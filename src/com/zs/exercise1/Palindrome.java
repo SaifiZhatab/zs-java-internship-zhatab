@@ -1,4 +1,4 @@
-package com.zs.exc1;
+package com.zs.exercise1;
 
 /*
 This class check the number is pallindrom or not

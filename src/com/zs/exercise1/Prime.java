@@ -1,4 +1,4 @@
-package com.zs.exc1;
+package com.zs.exercise1;
 
 /*
 This class help you to find the prime number

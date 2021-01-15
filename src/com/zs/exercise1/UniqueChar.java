@@ -1,4 +1,4 @@
-package com.zs.exc1;
+package com.zs;
 
 /*
 This class help you to find the unique character in Strnig

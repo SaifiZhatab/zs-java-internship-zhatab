@@ -1,4 +1,4 @@
-package com.zs.exc1;
+package com.zs.exercise1;
 
 /*
 implement bodmas
