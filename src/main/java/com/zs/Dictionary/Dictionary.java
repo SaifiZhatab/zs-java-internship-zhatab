@@ -33,6 +33,7 @@ public class Dictionary {
      *  use to move in the trie
      */
     static Node head;
+
     /**
      * the function insert the word in trie
      * @param word the word
@@ -81,7 +82,7 @@ public class Dictionary {
 
         if(node.isEndOfWord == false) {
             logger.warning("word isn't present in dictionary");
-        }else{
+        }else {
             logger.info("word is present in dictionary");
         }
         return node.isEndOfWord;
@@ -94,7 +95,7 @@ public class Dictionary {
      * @param word the word
      * @return the meaning of word
      */
-    static String meaning(String word){
+    static String meaning(String word) {
         logger.info("find the word in dictionary");
         Node node = head;
         int  length = word.length();
@@ -121,7 +122,7 @@ public class Dictionary {
      * @param word  the word
      * @return  arraylist of similar data
      */
-    static ArrayList<String> correctWord(String word){
+    static ArrayList<String> correctWord(String word) {
         logger.info("find the correct word which similar to given word");
         int length = word.length();
 
@@ -130,8 +131,8 @@ public class Dictionary {
         for(int i=0;i<length;i++) {
             char ch = word.charAt(i);
 
-            for(int j=0;j<ALPHABET_SIZE;j++){
-                if((ch-'a') != j ){
+            for(int j=0;j<ALPHABET_SIZE;j++) {
+                if((ch-'a') != j ) {
 
                     // change the ith Character of word string
                     String st = word.substring(0,i) + (char) ('a' + j) + word.substring(i+1);
@@ -147,10 +148,15 @@ public class Dictionary {
         return correct;
     }
 
+    /**
+     * return all string which contain given node
+     * @param node  current node in trie
+     * @param matchWord  store result
+     * @param word  the word
+     */
+    static void addInList(Node node, ArrayList<String>  matchWord , String word) {
 
-    static void addInList(Node node, ArrayList<String>  matchWord , String word){
-
-        if(node.isEndOfWord == true){
+        if(node.isEndOfWord == true) {
             matchWord.add(word);
         }
 
@@ -168,7 +174,7 @@ public class Dictionary {
      * @param word  the word
      * @return  the arraylist
      */
-    static ArrayList<String> matchWord(String word){
+    static ArrayList<String> matchWord(String word) {
         logger.info("find all word start with given word");
         Node node = head;
         int len = word.length();
@@ -177,7 +183,7 @@ public class Dictionary {
         for(int i=0;i<len;i++) {
             char ch = word.charAt(i);
 
-            if(node.child[ch-'a'] == null){
+            if(node.child[ch-'a'] == null) {
                 return matchWord;
             }
             node = node.child[ch - 'a'];
@@ -214,12 +220,12 @@ public class Dictionary {
         int choice;
         String word, meaning;
         boolean check;
-        do{
+        do {
 
             System.out.println("Please choose which operation you want to perform = ");
             choice = in.nextInt();
 
-            switch(choice){
+            switch(choice) {
                 case 1:
                     System.out.print("Please enter word = ");
                     word = in.next();
@@ -244,10 +250,10 @@ public class Dictionary {
                     word = in.next();
 
                     check = search(word);
-                    if(check){
+                    if(check) {
                         meaning = meaning(word);
                         System.out.println(word + " : " + meaning);
-                    }else{
+                    }else {
                         System.out.println("Sorry,this word isn't present in dictionary");
                     }
                     break;
@@ -255,7 +261,7 @@ public class Dictionary {
                 case 4:
                     System.out.print("Please enter the word = ");
                     word = in.next();
-                    ArrayList<String> correctWord = correctWord((String) word);
+                    ArrayList<String> correctWord = correctWord((String)word);
 
                     if(correctWord.size() == 0) {
                         System.out.println("No word present in dictionary similar to "+ word);
