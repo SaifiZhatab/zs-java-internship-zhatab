@@ -1,28 +1,14 @@
-package main.java.com.zs.Dictionary;
+package com.zs.exercise2;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
-/**
- *  Implement the Dictionary using tries data structure.
- *  Feature:
- *      insert word in dictionary
- *      search word in dictionary
- *      find meaning in dictionary
- *      find the correct word
- *      find the words start with given string
- */
 public class Dictionary {
 
     static final int ALPHABET_SIZE = 26;
-    private static Logger logger;
+    static ArrayList<String> allWords;
 
-    /**
-     *  This is the node which use to store the Characters is the tries node structure
-     */
+    //This is the node which use to store the Character
     static class Node {
         Node child[] = new Node[ALPHABET_SIZE];
         boolean isEndOfWord;
@@ -37,75 +23,29 @@ public class Dictionary {
         }
     };
 
-    /**
-     *  This is the node which store the head of tries
-     *  use to move in the trie
-     */
+    // This is root node of trie tree
     static Node head;
 
-    /**
-     * the function insert the word in trie
-     * @param word the word
-     * @param meaning the meaning of word
-     */
+    //This function help you to insert the word in dictionary
     static void insert(String word , String meaning) {
-        logger.info("insert the word in dictionary");
-
         int length = word.length();
+        allWords.add(word);
         Node node = head;
+
         for(int i=0;i<length;i++) {
             char ch = word.charAt(i);
+
             if(node.child[ch-'a'] == null) {
-                // when the node is null, then insert the new node
                 node.child[ch-'a'] = new Node();
             }
             node = node.child[ch-'a'];
         }
-        logger.info("move in last node");
         node.isEndOfWord = true;
         node.meaning = meaning;
-
-        logger.info("insert the word in dictionary successfully");
     }
 
-    /**
-     * return true or false
-     *      if word present in dictionary, then return true
-     *      if word not present in dictionary, then return false;
-     * @param word the word
-     * @return  true or false
-     */
+    //This function help you to search the word in dictionary
     static boolean search(String word) {
-        logger.info("search the word in dictionary");
-        Node node = head;
-        int  length = word.length();
-
-        for(int i=0;i<length;i++) {
-            char ch = word.charAt(i);
-            if(node.child[(int)(ch -'a')] == null) {
-                logger.warning("word isn't present in dictionary");
-                return false;
-            }
-            node = node.child[ch-'a'];
-        }
-
-        if(!node.isEndOfWord ) {
-            logger.warning("word isn't present in dictionary");
-        }else {
-            logger.info("word is present in dictionary");
-        }
-        return node.isEndOfWord;
-    }
-
-    /**
-     * return the meaning of word
-     *      if the word is null, then return null string
-     *
-     * @param word the word
-     * @return the meaning of word
-     */
-    static String meaning(String word) {
-        logger.info("find the word in dictionary");
         Node node = head;
         int  length = word.length();
 
@@ -113,59 +53,54 @@ public class Dictionary {
             char ch = word.charAt(i);
 
             if(node.child[ch-'a'] == null) {
-                //  word isn't present in dictionary
-
-                logger.warning("word isn't present in dictionary");
-                return null;
+                return false;
             }
             node = node.child[ch-'a'];
         }
-
-        return node.meaning;
+        return node.isEndOfWord;
     }
 
-    /**
-     * return the arraylist whose present the similar word
-     *      only match with similar length word in dictionary
-     *
-     * @param word  the word
-     * @return  arraylist of similar data
-     */
-    static ArrayList<String> correctWord(String word) {
-        logger.info("find the correct word which similar to given word");
-        int length = word.length();
-
-        ArrayList<String> correct = new ArrayList<String>();
+    //This function help you to find the meaning in dictionary
+    static String meaning(String word){
+        Node node = head;
+        int  length = word.length();
 
         for(int i=0;i<length;i++) {
             char ch = word.charAt(i);
 
-            for(int j=0;j<ALPHABET_SIZE;j++) {
-                if((ch-'a') != j ) {
+            if(node.child[ch-'a'] == null) {
+                return null;
+            }
+            node = node.child[ch-'a'];
+        }
+        return node.meaning;
+    }
 
-                    // change the ith Character of word string
-                    String st = word.substring(0,i) + (char) ('a' + j) + word.substring(i+1);
 
-                    logger.info("check for every possible similar word");
-                    if(search(st)) {
+
+	//This function help you to check the correct word in dictionary
+    static ArrayList<String> correctWord(String word){
+        int lenght = word.length();
+
+        ArrayList<String> correct = new ArrayList<String>();
+
+        for(int i=0;i<lenght;i++) {
+            char ch = word.charAt(i);
+
+            for(int j=0;j<ALPHABET_SIZE;j++){
+                if((ch-'a') != j){
+                    String st = word.substring(0,i) + ('a' + j) + word.substring(i+1);
+                    if(search(st) == true) {
                         correct.add(st);
                     }
                 }
             }
         }
-        logger.info("successfully return the similar words");
         return correct;
     }
 
-    /**
-     * return all string which contain given node
-     * @param node  current node in trie
-     * @param matchWord  store result
-     * @param word  the word
-     */
-    static void addInList(Node node, ArrayList<String>  matchWord , String word) {
-
-        if(node.isEndOfWord ) {
+    static void addInList(Node node, ArrayList<String>  matchWord , String word){
+        if(node.isEndOfWord == true){
             matchWord.add(word);
         }
 
@@ -176,15 +111,8 @@ public class Dictionary {
         }
     }
 
-    /**
-     * return the arraylist whose contain the who start with given string
-     *      if the given string is null, then the return empty arraylist
-     *      if no word start with given string, then the return empty arraylist
-     * @param word  the word
-     * @return  the arraylist
-     */
-    static ArrayList<String> matchWord(String word) {
-        logger.info("find all word start with given word");
+    //This function help you to find the match string in dictionary
+    static ArrayList<String> matchWord(String word){
         Node node = head;
         int len = word.length();
         ArrayList<String> matchWord = new ArrayList<String>();
@@ -192,29 +120,16 @@ public class Dictionary {
         for(int i=0;i<len;i++) {
             char ch = word.charAt(i);
 
-            if(node.child[ch-'a'] == null) {
+            if(node.child[ch-'a'] == null){
                 return matchWord;
             }
             node = node.child[ch - 'a'];
         }
         addInList(node , matchWord , word);
-
-        logger.info("successfully fetch all matched words");
         return matchWord;
     }
 
-    /**
-     * this is main method who control the dictionary
-     * @param st command line argument
-     */
-    public static void main(String st[])  {
-        try {
-            LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resources/logging.properties"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        logger = Logger.getLogger(Dictionary.class.getName());
-
+    public static void main(String st[]){
         Scanner in = new Scanner(System.in);
         head = new Node();
 
@@ -227,14 +142,14 @@ public class Dictionary {
         System.out.println("6 - for exit ");
 
         int choice;
-        String word, meaning;
-        boolean check;
-        do {
+        do{
+            String word, meaning;
+            boolean check;
 
-            System.out.println("Please choose which operation you want to perform = ");
+            System.out.print("Please choose which operation you want to perform = ");
             choice = in.nextInt();
 
-            switch(choice) {
+            switch(choice){
                 case 1:
                     System.out.print("Please enter word = ");
                     word = in.next();
@@ -259,10 +174,10 @@ public class Dictionary {
                     word = in.next();
 
                     check = search(word);
-                    if(check) {
+                    if(check){
                         meaning = meaning(word);
                         System.out.println(word + " : " + meaning);
-                    }else {
+                    }else{
                         System.out.println("Sorry,this word isn't present in dictionary");
                     }
                     break;
@@ -270,7 +185,7 @@ public class Dictionary {
                 case 4:
                     System.out.print("Please enter the word = ");
                     word = in.next();
-                    ArrayList<String> correctWord = correctWord((String)word);
+                    ArrayList<String> correctWord = correctWord(word);
 
                     if(correctWord.size() == 0) {
                         System.out.println("No word present in dictionary similar to "+ word);
