@@ -1,4 +1,4 @@
-package com.zs.exercise2;
+package main.java.com.zs.exercise2;
 
 import java.util.ArrayList;
 import java.util.Scanner;
