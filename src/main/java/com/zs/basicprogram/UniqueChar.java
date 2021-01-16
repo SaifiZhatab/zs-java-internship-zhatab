@@ -1,15 +1,20 @@
-package com.zs;
-
-/*
-This class help you to find the unique character in Strnig
- */
+package main.java.com.zs.basicprogram;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * This class help you to find the unique word in given string
+ */
 public class UniqueChar {
+
     void uniqueChar(String sentence) {
+
+        /**
+         * Use hashmap to store the unique word
+         * hashmap contain unique key only
+         */
         HashMap<Character,Integer> storage = new HashMap<Character, Integer>();
 
         int len = sentence.length();

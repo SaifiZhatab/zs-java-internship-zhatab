@@ -1,10 +1,13 @@
-package com.zs.exercise1;
+package main.java.com.zs.basicprogram;
 
-/*
-This class check the number is pallindrom or not
+/**
+ * This class help you to check the number is palindrome or not
  */
 public class Palindrome {
     void palindrome(int num) {
+        /**
+         * keep the copy of original number
+         */
         int copy = num ;
         int pali = 0;
 
@@ -13,7 +16,9 @@ public class Palindrome {
             num = num/10;
         }
 
-        // check the number and its reverse is same or not
+        /**
+         * check the number and its reverse is same or not
+         */
         if(pali == copy) {
             System.out.println("Yes this number is palindorm");
         }else {

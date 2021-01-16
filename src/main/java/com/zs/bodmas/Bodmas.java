@@ -1,41 +1,80 @@
-package com.zs.exercise1;
-
-/*
-implement bodmas
- */
+package main.java.com.zs.bodmas;
 
 import java.util.Stack;
 
 import static java.lang.Character.isDigit;
 
+/**
+ *  implement bodmas
+ */
+
 public class Bodmas {
 
-    // This function return two number sum
+    /**
+     *  return the sum of first argument and second argument
+     * @param a the integer number
+     * @param b the integer number
+     * @return the value a + b
+     */
     public int sum(int a,int b){
         return (a+b);
     }
 
-    // This function return two number subtract
+    /**
+     *  return the subtract of first argument and second argument
+     * @param a the integer number
+     * @param b the integer number
+     * @return the value a - b
+     */
     public int subtract(int a,int b){
         return (a-b);
     }
 
-    // This function return two number multiply
+    /**
+     *  return the multiplication of first argument and second argument
+     * @param a the integer number
+     * @param b the integer number
+     * @return the value a*b
+     */
     public int multiply(int a,int b){
         return (a*b);
     }
 
-    // This function return two number divide
+    /**
+     *  return the sum of first argument and second argument.Special case:
+     *      if the second argument value is 0,then function give "divide by 0" exception
+     *
+     * @param a the integer number
+     * @param b the integer number
+     * @return the value a/b
+     */
     public int divide(int a,int b){
-        return (a/b);
+        try {
+            return (a/b);
+        }catch(Exception ex) {
+            System.out.println("divide by 0 ");
+            return 0;
+        }
     }
 
-    // This function return power
+    /**
+     *  Returns the value of the first argument raised to the power of the second argument. Special cases:
+     *     If the second argument is positive or negative zero, then the result is 1.0.
+     *     If the second argument is 1.0, then the result is the same as the first argument.
+     *
+     * @param a the base.
+     * @param b the exponent
+     * @return the value a^b.
+     */
     public int power(int a,int b){
         return (int)Math.pow(a,b);
     }
 
-    // This function return the precedence of the operaator
+    /**
+     *  return the precedence of operator
+     * @param op the character
+     * @return precedence
+     */
     public int precedence(char op){
         switch(op){
             case '-' : return 1;
@@ -47,7 +86,13 @@ public class Bodmas {
         }
     }
 
-    // This function perform the arthmatic operation on two number
+    /**
+     * perform the operation of the basis of operator and return output
+     * @param a first integer number
+     * @param b second integer number
+     * @param op the operator
+     * @return the value on the basis of operator
+     */
     public int perform(int a,int b, char op) {
         switch(op) {
             case '+' : return sum(a,b);
@@ -59,21 +104,35 @@ public class Bodmas {
         return 0;
     }
 
-    // This function solve the bodmas expression
+    /**
+     * solve the bodmas expression.Special case:
+     *      if the expression is wrong, then they give exception.
+     * @param exp the arithmetic expression
+     */
     public void bodmasSolver(String exp) {
         int length = exp.length();
         int ans=0;
         Stack<Integer> value = new Stack<Integer>();
         Stack<Character> operator = new Stack<Character>();
 
-        // use try-catch in case of any exception occur
+        /**
+         *  use try-catch
+         *  in case of any exception occur
+         *  i.e. NULLPOINTER , INDEXOUTOFBOUND exception.
+         */
         try {
             for (int i = 0; i < length; i++) {
                 if (exp.charAt(i) == ' ') {
                     continue;
                 } else if (exp.charAt(i) == '(') {
+                    /**
+                     * when the open bracket come means expression in expression
+                     */
                     operator.push(exp.charAt(i));
-                } else if (isDigit(exp.charAt(i))) {            // when it is numeric value
+                } else if (isDigit(exp.charAt(i))) {
+                    /**
+                     * when numeric value come, then join the string and make the number
+                     */
                     int val = 0;
                     while (i < length && isDigit(exp.charAt(i))) {
                         val = val * 10 + (exp.charAt(i) - '0');
@@ -82,8 +141,11 @@ public class Bodmas {
                     i--;
                     value.push(val);
 
-                } else if (exp.charAt(i) == ')') {              // when the bracket expression will complete
-                    while (operator.peek() != ')') {
+                } else if (exp.charAt(i) == ')') {
+                    /**
+                     * when the arithmetic expression is end
+                     */
+                    while (operator.peek() != '(') {
                         int value2 = value.peek();
                         value.pop();
 
@@ -98,7 +160,10 @@ public class Bodmas {
                     }
                     operator.pop();
                 } else {
-                    // solve the arthmatic expression
+                    /**
+                     * Solve the arithmetic expression.
+                     * First solve those operation which precedence is high or equal.
+                     */
                     while ( !operator.empty() && precedence(operator.peek()) >= precedence(exp.charAt(i))) {
                         int value2 = value.peek();
                         value.pop();
@@ -116,7 +181,10 @@ public class Bodmas {
                 }
             }
 
-            // in case of any operator remain in stack
+            /**
+             * when the operators are available in stack, then applied on operand
+             * i.e. "1+(2*3)+5
+             */
             while ( !operator.empty()) {
                 int value2 = value.peek();
                 value.pop();
@@ -137,4 +205,5 @@ public class Bodmas {
         }
         System.out.println(value.peek() );
     }
+
 }

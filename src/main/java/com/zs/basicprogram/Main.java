@@ -1,10 +1,10 @@
-package com.zs.exercise1;
+package main.java.com.zs.basicprogram;
 
-/*
-This is remote class
- */
 import java.util.Scanner;
 
+/**
+ * This class is make for control all the classes
+ */
 public class Main {
     public static void main(String[] args) {
 	// write your code
@@ -12,6 +12,10 @@ public class Main {
         System.out.print("Enter the valid expression = ");
         String exp = in.nextLine();
 
-        System.out.println();
+        /**
+         * check for extract words in sentence
+         */
+        ExtractSentence ext = new ExtractSentence();
+        ext.extractSentence(exp);
     }
 }

@@ -1,9 +1,10 @@
-package com.zs.exercise1;
+package main.java.com.zs.basicprogram;
 
-/*
-This class help you to add the two 2D arrays
+/**
+ * This class help you to add the two 2D array
  */
 public class TwoDimSum {
+
     void twoDimSum(int arr1[][] ,int arr2[][] ,int row, int col) {
         int sum[][] = new int[row][col];
 

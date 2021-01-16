@@ -1,6 +1,7 @@
-package com.zs.exercise1;
-/*
-This class is use to add the two 1D array
+package main.java.com.zs.basicprogram;
+
+/**
+ * This class help you to find the sum of two 1D array
  */
 public class OneDimSum {
 
