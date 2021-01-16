@@ -6,9 +6,7 @@ import java.util.Scanner;
 public class Dictionary {
 
     static final int ALPHABET_SIZE = 26;
-    static ArrayList<String> allWords;
 
-    //This is the node which use to store the Character
     static class Node {
         Node child[] = new Node[ALPHABET_SIZE];
         boolean isEndOfWord;
@@ -23,13 +21,10 @@ public class Dictionary {
         }
     };
 
-    // This is root node of trie tree
     static Node head;
 
-    //This function help you to insert the word in dictionary
     static void insert(String word , String meaning) {
         int length = word.length();
-        allWords.add(word);
         Node node = head;
 
         for(int i=0;i<length;i++) {
@@ -44,7 +39,6 @@ public class Dictionary {
         node.meaning = meaning;
     }
 
-    //This function help you to search the word in dictionary
     static boolean search(String word) {
         Node node = head;
         int  length = word.length();
@@ -60,7 +54,6 @@ public class Dictionary {
         return node.isEndOfWord;
     }
 
-    //This function help you to find the meaning in dictionary
     static String meaning(String word){
         Node node = head;
         int  length = word.length();
@@ -77,20 +70,18 @@ public class Dictionary {
     }
 
 
-
-	//This function help you to check the correct word in dictionary
     static ArrayList<String> correctWord(String word){
-        int lenght = word.length();
+        int length = word.length();
 
         ArrayList<String> correct = new ArrayList<String>();
 
-        for(int i=0;i<lenght;i++) {
+        for(int i=0;i<length;i++) {
             char ch = word.charAt(i);
 
             for(int j=0;j<ALPHABET_SIZE;j++){
                 if((ch-'a') != j){
                     String st = word.substring(0,i) + ('a' + j) + word.substring(i+1);
-                    if(search(st) == true) {
+                    if(search(st)) {
                         correct.add(st);
                     }
                 }
@@ -100,7 +91,7 @@ public class Dictionary {
     }
 
     static void addInList(Node node, ArrayList<String>  matchWord , String word){
-        if(node.isEndOfWord == true){
+        if(node.isEndOfWord ){
             matchWord.add(word);
         }
 
@@ -111,7 +102,6 @@ public class Dictionary {
         }
     }
 
-    //This function help you to find the match string in dictionary
     static ArrayList<String> matchWord(String word){
         Node node = head;
         int len = word.length();
