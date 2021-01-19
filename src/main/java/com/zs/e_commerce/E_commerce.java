@@ -1,9 +1,17 @@
 package main.java.com.zs.e_commerce;
+
+import java.io.FileInputStream;
 import java.sql.*;
 import java.util.Scanner;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
+/**
+ * This class help you to interact with e_commerce database
+ */
 public class E_commerce {
     static Connection con;
+    private static Logger logger;
     static Scanner in = new Scanner(System.in);
 
     /**
@@ -32,6 +40,8 @@ public class E_commerce {
         book_product = con.prepareStatement("insert into orders values (?,?,?,?,?,?,?)");
         lastXDayOrder = con.prepareStatement("select * from order where user_id = ? order by order_date desc limit ?");
         topXOrder = con.prepareStatement("select * from orders where user_id = ? order by item desc limit ?");
+
+        logger.info("Successfully create all queries");
     }
 
 
@@ -62,9 +72,9 @@ public class E_commerce {
         int check = insertInUser.executeUpdate();
 
         if(check == 0){
-            System.out.println("Some internal error comes.Please insert again");
+            logger.warning("Some internal error comes.Please insert again");
         }else{
-            System.out.println("Successfully insert data in User table");
+            logger.info("Successfully insert data in User table");
         }
     }
 
@@ -87,13 +97,11 @@ public class E_commerce {
         int check = insertInProduct.executeUpdate();
 
         if(check == 0){
-            System.out.println("Some internal error comes.Please insert again");
+            logger.warning("Some internal error comes.Please insert again");
         }else{
-            System.out.println("Successfully insert data in Product table");
+            logger.info("Successfully insert data in Product table");
         }
     }
-
-
 
     /**
      * This function help you to check the user data present or not in table
@@ -106,7 +114,6 @@ public class E_commerce {
      */
     public static boolean searchInUser(int id) throws SQLException {
         searchInUer.setInt(1,id);
-
         ResultSet rs = searchInUer.executeQuery();
 
         if(rs.next()){
@@ -127,7 +134,6 @@ public class E_commerce {
      */
     public static boolean searchInProduct(int id) throws SQLException {
         searchInProduct.setInt(1,id);
-
         ResultSet rs = searchInProduct.executeQuery();
 
         if(rs.next()){
@@ -137,7 +143,6 @@ public class E_commerce {
         }
     }
 
-
     /**
      * When you want to print the whole User Table
      * @throws SQLException  Exception :
@@ -146,9 +151,10 @@ public class E_commerce {
     public static void printUsers() throws SQLException {
         System.out.println("This is users database table");
         ResultSet  rs = printUsers.executeQuery();
-        System.out.println( "User id  :  firstName : LastName  : Mobile   :  Address");
+
+        logger.info ("User id  :  firstName : LastName  : Mobile   :  Address");
         while(rs.next()){
-            System.out.println(rs.getInt(1)+ " : " +rs.getString(2) + " : " + rs.getString(3) +  " : "
+            logger.info(rs.getInt(1)+ " : " +rs.getString(2) + " : " + rs.getString(3) +  " : "
                     + rs.getString(4) +  " : " + rs.getString(5));
         }
     }
@@ -161,9 +167,9 @@ public class E_commerce {
      */
     public static void printProducts() throws SQLException {
         ResultSet rs = printProducts.executeQuery();
-        System.out.println("Product id  :   name  :  quantity  : price ");
+        logger.info("Product id  :   name  :  quantity  : price ");
         while (rs.next()){
-            System.out.println(rs.getInt(1) + " : "+rs.getString(2) + " : " + rs.getInt(3) +" : " +rs.getInt(4));
+            logger.info(rs.getInt(1) + " : "+rs.getString(2) + " : " + rs.getInt(3) +" : " +rs.getInt(4));
         }
     }
 
@@ -184,15 +190,18 @@ public class E_commerce {
         updateUserData.setString(2,lastName);
         updateUserData.setString(3,mobile);
         updateUserData.setString(4,address);
-
         updateUserData.setInt(5,id);
 
         int check = updateUserData.executeUpdate();
 
+        /**
+         * when executeUpdate is return 0, that means row doesn't enter in it.
+         * when executeUpdate is return 1, that means row is successfully insert in table
+         */
         if(check == 0){
-            System.out.println("Some internal error comes.Please update again");
+            logger.warning("Some internal error comes.Please update again");
         }else{
-            System.out.println("Successfully update data in User table");
+            logger.info("Successfully update data in User table");
         }
     }
 
@@ -215,13 +224,16 @@ public class E_commerce {
 
         int check = updateProductData.executeUpdate();
 
+        /**
+         * when executeUpdate is return 0, that means row doesn't enter in it.
+         * when executeUpdate is return 1, that means row is successfully insert in table
+         */
         if(check == 0){
-            System.out.println("Some internal error comes.Please update again");
+            logger.warning("Some internal error comes.Please update again");
         }else{
-            System.out.println("Successfully update data in Product table");
+            logger.info("Successfully update data in Product table");
         }
     }
-
 
     /**
      * The function delete the entity in the database table
@@ -234,17 +246,21 @@ public class E_commerce {
             /**
              * check key present in table or not after that delete
              */
-            System.out.println("Key not present in table");
+            logger.warning("Key not present in table");
             return ;
         }
 
         deleteUser.setInt(1,id);
         int check = deleteUser.executeUpdate();
 
+        /**
+         * when executeUpdate is return 0, that means row doesn't enter in it.
+         * when executeUpdate is return 1, that means row is successfully insert in table
+         */
         if(check == 0){
-            System.out.println("Some internal error comes.Please try again");
+            logger.warning("Some internal error comes.Please try again");
         }else{
-            System.out.println("Successfully delete "+id +" in User table");
+            logger.info("Successfully delete "+id +" in User table");
         }
     }
 
@@ -266,10 +282,14 @@ public class E_commerce {
         deleteProduct.setInt(1,id);
         int check = deleteProduct.executeUpdate();
 
+        /**
+         * when executeUpdate is return 0, that means row doesn't enter in it.
+         * when executeUpdate is return 1, that means row is successfully insert in table
+         */
         if(check == 0){
-            System.out.println("Some internal error comes.Please try again");
+            logger.warning("Some internal error comes.Please try again");
         }else{
-            System.out.println("Successfully delete "+id +" in User table");
+            logger.info("Successfully delete "+id +" in User table");
         }
     }
 
@@ -302,9 +322,9 @@ public class E_commerce {
          * when executeUpdate is return 1, that means row is successfully insert in table
          */
         if(check == 0){
-            System.out.println("Some internal error comes.Please try again");
+            logger.warning("Some internal error comes.Please try again");
         }else{
-            System.out.println("Successfully order the product in User table");
+            logger.info("Successfully order the product in User table");
         }
     }
 
@@ -319,8 +339,9 @@ public class E_commerce {
         lastXDayOrder.setInt(1,user_id);
         lastXDayOrder.setInt(2,days);
         ResultSet rs = lastXDayOrder.executeQuery();
+
         while(rs.next()){
-            System.out.println(rs.getInt(1) + " "+rs.getInt(2) +" "+ rs.getString(4) +
+            logger.info(rs.getInt(1) + " "+rs.getInt(2) +" "+ rs.getString(4) +
                     " " + rs.getString(5) +" " +rs.getString(6) );
         }
     }
@@ -344,7 +365,7 @@ public class E_commerce {
             /**
              * loop run until you fetch all row present in ResultSet
              */
-            System.out.println(rs.getInt(1) + " " + rs.getInt(2) + " " + rs.getString(4) + " " +
+            logger.info(rs.getInt(1) + " " + rs.getInt(2) + " " + rs.getString(4) + " " +
                     rs.getString(5) +" "+ rs.getString(6) + " "+rs.getInt(7));
         }
     }
@@ -357,11 +378,24 @@ public class E_commerce {
      */
     public static void main(String[] args) {
         try {
+            /**
+             * make the connection between java program and postgres database
+             */
             Class.forName("org.postgresql.Driver");
             con = DriverManager.getConnection("jdbc:postgresql://0.0.0.0:2006/postgres",
                     "postgres", "root123");
 
+            logger.info("Connection make successfully");
+
             initialize();
+
+            /**
+             * initialize logger
+             */
+            LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resources/logging.properties"));
+            logger = Logger.getLogger(E_commerce.class.getName());
+            logger.info("logger connect successfully");
+
             /**
              * try to insert in product table using java
              */
@@ -379,10 +413,12 @@ public class E_commerce {
 
             insertInProduct(id,name,quantity,price);
 
+            /**
+             * here you can work on database
+             */
 
         }catch(Exception ex){
-            System.out.println("Hii bye");
-            ex.printStackTrace();
+            logger.warning(ex.getMessage());
         }
     }
 }
