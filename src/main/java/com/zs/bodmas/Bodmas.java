@@ -109,7 +109,7 @@ public class Bodmas {
      *      if the expression is wrong, then they give exception.
      * @param exp the arithmetic expression
      */
-    public void bodmasSolver(String exp) {
+    public int bodmasSolver(String exp) {
         int length = exp.length();
         int ans=0;
         Stack<Integer> value = new Stack<Integer>();
@@ -201,9 +201,9 @@ public class Bodmas {
         }
         catch(Exception ex) {
             System.out.println("You give wrong expression ");
-            return ;
+            return 0;
         }
-        System.out.println(value.peek() );
+        return value.peek() ;
     }
 
 }

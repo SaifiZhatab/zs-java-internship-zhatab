@@ -5,7 +5,7 @@ package main.java.com.zs.basicprogram;
  */
 public class DecimalToBinary {
 
-    void binaryToDecimal(int num){
+    public String binaryToDecimal(int num){
         String binary = "";
         while(num != 0) {
             /**
@@ -13,9 +13,9 @@ public class DecimalToBinary {
              * when the num is even, then add '0' in string
              */
 
-            binary = (num%2 + '0') + binary;
+            binary = (char)(num%2 + '0') + binary;
             num=num/2;
         }
-        System.out.println(binary);
+         return binary;
     }
 }
