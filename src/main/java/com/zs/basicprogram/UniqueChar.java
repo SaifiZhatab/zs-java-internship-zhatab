@@ -1,8 +1,6 @@
 package main.java.com.zs.basicprogram;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class help you to find the unique word in given string
@@ -15,23 +13,17 @@ public class UniqueChar {
          * Use hashmap to store the unique word
          * hashmap contain unique key only
          */
-        HashMap<Character,Integer> storage = new HashMap<Character, Integer>();
+        Set<Character> storage = new HashSet<Character>();
 
         int len = sentence.length();
 
         for(int i=0;i<len;i++) {
-            if( !storage.containsKey(sentence.charAt(i)) ) {
-                storage.put(sentence.charAt(i) , 1);
-            }
+            storage.add(sentence.charAt(i));
         }
 
-        if( !storage.isEmpty() ) {
-            Iterator it = storage.entrySet().iterator();
-
-            while(it.hasNext()) {
-                Map.Entry  pair = (Map.Entry) it.next();
-                System.out.print(pair.getKey() + " ");
-            }
+       Iterator iterator = storage.iterator();
+        while(iterator.hasNext()){
+            System.out.print(iterator.next() + " ");
         }
     }
     public static void main(String[] args) {
