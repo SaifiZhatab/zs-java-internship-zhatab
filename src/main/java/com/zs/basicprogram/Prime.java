@@ -4,9 +4,8 @@ package main.java.com.zs.basicprogram;
  * This class help you to find the prime number  between 1 to N range
  */
 public class Prime {
-
     void prime(int num) {
-        for(int i=1;i<num ;i++) {
+        for(int i=2;i<num ;i++) {
             boolean check = true;
 
             /**
@@ -14,7 +13,7 @@ public class Prime {
              * if yes, then the number is not prime
              * if no, then the number is prime
              */
-            for(int j=1;j<i ; j ++) {
+            for(int j=2;j<i ; j ++) {
                 if(i%j == 0) {
                     check = false;
                     break;
@@ -24,5 +23,9 @@ public class Prime {
                 System.out.print(i +" ");
             }
         }
+    }
+    public static void main(String[] args) {
+        Prime prime = new Prime();
+        prime.prime(20);
     }
 }

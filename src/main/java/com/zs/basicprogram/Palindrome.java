@@ -25,4 +25,9 @@ public class Palindrome {
             System.out.println("Yes this number isn't palindorm");
         }
     }
+    public static void main(String[] args) {
+        Palindrome palindrome = new Palindrome();
+        palindrome.palindrome(12221);
+        palindrome.palindrome(123432);
+    }
 }

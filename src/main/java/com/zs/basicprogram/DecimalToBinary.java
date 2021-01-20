@@ -1,11 +1,13 @@
 package main.java.com.zs.basicprogram;
 
+import java.util.Scanner;
+
 /**
  * This class help you to convert decimal to binary number.
  */
 public class DecimalToBinary {
 
-    void binaryToDecimal(int num){
+    void decimalToBinary(int num){
         String binary = "";
         while(num != 0) {
             /**
@@ -13,9 +15,16 @@ public class DecimalToBinary {
              * when the num is even, then add '0' in string
              */
 
-            binary = (num%2 + '0') + binary;
+            binary = (char)(num%2 + '0') + binary;
             num=num/2;
         }
         System.out.println(binary);
+    }
+    public static void main(String[] args) {
+        /**
+         * check decimal to binary
+         */
+        DecimalToBinary dtb = new DecimalToBinary();
+        dtb.decimalToBinary(11);
     }
 }

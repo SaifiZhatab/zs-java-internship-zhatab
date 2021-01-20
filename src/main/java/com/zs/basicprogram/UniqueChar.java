@@ -30,8 +30,12 @@ public class UniqueChar {
 
             while(it.hasNext()) {
                 Map.Entry  pair = (Map.Entry) it.next();
-                System.out.println(pair.getKey());
+                System.out.print(pair.getKey() + " ");
             }
         }
+    }
+    public static void main(String[] args) {
+        UniqueChar uniqueChar = new UniqueChar();
+        uniqueChar.uniqueChar("abcdefabcefabcd");
     }
 }

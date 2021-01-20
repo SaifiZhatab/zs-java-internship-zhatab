@@ -26,9 +26,17 @@ public class ExtractSentence {
                 st = st + sentence.charAt(i);
             }
         }
+        if(st.length() > 0) {
+            words.add(st);
+        }
 
         for(int i=0;i<words.size() ;i ++) {
             System.out.println(words.get(i));
         }
+    }
+
+    public static void main(String[] args) {
+        ExtractSentence ext = new ExtractSentence();
+        ext.extractSentence("abc def ghi jkl");
     }
 }

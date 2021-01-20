@@ -4,7 +4,6 @@ package main.java.com.zs.basicprogram;
  * This class help you to add the two 2D array
  */
 public class TwoDimSum {
-
     void twoDimSum(int arr1[][] ,int arr2[][] ,int row, int col) {
         int sum[][] = new int[row][col];
 
@@ -20,5 +19,14 @@ public class TwoDimSum {
             }
             System.out.println();
         }
+    }
+
+    public static void main(String[] args) {
+        int firstArray[][] = {{1,2,3},{4,5,6},{7,8,9}};
+        int secondArray[][] = {{1,2,3},{4,5,6},{7,8,9}};
+
+        TwoDimSum twoDimSum = new TwoDimSum();
+        twoDimSum.twoDimSum(firstArray,secondArray,3,3);
+
     }
 }
