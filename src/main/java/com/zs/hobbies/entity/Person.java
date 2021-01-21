@@ -1,13 +1,27 @@
-package main.java.com.zs.hobbies.type;
+package main.java.com.zs.hobbies.entity;
 
-public class User {
+import main.java.com.zs.hobbies.database.DataBase;
+
+import java.sql.SQLException;
+
+/**
+ * this class provide all person facility
+ */
+public class Person {
     private int id;
     private String name;
     private String mobile;
     private String address;
 
-    public User(int id, String name, String mobile, String address) {
+    public Person(int id, String name, String mobile, String address) {
         this.id = id;
+        this.name = name;
+        this.mobile = mobile;
+        this.address = address;
+    }
+
+    public Person(String name, String mobile, String address) throws SQLException {
+        this.id = DataBase.findHigherKey("persons","personid");
         this.name = name;
         this.mobile = mobile;
         this.address = address;

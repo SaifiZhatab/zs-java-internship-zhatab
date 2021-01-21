@@ -1,33 +1,31 @@
-package main.java.com.zs.hobbies.type;
+package main.java.com.zs.hobbies.entity;
 
-public class Chess {
-    private int id;
-    private User person;
+import main.java.com.zs.hobbies.database.DataBase;
+
+import java.sql.SQLException;
+
+/**
+ * this class provide all chess facility
+ */
+public class Chess extends Hobby{
+    private Person person;
     private Timing time;
     private int numMoves;
     private String result;
 
-    public Chess(int id,User person, Timing time, int numMoves, String result) {
-        this.id = id;
+    public Chess(Person person, Timing time, int numMoves, String result) throws SQLException {
+         super(DataBase.findHigherKey("Chess" , "chess_id"));
         this.person = person;
         this.time = time;
         this.numMoves = numMoves;
         this.result = result;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public User getPerson() {
+    public Person getPerson() {
         return person;
     }
 
-    public void setPerson(User person) {
+    public void setPerson(Person person) {
         this.person = person;
     }
 
