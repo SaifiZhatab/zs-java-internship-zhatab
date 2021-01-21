@@ -1,14 +1,21 @@
-package main.java.com.zs.hobbies.database;
+package main.java.com.zs.hobbies.dao;
 
-import main.java.com.zs.hobbies.entity.Person;
-import main.java.com.zs.hobbies.entity.VideoWatching;
+import main.java.com.zs.hobbies.Controller;
+import main.java.com.zs.hobbies.dto.Person;
+import main.java.com.zs.hobbies.dto.VideoWatching;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class VideoWatchingDataBase {
+    private Logger logger;
     private PreparedStatement insertVideo, dateVideoWatchingDetails, lastTick, longestVideoWatchingStreak;
 
     /**
@@ -18,7 +25,12 @@ public class VideoWatchingDataBase {
      * @throws ClassNotFoundException
      * @throws SQLException
      */
-    public VideoWatchingDataBase() throws ClassNotFoundException, SQLException {
+    public VideoWatchingDataBase() throws ClassNotFoundException, SQLException, IOException {
+        LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
+        logger = Logger.getLogger(Controller.class.getName());
+
+        logger.info("Successfully VideoWatching database start ");
+
         insertVideo = DataBase.con.prepareStatement("insert into VideoWatching values (?,?,?,?,?,?)");
         dateVideoWatchingDetails = DataBase.con.prepareStatement("select * from VideoWatching where personid = ? and day = ?");
         lastTick = DataBase.con.prepareStatement("select * from VideoWatching where personid = ? order by videoWatching_id desc LIMIT 1");
@@ -42,6 +54,13 @@ public class VideoWatchingDataBase {
         return insertVideo.executeUpdate();
     }
 
+    /**
+     * This function help you to fetch the VideoWatching data at particular date
+     * @param person    the person object
+     * @param date      particular date
+     * @return      return the fetch data
+     * @throws SQLException
+     */
     public ResultSet dateVideoWatchingDetails(Person person, Date date) throws SQLException {
         dateVideoWatchingDetails.setInt(1,person.getId());
         dateVideoWatchingDetails.setDate(2,date);
@@ -49,11 +68,23 @@ public class VideoWatchingDataBase {
         return dateVideoWatchingDetails.executeQuery();
     }
 
+    /**
+     * This function help you to find the last tick of person
+     * @param person    the person object
+     * @return      return the fetch data
+     * @throws SQLException
+     */
     public ResultSet lastTick(Person person) throws SQLException {
         lastTick.setInt(1,person.getId());
         return lastTick.executeQuery();
     }
 
+    /**
+     * This function used for find the longest streak in the database
+     * @param person    the person object
+     * @return      return the fetch data
+     * @throws SQLException
+     */
     public ResultSet longestVideoWatchingStreak(Person person) throws SQLException {
         longestVideoWatchingStreak.setInt(1,person.getId());
         return longestVideoWatchingStreak.executeQuery();

@@ -1,6 +1,6 @@
-package main.java.com.zs.hobbies.entity;
+package main.java.com.zs.hobbies.dto;
 
-import main.java.com.zs.hobbies.database.DataBase;
+import main.java.com.zs.hobbies.dao.DataBase;
 
 import java.sql.SQLException;
 

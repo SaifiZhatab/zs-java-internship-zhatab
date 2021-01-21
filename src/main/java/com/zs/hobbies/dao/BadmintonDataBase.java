@@ -1,14 +1,24 @@
-package main.java.com.zs.hobbies.database;
+package main.java.com.zs.hobbies.dao;
 
-import main.java.com.zs.hobbies.entity.Badminton;
-import main.java.com.zs.hobbies.entity.Person;
+import main.java.com.zs.hobbies.Controller;
+import main.java.com.zs.hobbies.dto.Badminton;
+import main.java.com.zs.hobbies.dto.Person;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
+/**
+ * this class help to Badminton service class to communicate with database
+ */
 public class BadmintonDataBase {
+    private Logger logger;
     private PreparedStatement insertBadminton, dateBadmintonDetails, longestBadmintonStreak,
                             lastTick;
 
@@ -19,7 +29,12 @@ public class BadmintonDataBase {
      * @throws ClassNotFoundException
      * @throws SQLException
      */
-    public BadmintonDataBase() throws ClassNotFoundException, SQLException {
+    public BadmintonDataBase() throws ClassNotFoundException, SQLException, IOException {
+        LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
+        logger = Logger.getLogger(Controller.class.getName());
+
+        logger.info("Successfully Badminton database start ");
+
         insertBadminton = DataBase.con.prepareStatement("insert into Badminton values (?,?,?,?,?,?,?)");
         longestBadmintonStreak = DataBase.con.prepareStatement("select * from Badminton where personid = ? order by day");
         dateBadmintonDetails = DataBase.con.prepareStatement("select * from Badminton where personid = ? and day=?");
@@ -55,12 +70,25 @@ public class BadmintonDataBase {
         return longestBadmintonStreak.executeQuery();
     }
 
+    /**
+     * this class help you to find the person details on a particular date
+     * @param person    the person object
+     * @param date      specific date
+     * @return      return the set of data
+     * @throws SQLException
+     */
     public ResultSet dateBadmintonDetails(Person person, Date date) throws SQLException {
         dateBadmintonDetails.setInt(1,person.getId());
         dateBadmintonDetails.setDate(2,date);
         return dateBadmintonDetails.executeQuery();
     }
 
+    /**
+     * This class help you to fetch the last tick details
+     * @param person    the person object
+     * @return      return the last tick details
+     * @throws SQLException
+     */
     public ResultSet lastTick(Person person) throws SQLException {
         lastTick.setInt(1,person.getId());
         return lastTick.executeQuery();

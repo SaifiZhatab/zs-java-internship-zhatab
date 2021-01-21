@@ -1,11 +1,20 @@
-package main.java.com.zs.hobbies.database;
+package main.java.com.zs.hobbies.dao;
 
-import main.java.com.zs.hobbies.entity.*;
+import main.java.com.zs.hobbies.Controller;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.*;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
+/**
+ * This class is help you to connect with database
+ */
 public class DataBase {
     static Connection con;
+    private static Logger logger;
 
     /**
      * This is constructor which help you to connect your program to database
@@ -13,10 +22,14 @@ public class DataBase {
      * @throws ClassNotFoundException
      * @throws SQLException
      */
-    public DataBase() throws ClassNotFoundException, SQLException {
+    public DataBase() throws ClassNotFoundException, SQLException, IOException {
         Class.forName("org.postgresql.Driver");
-        con = DriverManager.getConnection("jdbc:postgresql://0.0.0.0:2006/hobbies",
-                "zhatab", "zhatab");
+        con = DriverManager.getConnection("jdbc:postgresql://0.0.0.0:2006/hobbies", "zhatab", "zhatab");
+
+        LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
+        logger = Logger.getLogger(Controller.class.getName());
+
+        logger.info("DataBase connect successfully ");
     }
 
     /**

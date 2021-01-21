@@ -1,7 +1,7 @@
 package main.java.com.zs.hobbies.service;
 
-import main.java.com.zs.hobbies.entity.Badminton;
-import main.java.com.zs.hobbies.entity.Person;
+import main.java.com.zs.hobbies.dto.Badminton;
+import main.java.com.zs.hobbies.dto.Person;
 
 import java.sql.Date;
 import java.sql.SQLException;

@@ -1,21 +1,29 @@
 package main.java.com.zs.hobbies.service;
 
-import main.java.com.zs.hobbies.database.DataBase;
-import main.java.com.zs.hobbies.database.VideoWatchingDataBase;
-import main.java.com.zs.hobbies.entity.Person;
-import main.java.com.zs.hobbies.entity.VideoWatching;
+import main.java.com.zs.hobbies.Controller;
+import main.java.com.zs.hobbies.dao.VideoWatchingDataBase;
+import main.java.com.zs.hobbies.dto.Person;
+import main.java.com.zs.hobbies.dto.VideoWatching;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class VideoWatchingServiceImpl implements VideoWatchingService {
     VideoWatchingDataBase videoWatchingDataBase;
+    private Logger logger;
 
-    public VideoWatchingServiceImpl() throws SQLException, ClassNotFoundException {
+    public VideoWatchingServiceImpl() throws SQLException, ClassNotFoundException, IOException {
+        LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
+        logger = Logger.getLogger(Controller.class.getName());
+
+        logger.info("Successfully VideoWatching service start ");
         videoWatchingDataBase = new VideoWatchingDataBase();
     }
 
@@ -24,9 +32,9 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         int check = videoWatchingDataBase.insertVideo(videoWatching);
 
         if(check == 1) {
-            System.out.println("Successfully Chess enter in database");
+            logger.info("Successfully Chess enter in database");
         }else {
-            System.out.println("Some internally error comes.Please try again");
+            logger.warning("Some internally error comes.Please try again");
         }
     }
 
@@ -34,10 +42,10 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
     public void dateDetails(Person person, Date date) throws SQLException {
         ResultSet resultSet = videoWatchingDataBase.dateVideoWatchingDetails(person,date);
 
-        System.out.println("This is all VideoWatching details on " + date.toString());
-        System.out.println("startTime   :  EndTime   : Title  ");
+        logger.info("This is all VideoWatching details on " + date.toString());
+        logger.info("startTime   :  EndTime   : Title  ");
         while(resultSet.next()){
-            System.out.println(resultSet.getTime("startTime") + " " + resultSet.getTime("endTime")
+            logger.info(resultSet.getTime("startTime") + " " + resultSet.getTime("endTime")
                     + " "+  resultSet.getString("title") ) ;
         }
     }
@@ -47,14 +55,14 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         ResultSet resultSet = videoWatchingDataBase.lastTick(person);
 
         if(resultSet.next()) {
-            System.out.println("This is the last tick of Video Watching ");
+            logger.info("This is the last tick of Video Watching ");
 
-            System.out.println("Date : " + resultSet.getDate("day").toString() );
-            System.out.println("Start time : " + resultSet.getTime("startTime"));
-            System.out.println("End time : " + resultSet.getTime("endTime"));
-            System.out.println("Title : " +  resultSet.getString("title"));
+            logger.info("Date : " + resultSet.getDate("day").toString() );
+            logger.info("Start time : " + resultSet.getTime("startTime"));
+            logger.info("End time : " + resultSet.getTime("endTime"));
+            logger.info("Title : " +  resultSet.getString("title"));
         }else {
-            System.out.println("No tick available for you");
+            logger.warning("No tick available for you");
         }
     }
 
@@ -67,12 +75,12 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
             days.add(resultSet.getDate("day").toString() );
         }
         int longestStreak = SimilarRequirement.longestStreak(days);
-        System.out.print("Longest Video Streak for " + person.getName() + " : " + longestStreak);
+        logger.info("Longest Video Streak for " + person.getName() + " : " + longestStreak);
 
         if(longestStreak == 1) {
-            System.out.println(" day");
+            logger.info(" day");
         }else {
-            System.out.println(" days");
+            logger.info(" days");
         }
     }
 
@@ -86,12 +94,12 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         }
 
         int longestStreak = SimilarRequirement.latestStreak(days);
-        System.out.print("Latest VideoWatching Streak for " + person.getName() + " : " + longestStreak );
+        logger.info("Latest VideoWatching Streak for " + person.getName() + " : " + longestStreak );
 
         if(longestStreak == 1) {
-            System.out.println(" day");
+            logger.info(" day");
         }else {
-            System.out.println(" days");
+            logger.info(" days");
         }
     }
 }

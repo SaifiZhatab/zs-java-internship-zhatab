@@ -1,5 +1,8 @@
-package main.java.com.zs.hobbies.entity;
+package main.java.com.zs.hobbies.dto;
 
+/**
+ * This is a main class which inherit by all hobbies
+ */
 public class Hobby {
     private int id;
 

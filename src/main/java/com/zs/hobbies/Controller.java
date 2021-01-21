@@ -1,16 +1,35 @@
 package main.java.com.zs.hobbies;
 
-import main.java.com.zs.hobbies.database.DataBase;
-import main.java.com.zs.hobbies.entity.*;
+import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
+import main.java.com.zs.hobbies.dao.DataBase;
+import main.java.com.zs.hobbies.dto.*;
 import main.java.com.zs.hobbies.service.*;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
-public class Main {
+public class Controller {
+    private static Logger logger;
 
-    public static void main(String st[]) throws SQLException, ClassNotFoundException {
+    public static void main(String st[]) throws SQLException, ClassNotFoundException, IOException {
+        /**
+         * initialize logger
+         */
+        LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
+        logger = Logger.getLogger(Controller.class.getName());
+        logger.info("Successfully logger start");
+
+        /**
+         * is use to make the connection between java program and database
+         */
         DataBase db = new DataBase();
 
         /**

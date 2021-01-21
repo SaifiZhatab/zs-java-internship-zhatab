@@ -1,4 +1,4 @@
-package main.java.com.zs.hobbies.entity;
+package main.java.com.zs.hobbies.dto;
 
 import java.sql.Date;
 import java.sql.Time;

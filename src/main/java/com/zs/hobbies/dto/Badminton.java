@@ -1,6 +1,6 @@
-package main.java.com.zs.hobbies.entity;
+package main.java.com.zs.hobbies.dto;
 
-import main.java.com.zs.hobbies.database.DataBase;
+import main.java.com.zs.hobbies.dao.DataBase;
 
 import java.sql.SQLException;
 
@@ -13,6 +13,13 @@ public class Badminton extends Hobby{
     private int numPlayers ;
     private String result;
 
+    public Badminton(int id, Person person, Timing time, int numPlayers, String result) throws SQLException {
+        super(id);
+        this.person = person;
+        this.time = time;
+        this.numPlayers = numPlayers;
+        this.result = result;
+    }
     public Badminton(Person person, Timing time, int numPlayers, String result) throws SQLException {
         super(DataBase.findHigherKey("Badminton" , "badminton_id"));
         this.person = person;

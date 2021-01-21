@@ -1,44 +1,73 @@
 package main.java.com.zs.hobbies.service;
 
-import main.java.com.zs.hobbies.database.DataBase;
-import main.java.com.zs.hobbies.database.TravellingDataBase;
-import main.java.com.zs.hobbies.entity.Person;
-import main.java.com.zs.hobbies.entity.Travelling;
+import main.java.com.zs.hobbies.Controller;
+import main.java.com.zs.hobbies.dao.TravellingDataBase;
+import main.java.com.zs.hobbies.dto.Person;
+import main.java.com.zs.hobbies.dto.Travelling;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.SortedSet;
-import java.util.StringTokenizer;
 import java.util.TreeSet;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
+/**
+ * This class give service to Travelling hobby
+ */
 public class TravellingServiceImpl implements TravellingService {
     TravellingDataBase travellingDataBase;
+    private Logger logger;
 
-    public TravellingServiceImpl() throws SQLException, ClassNotFoundException {
+    /**
+     * This is a constructor
+     * This connect class with logger and initialize the Travelling Database also
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
+    public TravellingServiceImpl() throws SQLException, ClassNotFoundException, IOException {
+        LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
+        logger = Logger.getLogger(Controller.class.getName());
+
+        logger.info("Successfully Travelling service start ");
+        
         travellingDataBase = new TravellingDataBase();
     }
 
+    /**
+     * This function help you to insert the travelling data into travelling database table
+     * @param travelling
+     * @throws SQLException
+     */
     @Override
     public void insertTravelling(Travelling travelling) throws SQLException {
         int check = travellingDataBase.insertTravelling(travelling);
 
         if(check == 1) {
-            System.out.println("Successfully travelling hobbies enter in database");
+            logger.info("Successfully travelling hobbies enter in database");
         }else {
-            System.out.println("Some internally error comes.Please try again");
+            logger.warning("Some internally error comes.Please try again");
         }
     }
 
+    /**
+     * This function help you to find the details on the basis of date
+     * @param person        the person object
+     * @param date      date
+     * @throws SQLException
+     */
     @Override
     public void dateDetails(Person person, Date date) throws SQLException {
         ResultSet resultSet = travellingDataBase.dateTravellingDetails(person,date);
 
-        System.out.println("This is all Travelling details on " + date.toString());
-        System.out.println("startTime   :  EndTime   : startPoint   :   endPoint  : distance");
+        logger.info("This is all Travelling details on " + date.toString());
+        logger.info("startTime   :  EndTime   : startPoint   :   endPoint  : distance");
         while(resultSet.next()){
-            System.out.println(resultSet.getTime("startTime") + " " + resultSet.getTime("endTime")
+            logger.info(resultSet.getTime("startTime") + " " + resultSet.getTime("endTime")
                     + " "+  resultSet.getString("startPoint") + " " + resultSet.getString("endPoint") +
                     " : " + resultSet.getFloat("distance")) ;
         }
@@ -49,16 +78,16 @@ public class TravellingServiceImpl implements TravellingService {
         ResultSet resultSet = travellingDataBase.lastTick(person);
 
         if(resultSet.next()) {
-            System.out.println("This is the last tick of Travelling ");
+            logger.info("This is the last tick of Travelling ");
 
-            System.out.println("Date : " + resultSet.getDate("day").toString() );
-            System.out.println("Start Time : " + resultSet.getTime("startTime"));
-            System.out.println("End time : " +  resultSet.getTime("endTime") );
-            System.out.println("Start Location : " + resultSet.getString("startPoint"));
-            System.out.println("End Location : " +  resultSet.getString("endPoint"));
-            System.out.println("Total distance travel : " + resultSet.getFloat("distance"));
+            logger.info("Date : " + resultSet.getDate("day").toString() );
+            logger.info("Start Time : " + resultSet.getTime("startTime"));
+            logger.info("End time : " +  resultSet.getTime("endTime") );
+            logger.info("Start Location : " + resultSet.getString("startPoint"));
+            logger.info("End Location : " +  resultSet.getString("endPoint"));
+            logger.info("Total distance travel : " + resultSet.getFloat("distance"));
         }else {
-            System.out.println("No tick available for you");
+            logger.warning("No tick available for you");
         }
     }
 
@@ -70,15 +99,13 @@ public class TravellingServiceImpl implements TravellingService {
         while(resultSet.next()){
             days.add(resultSet.getDate("day").toString() );
         }
-        System.out.println(person.getId());
-        System.out.println(days);
         int longestStreak = SimilarRequirement.longestStreak(days);
-        System.out.print("Longest Travelling Streak for " + person.getName() + " : " + longestStreak);
+        logger.info("Longest Travelling Streak for " + person.getName() + " : " + longestStreak);
 
         if(longestStreak == 1) {
-            System.out.println(" day");
+            logger.info(" day");
         }else {
-            System.out.println(" days");
+            logger.info(" days");
         }
     }
 
@@ -92,12 +119,12 @@ public class TravellingServiceImpl implements TravellingService {
         }
 
         int longestStreak = SimilarRequirement.latestStreak(days);
-        System.out.print("Latest Travelling Streak for " + person.getName() + " : " + longestStreak );
+        logger.info("Latest Travelling Streak for " + person.getName() + " : " + longestStreak );
 
         if(longestStreak == 1) {
-            System.out.println(" day");
+            logger.info(" day");
         }else {
-            System.out.println(" days");
+            logger.info(" days");
         }
     }
 }
