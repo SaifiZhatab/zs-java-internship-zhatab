@@ -37,12 +37,6 @@ public class VideoWatchingDataBase {
      * @throws SQLException
      */
     public int insertVideo(VideoWatching videoWatching) throws SQLException {
-        /**
-         * if user doesn't give id, then it take automatically
-         */
-        if(videoWatching.getId() == -1) {
-            videoWatching.setId(findHigherKey());
-        }
         insertVideo.setInt(1,videoWatching.getId());
         insertVideo.setInt(2,videoWatching.getPerson().getId());
         insertVideo.setTime(3,videoWatching.getTime().getStartTime());

@@ -36,12 +36,6 @@ public class PersonDataBase {
      * @throws SQLException
      */
     public int insertPerson(Person person) throws SQLException {
-        /**
-         * if user doesn't give id, then it take automatically
-         */
-        if(person.getId() == -1) {
-            person.setId(findHigherKey());
-        }
         insertPerson.setInt(1,person.getId());
         insertPerson.setString(2, person.getName());
         insertPerson.setString(3, person.getMobile());

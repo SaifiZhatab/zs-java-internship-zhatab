@@ -41,13 +41,6 @@ public class BadmintonDataBase {
      * @throws SQLException
      */
     public int insertBadminton(Badminton badminton) throws SQLException {
-        /**
-         * if user doesn't give id, then it take automatically
-         */
-        if(badminton.getId() == -1) {
-            badminton.setId(findHigherKey());
-        }
-
         insertBadminton.setInt(1,badminton.getId());
         insertBadminton.setInt(2,badminton.getPerson().getId());
         insertBadminton.setTime(3,badminton.getTime().getStartTime());

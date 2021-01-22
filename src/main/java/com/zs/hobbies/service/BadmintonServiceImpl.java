@@ -4,6 +4,8 @@ import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.dao.BadmintonDataBase;
 import main.java.com.zs.hobbies.dto.Badminton;
 import main.java.com.zs.hobbies.dto.Person;
+import main.java.com.zs.hobbies.extrafeature.Lru;
+import main.java.com.zs.hobbies.extrafeature.Node;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,6 +23,7 @@ import java.util.logging.Logger;
 public class BadmintonServiceImpl implements BadmintonService {
     private BadmintonDataBase badmintonDataBase;
     private Logger logger;
+    private Lru lru;
     private SimilarRequirement similarRequirement;
 
     /**
@@ -30,11 +33,12 @@ public class BadmintonServiceImpl implements BadmintonService {
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public BadmintonServiceImpl(Connection con) throws SQLException, ClassNotFoundException, IOException {
+    public BadmintonServiceImpl(Connection con,Lru lru) throws SQLException, ClassNotFoundException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully Badminton Service class start ");
+        this.lru = lru;
         badmintonDataBase = new BadmintonDataBase(con);
 
         similarRequirement = new SimilarRequirement();
@@ -48,8 +52,14 @@ public class BadmintonServiceImpl implements BadmintonService {
     @Override
     public void insert(Badminton badminton) throws SQLException {
         /**
-         * if user doesn't provide id, then it automatically set
+         * if user doesn't give id, then it take automatically
          */
+        if(badminton.getId() == -1) {
+            badminton.setId(badmintonDataBase.findHigherKey());
+        }
+
+        lru.refer(new Node(badminton));
+
         int check = badmintonDataBase.insertBadminton(badminton);
 
         if(check == 1) {

@@ -4,6 +4,8 @@ import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.dao.TravellingDataBase;
 import main.java.com.zs.hobbies.dto.Person;
 import main.java.com.zs.hobbies.dto.Travelling;
+import main.java.com.zs.hobbies.extrafeature.Lru;
+import main.java.com.zs.hobbies.extrafeature.Node;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,6 +24,7 @@ import java.util.logging.Logger;
 public class TravellingServiceImpl implements TravellingService {
     private TravellingDataBase travellingDataBase;
     private Logger logger;
+    private Lru lru;
     private SimilarRequirement similarRequirement;
 
     /**
@@ -31,12 +34,13 @@ public class TravellingServiceImpl implements TravellingService {
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public TravellingServiceImpl(Connection con) throws SQLException, ClassNotFoundException, IOException {
+    public TravellingServiceImpl(Connection con,Lru lru) throws SQLException, ClassNotFoundException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully Travelling service start ");
-        
+
+        this.lru = lru;
         travellingDataBase = new TravellingDataBase(con);
 
         similarRequirement = new SimilarRequirement();
@@ -49,6 +53,14 @@ public class TravellingServiceImpl implements TravellingService {
      */
     @Override
     public void insert(Travelling travelling) throws SQLException {
+        /**
+         * if user doesn't give id, then it take automatically
+         */
+        if(travelling.getId() == -1) {
+            travelling.setId(travellingDataBase.findHigherKey());
+        }
+        lru.refer(new Node(travelling));
+
         int check = travellingDataBase.insertTravelling(travelling);
 
         if(check == 1) {

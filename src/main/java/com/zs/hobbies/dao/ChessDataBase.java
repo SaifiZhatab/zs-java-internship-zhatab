@@ -38,12 +38,6 @@ public class ChessDataBase {
      * @throws SQLException
      */
     public int insertChess(Chess chess) throws SQLException {
-        /**
-         * if user doesn't give id, then it take automatically
-         */
-        if(chess.getId() == -1) {
-            chess.setId(findHigherKey());
-        }
         insertChess.setInt(1,chess.getId());
         insertChess.setInt(2,chess.getPerson().getId());
         insertChess.setTime(3,chess.getTime().getStartTime());

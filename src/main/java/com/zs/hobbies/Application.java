@@ -2,6 +2,8 @@ package main.java.com.zs.hobbies;
 
 import main.java.com.zs.hobbies.dao.DataBase;
 import main.java.com.zs.hobbies.dto.*;
+import main.java.com.zs.hobbies.extrafeature.Lru;
+import main.java.com.zs.hobbies.extrafeature.Node;
 import main.java.com.zs.hobbies.service.*;
 
 import java.io.FileInputStream;
@@ -24,45 +26,56 @@ public class Application {
         logger.info("Successfully logger start");
 
         /**
+         * apply LRU cache on Hobby application
+         */
+        Lru lru = new Lru(5);
+
+        /**
          * is use to make the connection between java program and database
          */
         DataBase dataBase = new DataBase();
+
+
 
         /**
          * insert person in database table
          */
         Person person = new Person(9,"Rihan","9311851147","Dadri");
-        PersonService personService = new PersonServiceImpl(dataBase.getCon());
-       // personService.insert(person);
+        PersonService personService = new PersonServiceImpl(dataBase.getCon(),lru);
+        // personService.insert(person);
+
 
         /**
          * insert travel hobbies
          */
         Timing time = new Timing(Time.valueOf("10:59:59"),Time.valueOf("12:59:59"), Date.valueOf("2020-04-05"));
-        Travelling travelling = new Travelling(person,time,"delhi","mumbi",5.6f);
-        TravellingService travellingService = new TravellingServiceImpl(dataBase.getCon());
+        Travelling travelling = new Travelling(3,person,time,"delhi","mumbi",5.6f);
+        TravellingService travellingService = new TravellingServiceImpl(dataBase.getCon(),lru);
         //travellingService.insert(travelling);
+
 
         /**
          * insert chess hobbies
          */
-        Chess chess = new Chess(person,time,5,"win");
-        ChessService chessService = new ChessServiceImpl(dataBase.getCon());
+        Chess chess = new Chess(4,person,time,5,"win");
+        ChessService chessService = new ChessServiceImpl(dataBase.getCon(),lru);
         //chessService.insert(chess);
+
 
         /**
          * insert badminton hobbie
          */
-        Badminton badminton = new Badminton(person,time, 8,"win");
-        BadmintonService badmintonService = new BadmintonServiceImpl(dataBase.getCon());
-       // badmintonService.insert(badminton);
+        Badminton badminton = new Badminton(5,person,time, 8,"win");
+        BadmintonService badmintonService = new BadmintonServiceImpl(dataBase.getCon(),lru);
+ //       badmintonService.insert(badminton);
+
 
         /**
          * insert Video Watching hobbies in table
          */
-        VideoWatching videoWatching = new VideoWatching(person,time,"Lucifer morningstar");
-        VideoWatchingService videoWatchingService = new VideoWatchingServiceImpl(dataBase.getCon());
-        //videoWatchingService.insert(videoWatching);
+        VideoWatching videoWatching = new VideoWatching(6,person,time,"Lucifer morningstar");
+        VideoWatchingService videoWatchingService = new VideoWatchingServiceImpl(dataBase.getCon(),lru);
+//      videoWatchingService.insert(videoWatching);
 
 
         /**

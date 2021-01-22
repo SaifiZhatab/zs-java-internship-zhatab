@@ -35,12 +35,6 @@ public class TravellingDataBase {
      * @throws SQLException
      */
     public int insertTravelling(Travelling travelling) throws SQLException {
-        /**
-         * if user doesn't give id, then it take automatically
-         */
-        if(travelling.getId() == -1) {
-            travelling.setId(findHigherKey());
-        }
         insertTravelling.setInt(1,travelling.getId());
         insertTravelling.setInt(2,travelling.getPerson().getId());
         insertTravelling.setTime(3, travelling.getTime().getStartTime());

@@ -4,6 +4,8 @@ import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.dao.VideoWatchingDataBase;
 import main.java.com.zs.hobbies.dto.Person;
 import main.java.com.zs.hobbies.dto.VideoWatching;
+import main.java.com.zs.hobbies.extrafeature.Lru;
+import main.java.com.zs.hobbies.extrafeature.Node;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,20 +21,30 @@ import java.util.logging.Logger;
 public class VideoWatchingServiceImpl implements VideoWatchingService {
     private VideoWatchingDataBase videoWatchingDataBase;
     private Logger logger;
+    private Lru lru;
     private SimilarRequirement similarRequirement;
 
-    public VideoWatchingServiceImpl(Connection con) throws SQLException, ClassNotFoundException, IOException {
+    public VideoWatchingServiceImpl(Connection con,Lru lru) throws SQLException, ClassNotFoundException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully VideoWatching service start ");
         videoWatchingDataBase = new VideoWatchingDataBase(con);
 
+        this.lru = lru;
         similarRequirement = new SimilarRequirement();
     }
 
     @Override
     public void insert(VideoWatching videoWatching) throws SQLException {
+        /**
+         * if user doesn't give id, then it take automatically
+         */
+        if(videoWatching.getId() == -1) {
+            videoWatching.setId(videoWatchingDataBase.findHigherKey());
+        }
+        lru.refer(new Node(videoWatching));
+
         int check = videoWatchingDataBase.insertVideo(videoWatching);
 
         if(check == 1) {
