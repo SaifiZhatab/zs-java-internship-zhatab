@@ -1,42 +1,33 @@
 package main.java.com.zs.hobbies.dao;
 
-import main.java.com.zs.hobbies.Controller;
+import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.dto.Person;
 import main.java.com.zs.hobbies.dto.Travelling;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class TravellingDataBase {
     private Logger logger;
-    private PreparedStatement insertTravelling, dateTravellingDetails, lastTick, longestTravellingStreak;
+    private Connection con;
+    private PreparedStatement insertTravelling, dateTravellingDetails, lastTick, longestTravellingStreak, findHigherKey;
 
-    /**
-     * This is constructor which help you to connect your program to database
-     * set all the prepare statement
-     *
-     * @throws ClassNotFoundException
-     * @throws SQLException
-     */
-    public TravellingDataBase() throws ClassNotFoundException, SQLException, IOException {
+    public TravellingDataBase(Connection con) throws SQLException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
-        logger = Logger.getLogger(Controller.class.getName());
+        logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully Travelling database start ");
 
-        insertTravelling = DataBase.con.prepareStatement("insert into travelling values (?,?,?,?,?,?,?,?)");
-        dateTravellingDetails = DataBase.con.prepareStatement("select * from Travelling where personid = ? and day = ?");
-        lastTick = DataBase.con.prepareStatement("select * from Travelling where personid = ? order by travelling_id desc LIMIT 1");
-        longestTravellingStreak = DataBase.con.prepareStatement("select * from Travelling where personid = ? order by day");
+        this.con = con;
+        insertTravelling = con.prepareStatement("insert into travelling values (?,?,?,?,?,?,?,?)");
+        dateTravellingDetails = con.prepareStatement("select * from Travelling where personid = ? and day = ?");
+        lastTick = con.prepareStatement("select * from Travelling where personid = ? order by travelling_id desc LIMIT 1");
+        longestTravellingStreak = con.prepareStatement("select * from Travelling where personid = ? order by day");
+        findHigherKey = con.prepareStatement("select travelling_id from Travelling order by travelling_id desc LIMIT 1 ");
     }
-
     /**
      * this function help you to insert the travelling hobbies in database
      * @param travelling    this is a travel object
@@ -44,6 +35,12 @@ public class TravellingDataBase {
      * @throws SQLException
      */
     public int insertTravelling(Travelling travelling) throws SQLException {
+        /**
+         * if user doesn't give id, then it take automatically
+         */
+        if(travelling.getId() == -1) {
+            travelling.setId(findHigherKey());
+        }
         insertTravelling.setInt(1,travelling.getId());
         insertTravelling.setInt(2,travelling.getPerson().getId());
         insertTravelling.setTime(3, travelling.getTime().getStartTime());
@@ -90,5 +87,20 @@ public class TravellingDataBase {
     public ResultSet longestTravellingStreak(Person person) throws SQLException {
         longestTravellingStreak.setInt(1,person.getId());
         return longestTravellingStreak.executeQuery();
+    }
+
+    /**
+     * This class help you to find the unique key that will not present in database table
+     * @return   return the unique key of table
+     * @throws SQLException
+     */
+    public int findHigherKey() throws SQLException {
+        ResultSet resultSet = findHigherKey.executeQuery();
+
+        if(resultSet.next()) {
+            return resultSet.getInt(1) + 1;
+        }else {
+            return 1;
+        }
     }
 }

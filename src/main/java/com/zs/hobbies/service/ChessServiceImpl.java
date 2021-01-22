@@ -1,12 +1,13 @@
 package main.java.com.zs.hobbies.service;
 
-import main.java.com.zs.hobbies.Controller;
+import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.dao.ChessDataBase;
 import main.java.com.zs.hobbies.dto.Chess;
 import main.java.com.zs.hobbies.dto.Person;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,22 +19,23 @@ import java.util.logging.Logger;
  * This class give service to Chess hobby
  */
 public class ChessServiceImpl implements ChessService {
-    ChessDataBase chessDataBase ;
+    private ChessDataBase chessDataBase ;
     private Logger logger;
-
+    private SimilarRequirement similarRequirement;
     /**
      * This is a constructor
      * @throws SQLException
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public ChessServiceImpl() throws SQLException, ClassNotFoundException, IOException {
+    public ChessServiceImpl(Connection con) throws SQLException, ClassNotFoundException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
-        logger = Logger.getLogger(Controller.class.getName());
+        logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully Chess service start ");
 
-        chessDataBase = new ChessDataBase();
+        chessDataBase = new ChessDataBase(con);
+        similarRequirement = new SimilarRequirement();
     }
 
     /**
@@ -42,7 +44,7 @@ public class ChessServiceImpl implements ChessService {
      * @throws SQLException
      */
     @Override
-    public void insertChess(Chess chess) throws SQLException {
+    public void insert(Chess chess) throws SQLException {
         int check = chessDataBase.insertChess(chess);
 
         if(check == 1) {
@@ -109,7 +111,7 @@ public class ChessServiceImpl implements ChessService {
         while(resultSet.next()){
             days.add(resultSet.getDate("day").toString() );
         }
-        int longestStreak = SimilarRequirement.longestStreak(days);
+        int longestStreak = similarRequirement.longestStreak(days);
         logger.info("Longest Chess Streak for " + person.getName() + " : " + longestStreak);
 
         if(longestStreak == 1) {
@@ -133,7 +135,7 @@ public class ChessServiceImpl implements ChessService {
             days.add(resultSet.getDate("day").toString() );
         }
 
-        int longestStreak = SimilarRequirement.latestStreak(days);
+        int longestStreak = similarRequirement.latestStreak(days);
         logger.info("Latest Chess Streak for " + person.getName() + " : " + longestStreak );
 
         if(longestStreak == 1) {

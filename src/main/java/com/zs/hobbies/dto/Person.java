@@ -21,7 +21,7 @@ public class Person {
     }
 
     public Person(String name, String mobile, String address) throws SQLException {
-        this.id = DataBase.findHigherKey("persons","personid");
+        this.id = -1;
         this.name = name;
         this.mobile = mobile;
         this.address = address;

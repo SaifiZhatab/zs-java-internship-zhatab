@@ -22,7 +22,7 @@ public class Chess extends Hobby{
     }
 
     public Chess(Person person, Timing time, int numMoves, String result) throws SQLException {
-         super(DataBase.findHigherKey("Chess" , "chess_id"));
+        super(-1);
         this.person = person;
         this.time = time;
         this.numMoves = numMoves;

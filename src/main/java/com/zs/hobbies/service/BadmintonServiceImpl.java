@@ -1,12 +1,13 @@
 package main.java.com.zs.hobbies.service;
 
-import main.java.com.zs.hobbies.Controller;
+import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.dao.BadmintonDataBase;
 import main.java.com.zs.hobbies.dto.Badminton;
 import main.java.com.zs.hobbies.dto.Person;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,8 +19,9 @@ import java.util.logging.Logger;
  * This class give service to Badminton
  */
 public class BadmintonServiceImpl implements BadmintonService {
-    BadmintonDataBase badmintonDataBase;
+    private BadmintonDataBase badmintonDataBase;
     private Logger logger;
+    private SimilarRequirement similarRequirement;
 
     /**
      * This is a constructor
@@ -28,12 +30,14 @@ public class BadmintonServiceImpl implements BadmintonService {
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public BadmintonServiceImpl() throws SQLException, ClassNotFoundException, IOException {
+    public BadmintonServiceImpl(Connection con) throws SQLException, ClassNotFoundException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
-        logger = Logger.getLogger(Controller.class.getName());
+        logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully Badminton Service class start ");
-        badmintonDataBase = new BadmintonDataBase();
+        badmintonDataBase = new BadmintonDataBase(con);
+
+        similarRequirement = new SimilarRequirement();
     }
 
     /**
@@ -42,7 +46,10 @@ public class BadmintonServiceImpl implements BadmintonService {
      * @throws SQLException
      */
     @Override
-    public void insertBadminton(Badminton badminton) throws SQLException {
+    public void insert(Badminton badminton) throws SQLException {
+        /**
+         * if user doesn't provide id, then it automatically set
+         */
         int check = badmintonDataBase.insertBadminton(badminton);
 
         if(check == 1) {
@@ -50,7 +57,6 @@ public class BadmintonServiceImpl implements BadmintonService {
         }else {
             logger.warning("Some internally error comes.Please try again");
         }
-
     }
 
     /**
@@ -113,7 +119,7 @@ public class BadmintonServiceImpl implements BadmintonService {
             days.add(resultSet.getDate("day").toString() );
         }
 
-        int longestStreak = SimilarRequirement.longestStreak(days);
+        int longestStreak = similarRequirement.longestStreak(days);
         logger.info("Longest Badminton Streak for " + person.getName() + " : " + longestStreak );
 
         if(longestStreak == 1) {
@@ -136,7 +142,7 @@ public class BadmintonServiceImpl implements BadmintonService {
         while(resultSet.next()){
             days.add(resultSet.getDate("day").toString() );
         }
-        int longestStreak = SimilarRequirement.latestStreak(days);
+        int longestStreak = similarRequirement.latestStreak(days);
         logger.info("Latest Badminton Streak for " + person.getName() + " : " + longestStreak );
 
         if(longestStreak == 1) {
@@ -145,4 +151,5 @@ public class BadmintonServiceImpl implements BadmintonService {
             logger.info(" days");
         }
     }
+
 }

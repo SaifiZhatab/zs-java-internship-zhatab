@@ -1,40 +1,33 @@
 package main.java.com.zs.hobbies.dao;
 
-import main.java.com.zs.hobbies.Controller;
+import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.dto.Person;
 import main.java.com.zs.hobbies.dto.VideoWatching;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class VideoWatchingDataBase {
     private Logger logger;
-    private PreparedStatement insertVideo, dateVideoWatchingDetails, lastTick, longestVideoWatchingStreak;
+    private Connection con;
+    private PreparedStatement insertVideo, dateVideoWatchingDetails, lastTick, longestVideoWatchingStreak, findHigherKey;
 
-    /**
-     * This is constructor which help you to connect your program to database
-     * set all the prepare statement
-     *
-     * @throws ClassNotFoundException
-     * @throws SQLException
-     */
-    public VideoWatchingDataBase() throws ClassNotFoundException, SQLException, IOException {
+    public VideoWatchingDataBase(Connection con) throws SQLException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
-        logger = Logger.getLogger(Controller.class.getName());
+        logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully VideoWatching database start ");
 
-        insertVideo = DataBase.con.prepareStatement("insert into VideoWatching values (?,?,?,?,?,?)");
-        dateVideoWatchingDetails = DataBase.con.prepareStatement("select * from VideoWatching where personid = ? and day = ?");
-        lastTick = DataBase.con.prepareStatement("select * from VideoWatching where personid = ? order by videoWatching_id desc LIMIT 1");
-        longestVideoWatchingStreak = DataBase.con.prepareStatement("select * from VideoWatching where personid = ? order by day");
+        this.con = con;
+
+        insertVideo = con.prepareStatement("insert into VideoWatching values (?,?,?,?,?,?)");
+        dateVideoWatchingDetails = con.prepareStatement("select * from VideoWatching where personid = ? and day = ?");
+        lastTick = con.prepareStatement("select * from VideoWatching where personid = ? order by videoWatching_id desc LIMIT 1");
+        longestVideoWatchingStreak = con.prepareStatement("select * from VideoWatching where personid = ? order by day");
+        findHigherKey = con.prepareStatement("select videoWatching_id from VideoWatching order by videoWatching_id desc LIMIT 1");
     }
 
     /**
@@ -44,6 +37,12 @@ public class VideoWatchingDataBase {
      * @throws SQLException
      */
     public int insertVideo(VideoWatching videoWatching) throws SQLException {
+        /**
+         * if user doesn't give id, then it take automatically
+         */
+        if(videoWatching.getId() == -1) {
+            videoWatching.setId(findHigherKey());
+        }
         insertVideo.setInt(1,videoWatching.getId());
         insertVideo.setInt(2,videoWatching.getPerson().getId());
         insertVideo.setTime(3,videoWatching.getTime().getStartTime());
@@ -88,5 +87,20 @@ public class VideoWatchingDataBase {
     public ResultSet longestVideoWatchingStreak(Person person) throws SQLException {
         longestVideoWatchingStreak.setInt(1,person.getId());
         return longestVideoWatchingStreak.executeQuery();
+    }
+
+    /**
+     * This class help you to find the unique key that will not present in database table
+     * @return   return the unique key of table
+     * @throws SQLException
+     */
+    public int findHigherKey() throws SQLException {
+        ResultSet resultSet = findHigherKey.executeQuery();
+
+        if(resultSet.next()) {
+            return resultSet.getInt(1) + 1;
+        }else {
+            return 1;
+        }
     }
 }

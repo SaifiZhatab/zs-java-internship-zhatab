@@ -5,7 +5,7 @@ import java.util.*;
 
 public class SimilarRequirement {
 
-    public static int longestStreak(SortedSet<String> dates){
+    public int longestStreak(SortedSet<String> dates){
         int previous_day = -1, previous_month = -1, previous_year = -1;
         int max=0, count=0 ;
 
@@ -66,7 +66,7 @@ public class SimilarRequirement {
         return max;
     }
 
-    public static int latestStreak(SortedSet<String> dates){
+    public int latestStreak(SortedSet<String> dates){
         int previous_day = -1, previous_month = -1, previous_year = -1;
         int max=0, count=0 ;
 

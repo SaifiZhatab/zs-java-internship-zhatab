@@ -24,7 +24,7 @@ public class Travelling extends Hobby{
     }
 
     public Travelling(Person person, Timing time, String startPoint, String endPoint, float distance) throws SQLException {
-        super(DataBase.findHigherKey("Travelling" , "travelling_id"));
+        super(-1);
         this.person = person;
         this.time = time;
         this.startPoint = startPoint;

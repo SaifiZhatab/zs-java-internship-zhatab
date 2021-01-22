@@ -1,40 +1,34 @@
 package main.java.com.zs.hobbies.dao;
 
-import main.java.com.zs.hobbies.Controller;
+import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.dto.Chess;
 import main.java.com.zs.hobbies.dto.Person;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class ChessDataBase {
     private Logger logger;
-    private PreparedStatement insertChess, dateChessDetails, lastTick,longestChessStreak;
+    private Connection con;
+    private PreparedStatement insertChess, dateChessDetails, lastTick,longestChessStreak, findHigherKey;
 
-    /**
-     * This is constructor which help you to connect your program to database
-     * set all the prepare statement
-     *
-     * @throws ClassNotFoundException
-     * @throws SQLException
-     */
-    public ChessDataBase() throws ClassNotFoundException, SQLException, IOException {
+    public ChessDataBase(Connection con) throws SQLException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
-        logger = Logger.getLogger(Controller.class.getName());
+        logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully Chess database start ");
 
-        insertChess = DataBase.con.prepareStatement("insert into Chess values (?,?,?,?,?,?,?)");
-        dateChessDetails = DataBase.con.prepareStatement("select * from Chess where personid = ? and day = ?");
-        lastTick = DataBase.con.prepareStatement("select * from Chess where personid = ? order by chess_id desc LIMIT 1");
-        longestChessStreak = DataBase.con.prepareStatement("select * from Chess where personid = ? order by day");
+
+        this.con = con;
+
+        insertChess = con.prepareStatement("insert into Chess values (?,?,?,?,?,?,?)");
+        dateChessDetails = con.prepareStatement("select * from Chess where personid = ? and day = ?");
+        lastTick = con.prepareStatement("select * from Chess where personid = ? order by chess_id desc LIMIT 1");
+        longestChessStreak = con.prepareStatement("select * from Chess where personid = ? order by day");
+        findHigherKey = con.prepareStatement("select chess_id from Chess order by chess_id desc limit 1");
     }
 
     /**
@@ -44,6 +38,12 @@ public class ChessDataBase {
      * @throws SQLException
      */
     public int insertChess(Chess chess) throws SQLException {
+        /**
+         * if user doesn't give id, then it take automatically
+         */
+        if(chess.getId() == -1) {
+            chess.setId(findHigherKey());
+        }
         insertChess.setInt(1,chess.getId());
         insertChess.setInt(2,chess.getPerson().getId());
         insertChess.setTime(3,chess.getTime().getStartTime());
@@ -90,5 +90,20 @@ public class ChessDataBase {
     public ResultSet longestChessStreak(Person person) throws SQLException {
         longestChessStreak.setInt(1,person.getId());
         return longestChessStreak.executeQuery();
+    }
+
+    /**
+     * This class help you to find the unique key that will not present in database table
+     * @return      return the unique key of table
+     * @throws SQLException
+     */
+    public int findHigherKey() throws SQLException {
+        ResultSet resultSet = findHigherKey.executeQuery();
+
+        if(resultSet.next()) {
+            return resultSet.getInt(1) + 1;
+        }else {
+            return 1;
+        }
     }
 }

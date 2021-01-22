@@ -1,16 +1,12 @@
 package main.java.com.zs.hobbies.dao;
 
-import main.java.com.zs.hobbies.Controller;
+import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.dto.Badminton;
 import main.java.com.zs.hobbies.dto.Person;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -19,28 +15,25 @@ import java.util.logging.Logger;
  */
 public class BadmintonDataBase {
     private Logger logger;
+    private Connection con;
     private PreparedStatement insertBadminton, dateBadmintonDetails, longestBadmintonStreak,
-                            lastTick;
+                            lastTick, findHigherKey;
 
-    /**
-     * This is constructor which help you to connect your program to database
-     * set all the prepare statement
-     *
-     * @throws ClassNotFoundException
-     * @throws SQLException
-     */
-    public BadmintonDataBase() throws ClassNotFoundException, SQLException, IOException {
+
+    public BadmintonDataBase(Connection con) throws SQLException, IOException, ClassNotFoundException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
-        logger = Logger.getLogger(Controller.class.getName());
+        logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully Badminton database start ");
 
-        insertBadminton = DataBase.con.prepareStatement("insert into Badminton values (?,?,?,?,?,?,?)");
-        longestBadmintonStreak = DataBase.con.prepareStatement("select * from Badminton where personid = ? order by day");
-        dateBadmintonDetails = DataBase.con.prepareStatement("select * from Badminton where personid = ? and day=?");
-        lastTick = DataBase.con.prepareStatement("select * from Badminton where personid = ? order by badminton_id desc LIMIT 1");
-    }
+        this.con = con;
+        insertBadminton = con.prepareStatement("insert into Badminton values (?,?,?,?,?,?,?)");
+        longestBadmintonStreak = con.prepareStatement("select * from Badminton where personid = ? order by day");
+        dateBadmintonDetails = con.prepareStatement("select * from Badminton where personid = ? and day=?");
+        lastTick = con.prepareStatement("select * from Badminton where personid = ? order by badminton_id desc LIMIT 1");
+        findHigherKey = con.prepareStatement("select badminton_id from Badminton order by badminton_id desc LIMIT 1");
 
+    }
     /**
      * this function help you to insert the Badminton hobbies in database
      * @param badminton this is a badminton object
@@ -48,6 +41,13 @@ public class BadmintonDataBase {
      * @throws SQLException
      */
     public int insertBadminton(Badminton badminton) throws SQLException {
+        /**
+         * if user doesn't give id, then it take automatically
+         */
+        if(badminton.getId() == -1) {
+            badminton.setId(findHigherKey());
+        }
+
         insertBadminton.setInt(1,badminton.getId());
         insertBadminton.setInt(2,badminton.getPerson().getId());
         insertBadminton.setTime(3,badminton.getTime().getStartTime());
@@ -92,5 +92,20 @@ public class BadmintonDataBase {
     public ResultSet lastTick(Person person) throws SQLException {
         lastTick.setInt(1,person.getId());
         return lastTick.executeQuery();
+    }
+
+    /**
+     * This class help you to find the unique key that will not present in database table
+     * @return      return the unique key of table
+     * @throws SQLException
+     */
+    public int findHigherKey() throws SQLException {
+        ResultSet resultSet = findHigherKey.executeQuery();
+
+        if(resultSet.next()) {
+            return resultSet.getInt(1) + 1;
+        }else {
+            return 1;
+        }
     }
 }

@@ -1,12 +1,13 @@
 package main.java.com.zs.hobbies.service;
 
-import main.java.com.zs.hobbies.Controller;
+import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.dao.TravellingDataBase;
 import main.java.com.zs.hobbies.dto.Person;
 import main.java.com.zs.hobbies.dto.Travelling;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,8 +20,9 @@ import java.util.logging.Logger;
  * This class give service to Travelling hobby
  */
 public class TravellingServiceImpl implements TravellingService {
-    TravellingDataBase travellingDataBase;
+    private TravellingDataBase travellingDataBase;
     private Logger logger;
+    private SimilarRequirement similarRequirement;
 
     /**
      * This is a constructor
@@ -29,13 +31,15 @@ public class TravellingServiceImpl implements TravellingService {
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public TravellingServiceImpl() throws SQLException, ClassNotFoundException, IOException {
+    public TravellingServiceImpl(Connection con) throws SQLException, ClassNotFoundException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
-        logger = Logger.getLogger(Controller.class.getName());
+        logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully Travelling service start ");
         
-        travellingDataBase = new TravellingDataBase();
+        travellingDataBase = new TravellingDataBase(con);
+
+        similarRequirement = new SimilarRequirement();
     }
 
     /**
@@ -44,7 +48,7 @@ public class TravellingServiceImpl implements TravellingService {
      * @throws SQLException
      */
     @Override
-    public void insertTravelling(Travelling travelling) throws SQLException {
+    public void insert(Travelling travelling) throws SQLException {
         int check = travellingDataBase.insertTravelling(travelling);
 
         if(check == 1) {
@@ -99,7 +103,7 @@ public class TravellingServiceImpl implements TravellingService {
         while(resultSet.next()){
             days.add(resultSet.getDate("day").toString() );
         }
-        int longestStreak = SimilarRequirement.longestStreak(days);
+        int longestStreak = similarRequirement.longestStreak(days);
         logger.info("Longest Travelling Streak for " + person.getName() + " : " + longestStreak);
 
         if(longestStreak == 1) {
@@ -118,7 +122,7 @@ public class TravellingServiceImpl implements TravellingService {
             days.add(resultSet.getDate("day").toString() );
         }
 
-        int longestStreak = SimilarRequirement.latestStreak(days);
+        int longestStreak = similarRequirement.latestStreak(days);
         logger.info("Latest Travelling Streak for " + person.getName() + " : " + longestStreak );
 
         if(longestStreak == 1) {

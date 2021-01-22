@@ -20,7 +20,7 @@ public class VideoWatching extends Hobby{
     }
 
     public VideoWatching(Person person, Timing time, String title) throws SQLException {
-        super(DataBase.findHigherKey("VideoWatching" , "videoWatching_id"));
+        super(-1);
         this.person = person;
         this.time = time;
         this.title = title;

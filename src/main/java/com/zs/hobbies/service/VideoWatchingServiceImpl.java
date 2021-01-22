@@ -1,12 +1,13 @@
 package main.java.com.zs.hobbies.service;
 
-import main.java.com.zs.hobbies.Controller;
+import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.dao.VideoWatchingDataBase;
 import main.java.com.zs.hobbies.dto.Person;
 import main.java.com.zs.hobbies.dto.VideoWatching;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,19 +17,22 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class VideoWatchingServiceImpl implements VideoWatchingService {
-    VideoWatchingDataBase videoWatchingDataBase;
+    private VideoWatchingDataBase videoWatchingDataBase;
     private Logger logger;
+    private SimilarRequirement similarRequirement;
 
-    public VideoWatchingServiceImpl() throws SQLException, ClassNotFoundException, IOException {
+    public VideoWatchingServiceImpl(Connection con) throws SQLException, ClassNotFoundException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
-        logger = Logger.getLogger(Controller.class.getName());
+        logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully VideoWatching service start ");
-        videoWatchingDataBase = new VideoWatchingDataBase();
+        videoWatchingDataBase = new VideoWatchingDataBase(con);
+
+        similarRequirement = new SimilarRequirement();
     }
 
     @Override
-    public void insertVideo(VideoWatching videoWatching) throws SQLException {
+    public void insert(VideoWatching videoWatching) throws SQLException {
         int check = videoWatchingDataBase.insertVideo(videoWatching);
 
         if(check == 1) {
@@ -74,7 +78,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         while(resultSet.next()){
             days.add(resultSet.getDate("day").toString() );
         }
-        int longestStreak = SimilarRequirement.longestStreak(days);
+        int longestStreak = similarRequirement.longestStreak(days);
         logger.info("Longest Video Streak for " + person.getName() + " : " + longestStreak);
 
         if(longestStreak == 1) {
@@ -93,7 +97,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
             days.add(resultSet.getDate("day").toString() );
         }
 
-        int longestStreak = SimilarRequirement.latestStreak(days);
+        int longestStreak = similarRequirement.latestStreak(days);
         logger.info("Latest VideoWatching Streak for " + person.getName() + " : " + longestStreak );
 
         if(longestStreak == 1) {

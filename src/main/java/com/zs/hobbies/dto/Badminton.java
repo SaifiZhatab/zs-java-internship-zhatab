@@ -21,7 +21,7 @@ public class Badminton extends Hobby{
         this.result = result;
     }
     public Badminton(Person person, Timing time, int numPlayers, String result) throws SQLException {
-        super(DataBase.findHigherKey("Badminton" , "badminton_id"));
+        super(-1);
         this.person = person;
         this.time = time;
         this.numPlayers = numPlayers;

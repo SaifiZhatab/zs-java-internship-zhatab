@@ -12,10 +12,6 @@ import java.sql.SQLException;
  * this class help you to implement abstraction
  * this class control all the functionality
  */
-public interface TravellingService {
-    void insertTravelling(Travelling travelling) throws SQLException;
-    void dateDetails(Person person, Date date) throws SQLException;
-    void lastTick(Person person) throws SQLException;
-    void longestStreak(Person person) throws SQLException;
-    void latestStreak(Person person) throws SQLException;
+public interface TravellingService extends HobbyService{
+    void insert(Travelling travelling) throws SQLException;
 }

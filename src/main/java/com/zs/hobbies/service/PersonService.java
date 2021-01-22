@@ -11,5 +11,5 @@ import java.sql.SQLException;
  * this class control all the functionality
  */
 public interface PersonService {
-    void insertPerson(Person person) throws SQLException;
+    void insert(Person person) throws SQLException;
 }
