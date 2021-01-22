@@ -2,7 +2,10 @@ package main.java.com.zs.e_commerce;
 
 import java.io.FileInputStream;
 import java.sql.*;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -153,9 +156,19 @@ public class E_commerce {
         ResultSet  rs = printUsers.executeQuery();
 
         logger.info ("User id  :  firstName : LastName  : Mobile   :  Address");
+
+        Set<String> set = new HashSet<String>();
+
         while(rs.next()){
-            logger.info(rs.getInt(1)+ " : " +rs.getString(2) + " : " + rs.getString(3) +  " : "
+            String details = (rs.getInt(1)+ " : " +rs.getString(2) + " : " + rs.getString(3) +  " : "
                     + rs.getString(4) +  " : " + rs.getString(5));
+
+            set.add(details);
+        }
+        Iterator<String > iterator = set.iterator();
+
+        while(iterator.hasNext()){
+            System.out.println(iterator.next());
         }
     }
 
@@ -168,8 +181,17 @@ public class E_commerce {
     public static void printProducts() throws SQLException {
         ResultSet rs = printProducts.executeQuery();
         logger.info("Product id  :   name  :  quantity  : price ");
+
+        Set<String> set = new HashSet<String>();
         while (rs.next()){
-            logger.info(rs.getInt(1) + " : "+rs.getString(2) + " : " + rs.getInt(3) +" : " +rs.getInt(4));
+
+            String details = (rs.getInt(1) + " : "+rs.getString(2) + " : " + rs.getInt(3) +" : " +rs.getInt(4));
+            set.add(details);
+        }
+
+        Iterator<String > iterator = set.iterator();
+        while(iterator.hasNext()){
+            System.out.println(iterator.next());
         }
     }
 
