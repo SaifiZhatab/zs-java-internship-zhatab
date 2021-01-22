@@ -80,7 +80,7 @@ public class Dictionary {
 
             for(int j=0;j<ALPHABET_SIZE;j++){
                 if((ch-'a') != j){
-                    String st = word.substring(0,i) + ('a' + j) + word.substring(i+1);
+                    String st = word.substring(0,i) + (char)('a' + j) + word.substring(i+1);
                     if(search(st)) {
                         correct.add(st);
                     }
@@ -180,12 +180,12 @@ public class Dictionary {
                     if(correctWord.size() == 0) {
                         System.out.println("No word present in dictionary similar to "+ word);
                     }else {
-                        int ind=1;
+                        int index = 1;
                         System.out.println("Words start with " + word );
 
                         for(String match : correctWord) {
-                            System.out.println(ind + ") " + match );
-                            ind++;
+                            System.out.println(index + ") " + match );
+                            index++;
                         }
                     }
                     break;
@@ -200,12 +200,12 @@ public class Dictionary {
                     if(matchWord.size() == 0) {
                         System.out.println("No word present in dictionary who match with "+ word);
                     }else {
-                        int ind=1;
+                        int index = 1;
                         System.out.println("Words start with " + word );
 
                         for(String match : matchWord) {
-                            System.out.println(ind + ") " + match );
-                            ind++;
+                            System.out.println(index + ") " + match );
+                            index++;
                         }
                     }
                     break;
