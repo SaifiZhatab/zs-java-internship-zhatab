@@ -1,11 +1,11 @@
 package main.java.com.zs.hobbies.service;
 
 import main.java.com.zs.hobbies.Application;
+import main.java.com.zs.hobbies.cache.LruService;
 import main.java.com.zs.hobbies.dao.TravellingDataBase;
 import main.java.com.zs.hobbies.dto.Person;
 import main.java.com.zs.hobbies.dto.Travelling;
-import main.java.com.zs.hobbies.extrafeature.Lru;
-import main.java.com.zs.hobbies.extrafeature.Node;
+import main.java.com.zs.hobbies.cache.Node;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 public class TravellingServiceImpl implements TravellingService {
     private TravellingDataBase travellingDataBase;
     private Logger logger;
-    private Lru lru;
+    private LruService lru;
     private SimilarRequirement similarRequirement;
 
     /**
@@ -34,7 +34,7 @@ public class TravellingServiceImpl implements TravellingService {
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public TravellingServiceImpl(Connection con,Lru lru) throws SQLException, ClassNotFoundException, IOException {
+    public TravellingServiceImpl(Connection con,LruService lru) throws SQLException, ClassNotFoundException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
 
@@ -59,7 +59,8 @@ public class TravellingServiceImpl implements TravellingService {
         if(travelling.getId() == -1) {
             travelling.setId(travellingDataBase.findHigherKey());
         }
-        lru.refer(new Node(travelling));
+
+        lru.put(new Node(travelling));
 
         int check = travellingDataBase.insertTravelling(travelling);
 

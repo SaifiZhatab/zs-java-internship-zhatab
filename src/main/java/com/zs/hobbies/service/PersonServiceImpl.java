@@ -1,10 +1,10 @@
 package main.java.com.zs.hobbies.service;
 
 import main.java.com.zs.hobbies.Application;
+import main.java.com.zs.hobbies.cache.LruService;
 import main.java.com.zs.hobbies.dao.PersonDataBase;
 import main.java.com.zs.hobbies.dto.Person;
-import main.java.com.zs.hobbies.extrafeature.Lru;
-import main.java.com.zs.hobbies.extrafeature.Node;
+import main.java.com.zs.hobbies.cache.Node;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,10 +18,10 @@ import java.util.logging.Logger;
  */
 public class PersonServiceImpl implements PersonService {
     private PersonDataBase personDataBase;
-    private Lru lru;
+    private LruService lru;
     private Logger logger;
 
-    public PersonServiceImpl(Connection con,Lru lru) throws SQLException, ClassNotFoundException, IOException {
+    public PersonServiceImpl(Connection con,LruService lru) throws SQLException, ClassNotFoundException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
 
@@ -44,7 +44,8 @@ public class PersonServiceImpl implements PersonService {
         if(person.getId() == -1) {
             person.setId(personDataBase.findHigherKey());
         }
-        lru.refer(new Node(person));
+
+        lru.put(new Node(person));
 
         int check = personDataBase.insertPerson(person);
 

@@ -1,11 +1,11 @@
 package main.java.com.zs.hobbies.service;
 
 import main.java.com.zs.hobbies.Application;
+import main.java.com.zs.hobbies.cache.LruService;
 import main.java.com.zs.hobbies.dao.BadmintonDataBase;
 import main.java.com.zs.hobbies.dto.Badminton;
 import main.java.com.zs.hobbies.dto.Person;
-import main.java.com.zs.hobbies.extrafeature.Lru;
-import main.java.com.zs.hobbies.extrafeature.Node;
+import main.java.com.zs.hobbies.cache.Node;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 public class BadmintonServiceImpl implements BadmintonService {
     private BadmintonDataBase badmintonDataBase;
     private Logger logger;
-    private Lru lru;
+    private LruService lru;
     private SimilarRequirement similarRequirement;
 
     /**
@@ -33,7 +33,7 @@ public class BadmintonServiceImpl implements BadmintonService {
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public BadmintonServiceImpl(Connection con,Lru lru) throws SQLException, ClassNotFoundException, IOException {
+    public BadmintonServiceImpl(Connection con,LruService lru) throws SQLException, ClassNotFoundException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
 
@@ -58,7 +58,8 @@ public class BadmintonServiceImpl implements BadmintonService {
             badminton.setId(badmintonDataBase.findHigherKey());
         }
 
-        lru.refer(new Node(badminton));
+        Node node = new Node();
+        lru.put(node);
 
         int check = badmintonDataBase.insertBadminton(badminton);
 
@@ -80,6 +81,7 @@ public class BadmintonServiceImpl implements BadmintonService {
         ResultSet resultSet = badmintonDataBase.dateBadmintonDetails(person,date);
 
         logger.info("This is all badminton details on " + date.toString());
+
         logger.info("startTime : EndTime : Number of Player : result");
         while(resultSet.next()){
             logger.info(resultSet.getTime("startTime") + " " + resultSet.getTime("endTime")

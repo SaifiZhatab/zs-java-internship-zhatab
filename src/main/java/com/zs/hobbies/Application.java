@@ -1,9 +1,9 @@
 package main.java.com.zs.hobbies;
 
+import main.java.com.zs.hobbies.cache.LruService;
+import main.java.com.zs.hobbies.cache.LruServiceImpl;
 import main.java.com.zs.hobbies.dao.DataBase;
 import main.java.com.zs.hobbies.dto.*;
-import main.java.com.zs.hobbies.extrafeature.Lru;
-import main.java.com.zs.hobbies.extrafeature.Node;
 import main.java.com.zs.hobbies.service.*;
 
 import java.io.FileInputStream;
@@ -28,7 +28,7 @@ public class Application {
         /**
          * apply LRU cache on Hobby application
          */
-        Lru lru = new Lru(5);
+        LruService lru = new LruServiceImpl(5);
 
         /**
          * is use to make the connection between java program and database
@@ -40,24 +40,24 @@ public class Application {
         /**
          * insert person in database table
          */
-        Person person = new Person(9,"Rihan","9311851147","Dadri");
+        Person person = new Person(13,"Rihan","9311851147","Dadri");
         PersonService personService = new PersonServiceImpl(dataBase.getCon(),lru);
-        // personService.insert(person);
+        //personService.insert(person);
 
 
         /**
          * insert travel hobbies
          */
-        Timing time = new Timing(Time.valueOf("10:59:59"),Time.valueOf("12:59:59"), Date.valueOf("2020-04-05"));
-        Travelling travelling = new Travelling(3,person,time,"delhi","mumbi",5.6f);
+        Timing time = new Timing(Time.valueOf("09:09:39"),Time.valueOf("10:49:39"), Date.valueOf("2021-01-25"));
+        Travelling travelling = new Travelling(16,person,time,"delhi","mumbi",5.6f);
         TravellingService travellingService = new TravellingServiceImpl(dataBase.getCon(),lru);
-        //travellingService.insert(travelling);
+       // travellingService.insert(travelling);
 
 
         /**
          * insert chess hobbies
          */
-        Chess chess = new Chess(4,person,time,5,"win");
+        Chess chess = new Chess(17,person,time,3,"win");
         ChessService chessService = new ChessServiceImpl(dataBase.getCon(),lru);
         //chessService.insert(chess);
 
@@ -65,19 +65,20 @@ public class Application {
         /**
          * insert badminton hobbie
          */
-        Badminton badminton = new Badminton(5,person,time, 8,"win");
+        Badminton badminton = new Badminton(20,person,time, 8,"win");
         BadmintonService badmintonService = new BadmintonServiceImpl(dataBase.getCon(),lru);
- //       badmintonService.insert(badminton);
+        //badmintonService.insert(badminton);
 
 
         /**
          * insert Video Watching hobbies in table
          */
-        VideoWatching videoWatching = new VideoWatching(6,person,time,"Lucifer morningstar");
+        VideoWatching videoWatching = new VideoWatching(14,person,time,"Lucifer morningstar");
         VideoWatchingService videoWatchingService = new VideoWatchingServiceImpl(dataBase.getCon(),lru);
-//      videoWatchingService.insert(videoWatching);
+        //videoWatchingService.insert(videoWatching);
 
 
+      //lru.display();
         /**
          * find the hobbies on date
          */
@@ -85,7 +86,6 @@ public class Application {
 //        travellingService.dateDetails(person, Date.valueOf("2015-04-02"));
 //        videoWatchingService.dateDetails(person, Date.valueOf("2015-04-02"));
 //        chessService.dateDetails(person, Date.valueOf("2015-04-02"));
-
 
         /**
          * check last tick

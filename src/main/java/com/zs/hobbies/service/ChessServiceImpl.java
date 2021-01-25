@@ -1,11 +1,11 @@
 package main.java.com.zs.hobbies.service;
 
 import main.java.com.zs.hobbies.Application;
+import main.java.com.zs.hobbies.cache.LruService;
 import main.java.com.zs.hobbies.dao.ChessDataBase;
 import main.java.com.zs.hobbies.dto.Chess;
 import main.java.com.zs.hobbies.dto.Person;
-import main.java.com.zs.hobbies.extrafeature.Lru;
-import main.java.com.zs.hobbies.extrafeature.Node;
+import main.java.com.zs.hobbies.cache.Node;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 public class ChessServiceImpl implements ChessService {
     private ChessDataBase chessDataBase ;
     private Logger logger;
-    private Lru lru;
+    private LruService lru;
     private SimilarRequirement similarRequirement;
     /**
      * This is a constructor
@@ -31,7 +31,7 @@ public class ChessServiceImpl implements ChessService {
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public ChessServiceImpl(Connection con,Lru lru) throws SQLException, ClassNotFoundException, IOException {
+    public ChessServiceImpl(Connection con,LruService lru) throws SQLException, ClassNotFoundException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
 
@@ -55,7 +55,8 @@ public class ChessServiceImpl implements ChessService {
         if(chess.getId() == -1) {
             chess.setId(chessDataBase.findHigherKey());
         }
-        lru.refer(new Node(chess));
+
+        lru.put(new Node(chess));
 
         int check = chessDataBase.insertChess(chess);
 
