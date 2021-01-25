@@ -23,7 +23,11 @@ public class Dictionary {
 
     static Node head;
 
-    static void insert(String word , String meaning) {
+    public Dictionary(){
+        head = new Node();
+    }
+
+    public static void insert(String word, String meaning) {
         int length = word.length();
         Node node = head;
 
@@ -39,7 +43,7 @@ public class Dictionary {
         node.meaning = meaning;
     }
 
-    static boolean search(String word) {
+    public static boolean search(String word) {
         Node node = head;
         int  length = word.length();
 
@@ -54,7 +58,7 @@ public class Dictionary {
         return node.isEndOfWord;
     }
 
-    static String meaning(String word){
+   public static String meaning(String word){
         Node node = head;
         int  length = word.length();
 
@@ -70,7 +74,7 @@ public class Dictionary {
     }
 
 
-    static ArrayList<String> correctWord(String word){
+    public static ArrayList<String> correctWord(String word){
         int length = word.length();
 
         ArrayList<String> correct = new ArrayList<String>();
@@ -80,7 +84,7 @@ public class Dictionary {
 
             for(int j=0;j<ALPHABET_SIZE;j++){
                 if((ch-'a') != j){
-                    String st = word.substring(0,i) + ('a' + j) + word.substring(i+1);
+                    String st = word.substring(0,i) + (char)('a' + j) + word.substring(i+1);
                     if(search(st)) {
                         correct.add(st);
                     }
@@ -90,7 +94,7 @@ public class Dictionary {
         return correct;
     }
 
-    static void addInList(Node node, ArrayList<String>  matchWord , String word){
+   public static void addInList(Node node, ArrayList<String>  matchWord , String word){
         if(node.isEndOfWord ){
             matchWord.add(word);
         }
@@ -102,7 +106,7 @@ public class Dictionary {
         }
     }
 
-    static ArrayList<String> matchWord(String word){
+   public static ArrayList<String> matchWord(String word){
         Node node = head;
         int len = word.length();
         ArrayList<String> matchWord = new ArrayList<String>();
@@ -180,12 +184,12 @@ public class Dictionary {
                     if(correctWord.size() == 0) {
                         System.out.println("No word present in dictionary similar to "+ word);
                     }else {
-                        int ind=1;
+                        int index=1;
                         System.out.println("Words start with " + word );
 
                         for(String match : correctWord) {
-                            System.out.println(ind + ") " + match );
-                            ind++;
+                            System.out.println(index + ") " + match );
+                            index++;
                         }
                     }
                     break;
@@ -200,12 +204,12 @@ public class Dictionary {
                     if(matchWord.size() == 0) {
                         System.out.println("No word present in dictionary who match with "+ word);
                     }else {
-                        int ind=1;
+                        int index=1;
                         System.out.println("Words start with " + word );
 
                         for(String match : matchWord) {
-                            System.out.println(ind + ") " + match );
-                            ind++;
+                            System.out.println(index + ") " + match );
+                            index++;
                         }
                     }
                     break;
