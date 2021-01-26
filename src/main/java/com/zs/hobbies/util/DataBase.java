@@ -1,4 +1,4 @@
-package main.java.com.zs.hobbies.dao;
+package main.java.com.zs.hobbies.util;
 
 import main.java.com.zs.hobbies.Application;
 

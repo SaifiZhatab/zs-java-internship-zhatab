@@ -2,10 +2,11 @@ package main.java.com.zs.hobbies.service;
 
 import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.cache.LruService;
-import main.java.com.zs.hobbies.dao.BadmintonDataBase;
+import main.java.com.zs.hobbies.dao.BadmintonDao;
 import main.java.com.zs.hobbies.dto.Badminton;
 import main.java.com.zs.hobbies.dto.Person;
 import main.java.com.zs.hobbies.cache.Node;
+import main.java.com.zs.hobbies.util.SimilarRequirement;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,7 +22,7 @@ import java.util.logging.Logger;
  * This class give service to Badminton
  */
 public class BadmintonServiceImpl implements BadmintonService {
-    private BadmintonDataBase badmintonDataBase;
+    private BadmintonDao badmintonDao;
     private Logger logger;
     private LruService lru;
     private SimilarRequirement similarRequirement;
@@ -39,7 +40,7 @@ public class BadmintonServiceImpl implements BadmintonService {
 
         logger.info("Successfully Badminton Service class start ");
         this.lru = lru;
-        badmintonDataBase = new BadmintonDataBase(con);
+        badmintonDao = new BadmintonDao(con);
 
         similarRequirement = new SimilarRequirement();
     }
@@ -55,19 +56,29 @@ public class BadmintonServiceImpl implements BadmintonService {
          * if user doesn't give id, then it take automatically
          */
         if(badminton.getId() == -1) {
-            badminton.setId(badmintonDataBase.findHigherKey());
+            badminton.setId(badmintonDao.findHigherKey());
         }
 
-        Node node = new Node();
-        lru.put(node);
 
-        int check = badmintonDataBase.insertBadminton(badminton);
+        int check = badmintonDao.insertBadminton(badminton);
 
         if(check == 1) {
             logger.info("Successfully Badminton enter in database");
         }else {
             logger.warning("Some internally error comes.Please try again");
         }
+
+        
+        
+        Node node = lru.get(badminton.getPerson().getId(),"_badminton");
+        lru.clearLongestStreakCache(badminton.getPerson().getId(),"badminton");
+        /**
+         * already present in cache
+         * if present,then erase the longest badminton streak. So,that we can again compute
+         */
+
+        lru.put(new Node(badminton));
+
     }
 
     /**
@@ -78,7 +89,7 @@ public class BadmintonServiceImpl implements BadmintonService {
      */
     @Override
     public void dateDetails(Person person, Date date) throws SQLException {
-        ResultSet resultSet = badmintonDataBase.dateBadmintonDetails(person,date);
+        ResultSet resultSet = badmintonDao.dateBadmintonDetails(person,date);
 
         logger.info("This is all badminton details on " + date.toString());
 
@@ -96,7 +107,19 @@ public class BadmintonServiceImpl implements BadmintonService {
      */
     @Override
     public void lastTick(Person person) throws SQLException {
-        ResultSet resultSet = badmintonDataBase.lastTick(person);
+        Node node = lru.getLastTick(person.getId(),"badminton");
+
+        if(node != null && node.getBadminton() != null){
+            /**
+             * if the last tick present in cache
+             */
+            logger.info("This is the last tick of badminton ");
+            logger.info("Badminton id : " + node.getBadminton().getId());
+
+            return;
+        }
+
+        ResultSet resultSet = badmintonDao.lastTick(person);
 
         if(resultSet.next()) {
             logger.info("This is the last tick of badminton ");
@@ -120,7 +143,21 @@ public class BadmintonServiceImpl implements BadmintonService {
      */
     @Override
     public void longestStreak(Person person) throws SQLException {
-        ResultSet resultSet = badmintonDataBase.longestBadmintonStreak(person);
+        /**
+         * check in the cache memory
+         */
+        int longestStreakInCache = lru.setLongestStreak(person.getId(),"badminton");
+
+        /**
+         * if present in cache,then just print and return
+         * otherwise need to calculate it
+         */
+        if(longestStreakInCache != -1){
+            System.out.println(longestStreakInCache);
+            return;
+        }
+        
+        ResultSet resultSet = badmintonDao.longestBadmintonStreak(person);
 
         /**
          * use to store all dates in sorted order
@@ -132,6 +169,14 @@ public class BadmintonServiceImpl implements BadmintonService {
         }
 
         int longestStreak = similarRequirement.longestStreak(days);
+
+        /**
+         * if not present in cache,then insert into LRU
+         */
+        Node node = new Node(person);
+        node.getLongestStreak().setBadminton_streak(longestStreak);
+        lru.put(node);
+
         logger.info("Longest Badminton Streak for " + person.getName() + " : " + longestStreak );
 
         if(longestStreak == 1) {
@@ -148,7 +193,7 @@ public class BadmintonServiceImpl implements BadmintonService {
      */
     @Override
     public void latestStreak(Person person) throws SQLException {
-        ResultSet resultSet = badmintonDataBase.longestBadmintonStreak(person);
+        ResultSet resultSet = badmintonDao.longestBadmintonStreak(person);
         SortedSet<String> days = new TreeSet<String>();
 
         while(resultSet.next()){

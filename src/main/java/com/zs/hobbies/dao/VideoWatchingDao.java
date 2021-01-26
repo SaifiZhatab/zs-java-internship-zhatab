@@ -10,12 +10,12 @@ import java.sql.*;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-public class VideoWatchingDataBase {
+public class VideoWatchingDao {
     private Logger logger;
     private Connection con;
     private PreparedStatement insertVideo, dateVideoWatchingDetails, lastTick, longestVideoWatchingStreak, findHigherKey;
 
-    public VideoWatchingDataBase(Connection con) throws SQLException, IOException {
+    public VideoWatchingDao(Connection con) throws SQLException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
 

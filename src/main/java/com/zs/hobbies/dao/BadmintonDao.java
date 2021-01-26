@@ -13,14 +13,14 @@ import java.util.logging.Logger;
 /**
  * this class help to Badminton service class to communicate with database
  */
-public class BadmintonDataBase {
+public class BadmintonDao {
     private Logger logger;
     private Connection con;
     private PreparedStatement insertBadminton, dateBadmintonDetails, longestBadmintonStreak,
                             lastTick, findHigherKey;
 
 
-    public BadmintonDataBase(Connection con) throws SQLException, IOException, ClassNotFoundException {
+    public BadmintonDao(Connection con) throws SQLException, IOException, ClassNotFoundException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
 

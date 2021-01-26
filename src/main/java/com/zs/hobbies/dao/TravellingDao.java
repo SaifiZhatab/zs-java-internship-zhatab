@@ -10,12 +10,12 @@ import java.sql.*;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-public class TravellingDataBase {
+public class TravellingDao {
     private Logger logger;
     private Connection con;
     private PreparedStatement insertTravelling, dateTravellingDetails, lastTick, longestTravellingStreak, findHigherKey;
 
-    public TravellingDataBase(Connection con) throws SQLException, IOException {
+    public TravellingDao(Connection con) throws SQLException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
 

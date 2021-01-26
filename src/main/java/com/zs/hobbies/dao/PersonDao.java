@@ -12,12 +12,12 @@ import java.sql.SQLException;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-public class PersonDataBase {
+public class PersonDao {
     private Logger logger;
     private Connection con;
     private PreparedStatement insertPerson, findHigherKey;
 
-    public PersonDataBase(Connection con) throws SQLException, IOException, ClassNotFoundException {
+    public PersonDao(Connection con) throws SQLException, IOException, ClassNotFoundException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
 

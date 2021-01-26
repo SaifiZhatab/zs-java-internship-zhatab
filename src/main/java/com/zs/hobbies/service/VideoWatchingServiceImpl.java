@@ -2,10 +2,11 @@ package main.java.com.zs.hobbies.service;
 
 import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.cache.LruService;
-import main.java.com.zs.hobbies.dao.VideoWatchingDataBase;
+import main.java.com.zs.hobbies.dao.VideoWatchingDao;
 import main.java.com.zs.hobbies.dto.Person;
 import main.java.com.zs.hobbies.dto.VideoWatching;
 import main.java.com.zs.hobbies.cache.Node;
+import main.java.com.zs.hobbies.util.SimilarRequirement;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,7 +20,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class VideoWatchingServiceImpl implements VideoWatchingService {
-    private VideoWatchingDataBase videoWatchingDataBase;
+    private VideoWatchingDao videoWatchingDao;
     private Logger logger;
     private LruService lru;
     private SimilarRequirement similarRequirement;
@@ -29,7 +30,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully VideoWatching service start ");
-        videoWatchingDataBase = new VideoWatchingDataBase(con);
+        videoWatchingDao = new VideoWatchingDao(con);
 
         this.lru = lru;
         similarRequirement = new SimilarRequirement();
@@ -41,12 +42,12 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
          * if user doesn't give id, then it take automatically
          */
         if(videoWatching.getId() == -1) {
-            videoWatching.setId(videoWatchingDataBase.findHigherKey());
+            videoWatching.setId(videoWatchingDao.findHigherKey());
         }
 
         lru.put(new Node(videoWatching));
 
-        int check = videoWatchingDataBase.insertVideo(videoWatching);
+        int check = videoWatchingDao.insertVideo(videoWatching);
 
         if(check == 1) {
             logger.info("Successfully Chess enter in database");
@@ -57,7 +58,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
 
     @Override
     public void dateDetails(Person person, Date date) throws SQLException {
-        ResultSet resultSet = videoWatchingDataBase.dateVideoWatchingDetails(person,date);
+        ResultSet resultSet = videoWatchingDao.dateVideoWatchingDetails(person,date);
 
         logger.info("This is all VideoWatching details on " + date.toString());
         logger.info("startTime   :  EndTime   : Title  ");
@@ -69,7 +70,19 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
 
     @Override
     public void lastTick(Person person) throws SQLException {
-        ResultSet resultSet = videoWatchingDataBase.lastTick(person);
+        Node node = lru.getLastTick(person.getId(),"videoWatching");
+
+        /**
+         * when videoWatching present in lru cache
+         */
+        if(node != null && node.getVideoWatching() != null) {
+            logger.info("This is video Watching class in cache");
+            logger.info("Video Watching id :" + node.getVideoWatching().getId());
+
+            return;
+        }
+
+        ResultSet resultSet = videoWatchingDao.lastTick(person);
 
         if(resultSet.next()) {
             logger.info("This is the last tick of Video Watching ");
@@ -85,7 +98,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
 
     @Override
     public void longestStreak(Person person) throws SQLException {
-        ResultSet resultSet = videoWatchingDataBase.longestVideoWatchingStreak(person);
+        ResultSet resultSet = videoWatchingDao.longestVideoWatchingStreak(person);
         SortedSet<String> days = new TreeSet<String>();
 
         while(resultSet.next()){
@@ -103,7 +116,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
 
     @Override
     public void latestStreak(Person person) throws SQLException {
-        ResultSet resultSet = videoWatchingDataBase.longestVideoWatchingStreak(person);
+        ResultSet resultSet = videoWatchingDao.longestVideoWatchingStreak(person);
         SortedSet<String> days = new TreeSet<String>();
 
         while(resultSet.next()){

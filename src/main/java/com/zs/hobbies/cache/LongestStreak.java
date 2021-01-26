@@ -6,6 +6,13 @@ public class LongestStreak {
     private int videoWatching_streak;
     private int travelling_streak;
 
+    public LongestStreak() {
+        chess_streak = -1;
+        badminton_streak = -1;
+        videoWatching_streak = -1;
+        travelling_streak = -1;
+    }
+
     public LongestStreak(int chess_streak) {
         this.chess_streak = chess_streak;
     }

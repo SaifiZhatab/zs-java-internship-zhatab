@@ -2,10 +2,11 @@ package main.java.com.zs.hobbies.service;
 
 import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.cache.LruService;
-import main.java.com.zs.hobbies.dao.ChessDataBase;
+import main.java.com.zs.hobbies.dao.ChessDao;
 import main.java.com.zs.hobbies.dto.Chess;
 import main.java.com.zs.hobbies.dto.Person;
 import main.java.com.zs.hobbies.cache.Node;
+import main.java.com.zs.hobbies.util.SimilarRequirement;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,7 +22,7 @@ import java.util.logging.Logger;
  * This class give service to Chess hobby
  */
 public class ChessServiceImpl implements ChessService {
-    private ChessDataBase chessDataBase ;
+    private ChessDao chessDao;
     private Logger logger;
     private LruService lru;
     private SimilarRequirement similarRequirement;
@@ -38,7 +39,7 @@ public class ChessServiceImpl implements ChessService {
         logger.info("Successfully Chess service start ");
 
         this.lru = lru;
-        chessDataBase = new ChessDataBase(con);
+        chessDao = new ChessDao(con);
         similarRequirement = new SimilarRequirement();
     }
 
@@ -53,12 +54,12 @@ public class ChessServiceImpl implements ChessService {
          * if user doesn't give id, then it take automatically
          */
         if(chess.getId() == -1) {
-            chess.setId(chessDataBase.findHigherKey());
+            chess.setId(chessDao.findHigherKey());
         }
 
         lru.put(new Node(chess));
 
-        int check = chessDataBase.insertChess(chess);
+        int check = chessDao.insertChess(chess);
 
         if(check == 1) {
             logger.info("Successfully Chess enter in database");
@@ -75,7 +76,7 @@ public class ChessServiceImpl implements ChessService {
      */
     @Override
     public void dateDetails(Person person, Date date) throws SQLException {
-        ResultSet resultSet = chessDataBase.dateChessDetails(person,date);
+        ResultSet resultSet = chessDao.dateChessDetails(person,date);
 
         logger.info("This is all Chess details on " + date.toString());
         logger.info("startTime   :  EndTime   : Number of Moves   :   result");
@@ -92,7 +93,19 @@ public class ChessServiceImpl implements ChessService {
      */
     @Override
     public void lastTick(Person person) throws SQLException {
-        ResultSet resultSet = chessDataBase.lastTick(person);
+        Node node = lru.getLastTick(person.getId(),"chess");
+
+        /**
+         * when last tick present in lru cache
+         */
+        if(node != null && node.getChess() != null) {
+            logger.info("This is the last tick of Chess");
+            logger.info("Chess id : " + node.getChess().getId());
+
+            return ;
+        }
+
+        ResultSet resultSet = chessDao.lastTick(person);
 
         if(resultSet.next()) {
             logger.info("This is the last tick of Chess  ");
@@ -114,7 +127,7 @@ public class ChessServiceImpl implements ChessService {
      */
     @Override
     public void longestStreak(Person person) throws SQLException {
-        ResultSet resultSet = chessDataBase.longestChessStreak(person);
+        ResultSet resultSet = chessDao.longestChessStreak(person);
 
         /**
          * use to store dates in sorted order
@@ -141,7 +154,7 @@ public class ChessServiceImpl implements ChessService {
      */
     @Override
     public void latestStreak(Person person) throws SQLException {
-        ResultSet resultSet = chessDataBase.longestChessStreak(person);
+        ResultSet resultSet = chessDao.longestChessStreak(person);
         SortedSet<String> days = new TreeSet<String>();
 
         while(resultSet.next()){

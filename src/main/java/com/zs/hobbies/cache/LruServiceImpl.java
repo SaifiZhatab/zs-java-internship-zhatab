@@ -19,7 +19,7 @@ public class LruServiceImpl implements LruService {
         last.setPrevious(head);
     }
 
-    void delete(Node node){
+    public void delete(Node node){
         node.getPrevious().setNext(node.getNext());
         node.getNext().setPrevious(node.getPrevious());
 
@@ -28,7 +28,7 @@ public class LruServiceImpl implements LruService {
 
     }
 
-    void insert(Node node){
+    public void insert(Node node){
         node.setNext(head.getNext());
         head.getNext().setPrevious(node);
 
@@ -102,4 +102,55 @@ public class LruServiceImpl implements LruService {
             node = node.getNext();
         }
     }
+
+    public int setLongestStreak(int id, String hobby_name){
+        Node node = get(id,"_"+hobby_name);
+
+        if(node == null) {
+            return -1;
+        }
+
+        switch (hobby_name) {
+            case "badminton" : return (node.getLongestStreak().getBadminton_streak() != -1) ?
+                                node.getLongestStreak().getBadminton_streak() :  -1 ;
+
+            case "chess" :     return  (node.getLongestStreak().getChess_streak() != -1) ?
+                                     node.getLongestStreak().getChess_streak():  -1;
+
+            case "videoWatching":   return (node.getLongestStreak().getVideoWatching_streak() != -1)?
+                                    node.getLongestStreak().getVideoWatching_streak() : -1;
+
+            case "travelling" :   return (node.getLongestStreak().getTravelling_streak() != -1) ?
+                                    node.getLongestStreak().getTravelling_streak() : -1;
+
+            default:    return -1;
+        }
+
+
+    }
+    public void clearLongestStreakCache(int id,String hobby_name){
+        Node node = get(id, "_" + hobby_name);
+        if(node == null) {
+            return;
+        }
+
+        switch (hobby_name) {
+            case "badminton" :   node.getLongestStreak().setBadminton_streak(-1);
+                break;
+            case "chess":       node.getLongestStreak().setChess_streak(-1);
+                break;
+            case "videoWatching":       node.getLongestStreak().setVideoWatching_streak(-1);
+                break;
+            case "travelling":      node.getLongestStreak().setTravelling_streak(-1);
+                break;
+        }
+    }
+
+    @Override
+    public Node getLastTick(int id, String hobby) {
+        Node node = get(id,hobby);
+
+        return node;
+    }
+
 }

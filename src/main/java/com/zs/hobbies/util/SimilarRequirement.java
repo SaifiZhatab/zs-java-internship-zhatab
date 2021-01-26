@@ -1,4 +1,4 @@
-package main.java.com.zs.hobbies.service;
+package main.java.com.zs.hobbies.util;
 
 import java.sql.Date;
 import java.util.*;

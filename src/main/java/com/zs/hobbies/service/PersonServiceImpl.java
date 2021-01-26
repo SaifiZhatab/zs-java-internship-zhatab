@@ -2,7 +2,7 @@ package main.java.com.zs.hobbies.service;
 
 import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.cache.LruService;
-import main.java.com.zs.hobbies.dao.PersonDataBase;
+import main.java.com.zs.hobbies.dao.PersonDao;
 import main.java.com.zs.hobbies.dto.Person;
 import main.java.com.zs.hobbies.cache.Node;
 
@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  * This class give service to person
  */
 public class PersonServiceImpl implements PersonService {
-    private PersonDataBase personDataBase;
+    private PersonDao personDao;
     private LruService lru;
     private Logger logger;
 
@@ -28,7 +28,7 @@ public class PersonServiceImpl implements PersonService {
         logger.info("Successfully Person Service start ");
 
         this.lru = lru;
-        personDataBase =  new PersonDataBase(con);
+        personDao =  new PersonDao(con);
     }
 
     /**
@@ -42,12 +42,12 @@ public class PersonServiceImpl implements PersonService {
          * if user doesn't give id, then it take automatically
          */
         if(person.getId() == -1) {
-            person.setId(personDataBase.findHigherKey());
+            person.setId(personDao.findHigherKey());
         }
 
         lru.put(new Node(person));
 
-        int check = personDataBase.insertPerson(person);
+        int check = personDao.insertPerson(person);
 
         if(check == 1) {
             logger.info("Successfully person enter in database");

@@ -10,12 +10,12 @@ import java.sql.*;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-public class ChessDataBase {
+public class ChessDao {
     private Logger logger;
     private Connection con;
     private PreparedStatement insertChess, dateChessDetails, lastTick,longestChessStreak, findHigherKey;
 
-    public ChessDataBase(Connection con) throws SQLException, IOException {
+    public ChessDao(Connection con) throws SQLException, IOException {
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
 
@@ -84,6 +84,7 @@ public class ChessDataBase {
     public ResultSet longestChessStreak(Person person) throws SQLException {
         longestChessStreak.setInt(1,person.getId());
         return longestChessStreak.executeQuery();
+
     }
 
     /**

@@ -2,10 +2,11 @@ package main.java.com.zs.hobbies.service;
 
 import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.cache.LruService;
-import main.java.com.zs.hobbies.dao.TravellingDataBase;
+import main.java.com.zs.hobbies.dao.TravellingDao;
 import main.java.com.zs.hobbies.dto.Person;
 import main.java.com.zs.hobbies.dto.Travelling;
 import main.java.com.zs.hobbies.cache.Node;
+import main.java.com.zs.hobbies.util.SimilarRequirement;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,7 +23,7 @@ import java.util.logging.Logger;
  * This class give service to Travelling hobby
  */
 public class TravellingServiceImpl implements TravellingService {
-    private TravellingDataBase travellingDataBase;
+    private TravellingDao travellingDao;
     private Logger logger;
     private LruService lru;
     private SimilarRequirement similarRequirement;
@@ -41,7 +42,7 @@ public class TravellingServiceImpl implements TravellingService {
         logger.info("Successfully Travelling service start ");
 
         this.lru = lru;
-        travellingDataBase = new TravellingDataBase(con);
+        travellingDao = new TravellingDao(con);
 
         similarRequirement = new SimilarRequirement();
     }
@@ -57,12 +58,12 @@ public class TravellingServiceImpl implements TravellingService {
          * if user doesn't give id, then it take automatically
          */
         if(travelling.getId() == -1) {
-            travelling.setId(travellingDataBase.findHigherKey());
+            travelling.setId(travellingDao.findHigherKey());
         }
 
         lru.put(new Node(travelling));
 
-        int check = travellingDataBase.insertTravelling(travelling);
+        int check = travellingDao.insertTravelling(travelling);
 
         if(check == 1) {
             logger.info("Successfully travelling hobbies enter in database");
@@ -79,7 +80,7 @@ public class TravellingServiceImpl implements TravellingService {
      */
     @Override
     public void dateDetails(Person person, Date date) throws SQLException {
-        ResultSet resultSet = travellingDataBase.dateTravellingDetails(person,date);
+        ResultSet resultSet = travellingDao.dateTravellingDetails(person,date);
 
         logger.info("This is all Travelling details on " + date.toString());
         logger.info("startTime   :  EndTime   : startPoint   :   endPoint  : distance");
@@ -92,7 +93,19 @@ public class TravellingServiceImpl implements TravellingService {
 
     @Override
     public void lastTick(Person person) throws SQLException {
-        ResultSet resultSet = travellingDataBase.lastTick(person);
+        Node node = lru.getLastTick(person.getId(),"travelling");
+
+        /**
+         * if last tick of travelling present in the cache
+         */
+        if(node != null && node.getTravelling() != null) {
+            logger.info("This is the last tick of travelling");
+            logger.info("Travelling id : " + node.getTravelling().getId());
+
+            return;
+        }
+
+        ResultSet resultSet = travellingDao.lastTick(person);
 
         if(resultSet.next()) {
             logger.info("This is the last tick of Travelling ");
@@ -110,7 +123,7 @@ public class TravellingServiceImpl implements TravellingService {
 
     @Override
     public void longestStreak(Person person) throws SQLException {
-        ResultSet resultSet = travellingDataBase.longestTravellingStreak(person);
+        ResultSet resultSet = travellingDao.longestTravellingStreak(person);
         SortedSet<String> days = new TreeSet<String>();
 
         while(resultSet.next()){
@@ -128,7 +141,7 @@ public class TravellingServiceImpl implements TravellingService {
 
     @Override
     public void latestStreak(Person person) throws SQLException {
-        ResultSet resultSet = travellingDataBase.longestTravellingStreak(person);
+        ResultSet resultSet = travellingDao.longestTravellingStreak(person);
         SortedSet<String> days = new TreeSet<String>();
 
         while(resultSet.next()){
