@@ -1,11 +1,12 @@
 package com.zs.e_commerce;
 
 import java.io.FileInputStream;
-import java.sql.*;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.sql.PreparedStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.DriverManager;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -30,7 +31,7 @@ public class E_commerce {
     static void insertInUsers(int id,String firstName,String lastName,
                                      String mobile,String address) throws SQLException {
 
-        PreparedStatement  insertInUser = con.prepareStatement("insert into users values (?,?,?,?,?)");
+        PreparedStatement insertInUser = con.prepareStatement("insert into users values (?,?,?,?,?)");
 
         if(searchInUser(id)){
             logger.info("Key already present in user table ");
