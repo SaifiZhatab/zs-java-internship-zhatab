@@ -7,7 +7,11 @@ import java.util.Scanner;
  */
 public class DecimalToBinary {
 
+
+    public String binaryToDecimal(int num){
+
     void decimalToBinary(int num){
+
         String binary = "";
         while(num != 0) {
             /**
@@ -18,7 +22,7 @@ public class DecimalToBinary {
             binary = (char)(num%2 + '0') + binary;
             num=num/2;
         }
-        System.out.println(binary);
+         return binary;
     }
     public static void main(String[] args) {
         /**
