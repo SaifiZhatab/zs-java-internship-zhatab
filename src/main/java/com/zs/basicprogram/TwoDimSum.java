@@ -1,4 +1,4 @@
-package main.java.com.zs.basicprogram;
+package com.zs.basicprogram;
 
 /**
  * This class help you to add the two 2D array

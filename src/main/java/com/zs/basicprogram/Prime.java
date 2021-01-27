@@ -1,4 +1,4 @@
-package main.java.com.zs.basicprogram;
+package com.zs.basicprogram;
 
 /**
  * This class help you to find the prime number  between 1 to N range
