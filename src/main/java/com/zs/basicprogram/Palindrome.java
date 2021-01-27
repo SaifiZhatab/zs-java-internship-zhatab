@@ -4,7 +4,7 @@ package com.zs.basicprogram;
  * This class help you to check the number is palindrome or not
  */
 public class Palindrome {
-    void palindrome(int num) {
+    public boolean palindrome(int num) {
         /**
          * keep the copy of original number
          */
@@ -21,8 +21,10 @@ public class Palindrome {
          */
         if(pali == copy) {
             System.out.println("Yes this number is palindorm");
+            return true;
         }else {
             System.out.println("Yes this number isn't palindorm");
+            return false;
         }
     }
     public static void main(String[] args) {
