@@ -1,12 +1,13 @@
 package main.java.com.zs.exercise2;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 public class Dictionary {
 
     static final int ALPHABET_SIZE = 26;
-
     static class Node {
         Node child[] = new Node[ALPHABET_SIZE];
         boolean isEndOfWord;
@@ -20,7 +21,7 @@ public class Dictionary {
             }
         }
     };
-
+    static TreeMap<String, Integer> treeMap;
     static Node head;
 
     public Dictionary(){
@@ -29,6 +30,11 @@ public class Dictionary {
 
     public static void insert(String word, String meaning) {
         int length = word.length();
+
+        if(!treeMap.containsKey(word)) {
+            treeMap.put(word,1);
+        }
+
         Node node = head;
 
         for(int i=0;i<length;i++) {
@@ -74,21 +80,36 @@ public class Dictionary {
     }
 
 
+
     public static ArrayList<String> correctWord(String word){
+
+    static ArrayList<String> correctWord(String word) {
+
         int length = word.length();
 
         ArrayList<String> correct = new ArrayList<String>();
 
-        for(int i=0;i<length;i++) {
-            char ch = word.charAt(i);
+        for(Map.Entry<String,Integer> entry : treeMap.entrySet()) {
+            int count_difference = 0;
+
 
             for(int j=0;j<ALPHABET_SIZE;j++){
                 if((ch-'a') != j){
                     String st = word.substring(0,i) + (char)('a' + j) + word.substring(i+1);
                     if(search(st)) {
                         correct.add(st);
+
+            if(entry.getKey().length() == word.length()) {
+                for(int i=0;i<word.length();i++) {
+                    if(entry.getKey().charAt(i) != word.charAt(i)) {
+                        count_difference++;
+
                     }
                 }
+            }
+
+            if(count_difference == 1) {
+                correct.add(entry.getKey());
             }
         }
         return correct;
@@ -125,6 +146,7 @@ public class Dictionary {
 
     public static void main(String st[]){
         Scanner in = new Scanner(System.in);
+        treeMap = new TreeMap<String,Integer>();
         head = new Node();
 
         System.out.println("Please read the instruction carefully");
@@ -184,7 +206,11 @@ public class Dictionary {
                     if(correctWord.size() == 0) {
                         System.out.println("No word present in dictionary similar to "+ word);
                     }else {
+
                         int index=1;
+
+                        int index = 1;
+
                         System.out.println("Words start with " + word );
 
                         for(String match : correctWord) {
@@ -204,7 +230,11 @@ public class Dictionary {
                     if(matchWord.size() == 0) {
                         System.out.println("No word present in dictionary who match with "+ word);
                     }else {
+
                         int index=1;
+
+                        int index = 1;
+
                         System.out.println("Words start with " + word );
 
                         for(String match : matchWord) {
