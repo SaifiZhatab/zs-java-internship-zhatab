@@ -1,4 +1,4 @@
-package com.zs.exercise2;
+package com.zs.dictionary;
 
 import java.io.*;
 import java.util.ArrayList;
