@@ -1,5 +1,7 @@
 package main.java.com.zs.basicprogram;
 
+import java.util.Scanner;
+
 /**
  * This class help you to check the emi.
  */
@@ -7,7 +9,10 @@ public class Emi {
     void emi(int loan_amount, int interest ,int time_period) {
         float emi= 0l;
 
-        interest = interest / (12 * 100);
+        /**
+         * type casting
+         */
+        interest = (int)interest / (12 * 100);
         time_period = time_period * 12;
 
         /**
@@ -22,5 +27,9 @@ public class Emi {
                 / (float)(Math.pow(1 + interest, time_period) - 1);
 
        System.out.println(emi);
+    }
+    public static void main(String[] args) {
+        Emi emi = new Emi();
+        emi.emi(12,4000,4);
     }
 }

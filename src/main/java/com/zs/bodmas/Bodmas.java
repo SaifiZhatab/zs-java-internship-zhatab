@@ -57,18 +57,6 @@ public class Bodmas {
         }
     }
 
-    /**
-     *  Returns the value of the first argument raised to the power of the second argument. Special cases:
-     *     If the second argument is positive or negative zero, then the result is 1.0.
-     *     If the second argument is 1.0, then the result is the same as the first argument.
-     *
-     * @param a the base.
-     * @param b the exponent
-     * @return the value a^b.
-     */
-    public int power(int a,int b){
-        return (int)Math.pow(a,b);
-    }
 
     /**
      *  return the precedence of operator
@@ -81,7 +69,6 @@ public class Bodmas {
             case '+' : return 1;
             case '*' : return 2;
             case '/' : return 2;
-            case '^' : return 3;
             default  : return 0;
         }
     }
@@ -99,7 +86,6 @@ public class Bodmas {
             case '-' : return subtract(a,b);
             case '*' : return multiply(a,b);
             case '/' : return divide(a,b);
-            case '^' : return power(a,b);
         }
         return 0;
     }
@@ -204,6 +190,11 @@ public class Bodmas {
             return 0;
         }
         return value.peek() ;
+    }
+
+    public static void main (String [] args) {
+        Bodmas bodmas = new Bodmas();
+        bodmas.bodmasSolver("(5+8)*2");
     }
 
 }

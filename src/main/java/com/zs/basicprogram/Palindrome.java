@@ -27,4 +27,9 @@ public class Palindrome {
             return false;
         }
     }
+    public static void main(String[] args) {
+        Palindrome palindrome = new Palindrome();
+        palindrome.palindrome(12221);
+        palindrome.palindrome(123432);
+    }
 }
