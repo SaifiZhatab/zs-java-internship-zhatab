@@ -1,4 +1,4 @@
-package main.java.com.zs.basicprogram;
+package com.zs.basicprogram;
 
 import java.util.ArrayList;
 

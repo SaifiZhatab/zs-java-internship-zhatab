@@ -1,4 +1,4 @@
-package main.java.com.zs.bodmas;
+package com.zs.bodmas;
 
 import java.util.Stack;
 

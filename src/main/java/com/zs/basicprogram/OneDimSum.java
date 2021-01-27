@@ -1,4 +1,4 @@
-package main.java.com.zs.basicprogram;
+package com.zs.basicprogram;
 
 /**
  * This class help you to find the sum of two 1D array
