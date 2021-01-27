@@ -6,7 +6,6 @@ import main.java.com.zs.hobbies.dao.TravellingDao;
 import main.java.com.zs.hobbies.dto.Person;
 import main.java.com.zs.hobbies.dto.Travelling;
 import main.java.com.zs.hobbies.cache.Node;
-import main.java.com.zs.hobbies.util.SimilarRequirement;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -61,12 +60,15 @@ public class TravellingServiceImpl implements TravellingService {
             travelling.setId(travellingDao.findHigherKey());
         }
 
-        lru.put(new Node(travelling));
-
         int check = travellingDao.insertTravelling(travelling);
 
         if(check == 1) {
             logger.info("Successfully travelling hobbies enter in database");
+
+            /**
+             * insert hobby into the LRU cache
+             */
+            lru.put(String.valueOf(travelling.getPerson().getId()) + "_travelling", new Node(travelling));
         }else {
             logger.warning("Some internally error comes.Please try again");
         }
@@ -91,9 +93,15 @@ public class TravellingServiceImpl implements TravellingService {
         }
     }
 
+    /**
+     * This function help you to find the last tick of person
+     * if the last tick isn't present, then it nothing print
+     * @param person    the person object
+     * @throws SQLException
+     */
     @Override
     public void lastTick(Person person) throws SQLException {
-        Node node = lru.getLastTick(person.getId(),"travelling");
+        Node node = lru.get(String.valueOf(person.getId()) + "_travelling");
 
         /**
          * if last tick of travelling present in the cache
@@ -109,26 +117,35 @@ public class TravellingServiceImpl implements TravellingService {
 
         if(resultSet.next()) {
             logger.info("This is the last tick of Travelling ");
-
-            logger.info("Date : " + resultSet.getDate("day").toString() );
-            logger.info("Start Time : " + resultSet.getTime("startTime"));
-            logger.info("End time : " +  resultSet.getTime("endTime") );
-            logger.info("Start Location : " + resultSet.getString("startPoint"));
-            logger.info("End Location : " +  resultSet.getString("endPoint"));
-            logger.info("Total distance travel : " + resultSet.getFloat("distance"));
+            logger.info(("Travelling id : " + resultSet.getInt(1)));
         }else {
             logger.warning("No tick available for you");
         }
     }
 
+    /**
+     * This function help you to find the longest streak of person travelling
+     * if there is not streak, then it return 0
+     * @param person the person object
+     * @throws SQLException
+     */
     @Override
     public void longestStreak(Person person) throws SQLException {
         ResultSet resultSet = travellingDao.longestTravellingStreak(person);
+
+        /**
+         * use to store all the data in sorted order
+         */
         SortedSet<String> days = new TreeSet<String>();
 
+        /**
+         * get all the details of person in travelling table and perform operation on it.
+         * To find the longest streak
+         */
         while(resultSet.next()){
             days.add(resultSet.getDate("day").toString() );
         }
+
         int longestStreak = similarRequirement.longestStreak(days);
         logger.info("Longest Travelling Streak for " + person.getName() + " : " + longestStreak);
 
@@ -139,11 +156,25 @@ public class TravellingServiceImpl implements TravellingService {
         }
     }
 
+    /**
+     * This function help you to find the latest streak of person in travelling
+     * if there is no streak then it return 0
+     * @param person    the person object
+     * @throws SQLException
+     */
     @Override
     public void latestStreak(Person person) throws SQLException {
         ResultSet resultSet = travellingDao.longestTravellingStreak(person);
+
+        /**
+         * use to store all the data in sorted order
+         */
         SortedSet<String> days = new TreeSet<String>();
 
+        /**
+         * get all the details of person in travelling table and perform operation on it.
+         * To find the longest streak
+         */
         while(resultSet.next()){
             days.add(resultSet.getDate("day").toString() );
         }

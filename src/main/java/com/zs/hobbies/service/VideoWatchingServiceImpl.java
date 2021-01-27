@@ -6,7 +6,6 @@ import main.java.com.zs.hobbies.dao.VideoWatchingDao;
 import main.java.com.zs.hobbies.dto.Person;
 import main.java.com.zs.hobbies.dto.VideoWatching;
 import main.java.com.zs.hobbies.cache.Node;
-import main.java.com.zs.hobbies.util.SimilarRequirement;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,6 +18,9 @@ import java.util.TreeSet;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+/**
+ * This class give service to Video watching hobby
+ */
 public class VideoWatchingServiceImpl implements VideoWatchingService {
     private VideoWatchingDao videoWatchingDao;
     private Logger logger;
@@ -36,6 +38,11 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         similarRequirement = new SimilarRequirement();
     }
 
+    /**
+     * This function is helpful you to insert data in video watching table
+     * @param videoWatching this is a videoWatching object
+     * @throws SQLException
+     */
     @Override
     public void insert(VideoWatching videoWatching) throws SQLException {
         /**
@@ -45,17 +52,26 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
             videoWatching.setId(videoWatchingDao.findHigherKey());
         }
 
-        lru.put(new Node(videoWatching));
-
         int check = videoWatchingDao.insertVideo(videoWatching);
 
         if(check == 1) {
             logger.info("Successfully Chess enter in database");
+
+            /**
+             * insert hobby into the LRU cache
+             */
+            lru.put(String.valueOf(videoWatching.getPerson().getId()) + "_videoWatching", new Node(videoWatching));
         }else {
             logger.warning("Some internally error comes.Please try again");
         }
     }
 
+    /**
+     * This function help you to find the details of person on particular date
+     * @param person    the person object
+     * @param date      particular date
+     * @throws SQLException
+     */
     @Override
     public void dateDetails(Person person, Date date) throws SQLException {
         ResultSet resultSet = videoWatchingDao.dateVideoWatchingDetails(person,date);
@@ -68,9 +84,14 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         }
     }
 
+    /**
+     * This function help you to find the last tick of person in video watching table
+     * @param person    the person object
+     * @throws SQLException
+     */
     @Override
     public void lastTick(Person person) throws SQLException {
-        Node node = lru.getLastTick(person.getId(),"videoWatching");
+        Node node = lru.get(String.valueOf(person.getId())  + "_videoWatching");
 
         /**
          * when videoWatching present in lru cache
@@ -86,21 +107,30 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
 
         if(resultSet.next()) {
             logger.info("This is the last tick of Video Watching ");
-
-            logger.info("Date : " + resultSet.getDate("day").toString() );
-            logger.info("Start time : " + resultSet.getTime("startTime"));
-            logger.info("End time : " + resultSet.getTime("endTime"));
-            logger.info("Title : " +  resultSet.getString("title"));
+            logger.info("Video Watching id : " + resultSet.getInt(1));
         }else {
             logger.warning("No tick available for you");
         }
     }
 
+    /**
+     * This function help you to find the longest streak in the video watching table
+     * @param person    the person object
+     * @throws SQLException
+     */
     @Override
     public void longestStreak(Person person) throws SQLException {
         ResultSet resultSet = videoWatchingDao.longestVideoWatchingStreak(person);
+
+        /**
+         * use to store all dates in sorted order
+         */
         SortedSet<String> days = new TreeSet<String>();
 
+        /**
+         * get all the details of person in video watching table and perform operation on it.
+         * To find the longest streak
+         */
         while(resultSet.next()){
             days.add(resultSet.getDate("day").toString() );
         }
@@ -114,11 +144,24 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         }
     }
 
+    /**
+     * This function help you to find the latest streak
+     * @param person    the person object
+     * @throws SQLException
+     */
     @Override
     public void latestStreak(Person person) throws SQLException {
         ResultSet resultSet = videoWatchingDao.longestVideoWatchingStreak(person);
+
+        /**
+         * use to store all dates in sorted order
+         */
         SortedSet<String> days = new TreeSet<String>();
 
+        /**
+         * get all the details of person in video watching table and perform operation on it.
+         * To find the longest streak
+         */
         while(resultSet.next()){
             days.add(resultSet.getDate("day").toString() );
         }

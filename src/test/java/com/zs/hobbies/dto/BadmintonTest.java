@@ -12,12 +12,15 @@ import java.sql.Time;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * This is a testing class for Badminton dto class
+ */
 class BadmintonTest {
-    Person person;
-    Timing timing;
-    int numPlayers;
-    String result;
-    Badminton badminton;
+    private Person person;
+    private Timing timing;
+    private int numPlayers;
+    private String result;
+    private Badminton badminton;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -26,25 +29,79 @@ class BadmintonTest {
         numPlayers = 2;
         result = "Win";
 
-        badminton = new Badminton(1,person,timing,numPlayers,result);
     }
 
+    /**
+     *  This function help you to check the person object available in badminton object
+     */
     @Test
-    void getPerson() {
+    void checkPersonAvailable() throws SQLException {
+        person = new Person(1,"zhatab" , "8024987656","UP");
+
+        /**
+         * insert person in badminton object
+         */
+        badminton = new Badminton(1,person,timing,numPlayers,result);
+
+        /**
+         * check the same object or data present in the badminton object
+         */
         assertEquals(person,badminton.getPerson());
     }
 
     @Test
-    void setPerson() {
+    void setWhenAlreadyPersonPresent() throws SQLException {
+        badminton = new Badminton(1,person,timing,numPlayers,result);
+
+        /**
+         * change the badminton person object and check it is successfully change or not
+         */
+        Person personChange = new Person(1,"zhatab" , "8024987656","UP");
+
+        /**
+         * change the person object in badminton
+         */
+        badminton.setPerson(personChange);
+
+        /**
+         * check the new object present or not in badminton object
+         */
+        assertEquals(personChange,badminton.getPerson());
     }
 
     @Test
-    void getTime() {
-        assertEquals(timing,badminton.getTime());
+    void checkTimeAvailable() throws SQLException {
+        timing = new Timing(Time.valueOf("10:59:59"),Time.valueOf("12:59:59"), Date.valueOf("2015-04-05"));
+
+        /**
+         * insert person in badminton object
+         */
+        badminton = new Badminton(1,person,timing,numPlayers,result);
+
+        /**
+         * check the same object or data present in the badminton object
+         */
+        assertEquals(person,badminton.getPerson());
     }
 
     @Test
-    void setTime() {
+    void setWhenAlreadyTimePresent() throws SQLException {
+        badminton = new Badminton(1,person,timing,numPlayers,result);
+
+        /**
+         * change the badminton timing object and check it is successfully change or not
+         */
+        Timing changeTiming = new Timing(Time.valueOf("02:52:59"),Time.valueOf("12:59:59"), Date.valueOf("2020-07-25"));
+
+        /**
+         * change the person object in badminton
+         */
+        badminton.setTime(changeTiming);
+
+        /**
+         * check the new object present or not in badminton object
+         */
+        assertEquals(changeTiming,badminton.getTime());
     }
 
     @Test

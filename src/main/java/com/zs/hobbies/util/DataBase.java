@@ -1,6 +1,7 @@
 package main.java.com.zs.hobbies.util;
 
 import main.java.com.zs.hobbies.Application;
+import main.java.com.zs.hobbies.exception.InvalidInputException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,19 +23,31 @@ public class DataBase {
      * @throws SQLException
      */
     public DataBase() throws ClassNotFoundException, SQLException, IOException {
-        Class.forName("org.postgresql.Driver");
-        con = DriverManager.getConnection("jdbc:postgresql://0.0.0.0:2006/hobbies", "zhatab", "zhatab");
 
+        Class.forName("org.postgresql.Driver");
+        try {
+            con = DriverManager.getConnection("jdbc:postgresql://0.0.0.0:2006/hobbies", "zhatab", "zhatab");
+        }catch (Exception ex) {
+            throw new InvalidInputException(500 , "Connection not create");
+        }
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
 
         logger.info("DataBase connect successfully ");
     }
 
+    /**
+     * This function return the connection
+     * @return  connection
+     */
     public Connection getCon() {
         return con;
     }
 
+    /**
+     * This function set the connection
+     * @param con the connection object
+     */
     public void setCon(Connection con) {
         this.con = con;
     }

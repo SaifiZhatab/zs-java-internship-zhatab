@@ -12,12 +12,15 @@ import java.sql.Time;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * This is a testing class for Chess dto class
+ */
 class ChessTest {
-    Person person;
-    Timing timing;
-    int numMoves;
-    String result;
-    Chess chess;
+    private Person person;
+    private Timing timing;
+    private int numMoves;
+    private String result;
+    private Chess chess;
 
     @BeforeEach
     void setUp() throws SQLException {

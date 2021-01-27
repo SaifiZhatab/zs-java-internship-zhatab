@@ -2,62 +2,67 @@ package main.java.com.zs.hobbies.cache;
 
 import main.java.com.zs.hobbies.dto.*;
 
+/**
+ * This class is represent Object in LRU cache
+ */
 public class Node {
-    private String id;
+    private String key;
     private Badminton badminton;
     private Travelling travelling;
     private Chess chess;
     private VideoWatching videoWatching;
-    private Person person;
 
     private Node previous , next;
-
-    private LongestStreak longestStreak;
 
     public Node(){
         badminton = null;
         travelling = null;
         chess = null;
         videoWatching = null;
-        person = null;
     }
 
+    /**
+     * set the badminton object
+     * @param badminton badminton object which you want to insert in LRU cache
+     */
     public Node(Badminton badminton) {
-        this();
-        id = String.valueOf(badminton.getPerson().getId() ) + "_badminton";
+        key = String.valueOf(badminton.getPerson().getId()) + "_badminton";
         this.badminton = badminton;
     }
 
+    /**
+     * set the travelling object in node
+     * @param travelling travelling object which you want to insert in LRU cache
+     */
     public Node(Travelling travelling) {
-        this();
-        id = String.valueOf(travelling.getPerson().getId() ) + "_travelling";
+        key = String.valueOf(travelling.getPerson().getId()) + "_travelling";
         this.travelling = travelling;
     }
 
+    /**
+     * set the chess object in node
+     * @param chess chess object which you want to insert in LRU cache
+     */
     public Node(Chess chess) {
-        this();
-        id = String.valueOf(chess.getPerson().getId() ) + "_chess";
+        key = String.valueOf(chess.getPerson().getId()) + "_chess";
         this.chess = chess;
     }
 
+    /**
+     * set the videoWatching object in node
+     * @param videoWatching videoWatching object which you want to insert in LRU cache
+     */
     public Node(VideoWatching videoWatching) {
-        this();
-        id = String.valueOf(videoWatching.getPerson().getId() ) + "_videoWatching";
+        key = String.valueOf(videoWatching.getPerson().getId()) + "_videoWatching";
         this.videoWatching = videoWatching;
     }
 
-    public Node(Person person) {
-        this();
-        id = String.valueOf(person.getId() ) + "_person";
-        this.person = person;
+    public String getKey() {
+        return key;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public Badminton getBadminton() {
@@ -92,14 +97,6 @@ public class Node {
         this.videoWatching = videoWatching;
     }
 
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
-    }
-
     public Node getPrevious() {
         return previous;
     }
@@ -114,13 +111,5 @@ public class Node {
 
     public void setNext(Node next) {
         this.next = next;
-    }
-
-    public LongestStreak getLongestStreak() {
-        return longestStreak;
-    }
-
-    public void setLongestStreak(LongestStreak longestStreak) {
-        this.longestStreak = longestStreak;
     }
 }

@@ -12,6 +12,16 @@ public class Travelling extends Hobby{
     private String endPoint;
     private float distance;
 
+    /**
+     *  if the user give id by itself
+     * @param id  the travelling id
+     * @param person the person object
+     * @param time the timing object
+     * @param startPoint the starting point
+     * @param endPoint the ending point
+     * @param distance  the total distance cover
+     * @throws SQLException
+     */
     public Travelling(int id, Person person, Timing time, String startPoint, String endPoint, float distance) throws SQLException {
         super(id);
         this.person = person;
@@ -21,6 +31,15 @@ public class Travelling extends Hobby{
         this.distance = distance;
     }
 
+    /**
+     * if the user doesn't give id, then it take automatically
+     * @param person the person object
+     * @param time the timing object
+     * @param startPoint the starting point
+     * @param endPoint the ending point
+     * @param distance  the total distance cover
+     * @throws SQLException
+     */
     public Travelling(Person person, Timing time, String startPoint, String endPoint, float distance) throws SQLException {
         super(-1);
         this.person = person;

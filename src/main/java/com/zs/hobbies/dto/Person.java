@@ -11,6 +11,13 @@ public class Person {
     private String mobile;
     private String address;
 
+    /**
+     *if the user give id by itself
+     * @param id the user id
+     * @param name  name of user
+     * @param mobile mobile number string
+     * @param address address of user
+     */
     public Person(int id, String name, String mobile, String address) {
         this.id = id;
         this.name = name;
@@ -18,6 +25,12 @@ public class Person {
         this.address = address;
     }
 
+    /**
+     * if the user doesn't give id, then it take automatically
+     * @param name  name of user
+     * @param mobile mobile number string
+     * @param address address of user
+     */
     public Person(String name, String mobile, String address) throws SQLException {
         this.id = -1;
         this.name = name;

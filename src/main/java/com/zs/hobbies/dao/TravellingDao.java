@@ -28,6 +28,7 @@ public class TravellingDao {
         longestTravellingStreak = con.prepareStatement("select * from Travelling where personid = ? order by day");
         findHigherKey = con.prepareStatement("select travelling_id from Travelling order by travelling_id desc LIMIT 1 ");
     }
+
     /**
      * this function help you to insert the travelling hobbies in database
      * @param travelling    this is a travel object

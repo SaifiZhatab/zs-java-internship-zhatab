@@ -11,6 +11,15 @@ public class Badminton extends Hobby{
     private int numPlayers ;
     private String result;
 
+    /**
+     * if the user give id by itself
+     * @param id    the id
+     * @param person the person object
+     * @param time     the timing object
+     * @param numPlayers  number of player
+     * @param result  the result
+     * @throws SQLException
+     */
     public Badminton(int id, Person person, Timing time, int numPlayers, String result) throws SQLException {
         super(id);
         this.person = person;
@@ -18,6 +27,15 @@ public class Badminton extends Hobby{
         this.numPlayers = numPlayers;
         this.result = result;
     }
+
+    /**
+     * Tif the user doesn't give id, then it take automatically
+     * @param person the person object
+     * @param time     the timing object
+     * @param numPlayers  number of player
+     * @param result  the result
+     * @throws SQLException
+     */
     public Badminton(Person person, Timing time, int numPlayers, String result) throws SQLException {
         super(-1);
         this.person = person;

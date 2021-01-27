@@ -11,6 +11,15 @@ public class Chess extends Hobby{
     private int numMoves;
     private String result;
 
+    /**
+     * if the user give id by itself
+     * @param id the chess id
+     * @param person the person object
+     * @param time  the timing object
+     * @param numMoves  number of moves
+     * @param result the result
+     * @throws SQLException
+     */
     public Chess(int id, Person person, Timing time, int numMoves, String result) throws SQLException {
         super(id);
         this.person = person;
@@ -19,6 +28,14 @@ public class Chess extends Hobby{
         this.result = result;
     }
 
+    /**
+     * if the user doesn't give id, then it take automatically
+     * @param person the person object
+     * @param time  the timing object
+     * @param numMoves  number of moves
+     * @param result the result
+     * @throws SQLException
+     */
     public Chess(Person person, Timing time, int numMoves, String result) throws SQLException {
         super(-1);
         this.person = person;

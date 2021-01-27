@@ -6,13 +6,16 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * This is a testing class for Person dto class
+ */
 class PersonTest {
 
-    int id;
-    String name;
-    String mobile;
-    String address;
-    Person person ;
+    private int id;
+    private String name;
+    private String mobile;
+    private String address;
+    private Person person ;
 
     @BeforeEach
     void setUp() {

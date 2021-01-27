@@ -4,7 +4,6 @@ import main.java.com.zs.hobbies.Application;
 import main.java.com.zs.hobbies.cache.LruService;
 import main.java.com.zs.hobbies.dao.PersonDao;
 import main.java.com.zs.hobbies.dto.Person;
-import main.java.com.zs.hobbies.cache.Node;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,8 +43,6 @@ public class PersonServiceImpl implements PersonService {
         if(person.getId() == -1) {
             person.setId(personDao.findHigherKey());
         }
-
-        lru.put(new Node(person));
 
         int check = personDao.insertPerson(person);
 

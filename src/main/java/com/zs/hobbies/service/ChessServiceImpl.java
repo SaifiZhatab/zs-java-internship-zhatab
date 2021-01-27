@@ -6,7 +6,6 @@ import main.java.com.zs.hobbies.dao.ChessDao;
 import main.java.com.zs.hobbies.dto.Chess;
 import main.java.com.zs.hobbies.dto.Person;
 import main.java.com.zs.hobbies.cache.Node;
-import main.java.com.zs.hobbies.util.SimilarRequirement;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -57,12 +56,15 @@ public class ChessServiceImpl implements ChessService {
             chess.setId(chessDao.findHigherKey());
         }
 
-        lru.put(new Node(chess));
-
         int check = chessDao.insertChess(chess);
 
         if(check == 1) {
             logger.info("Successfully Chess enter in database");
+
+            /**
+             * insert hobby into the LRU cache
+             */
+            lru.put(String.valueOf(chess.getPerson().getId()) + "_chess",new Node(chess));
         }else {
             logger.warning("Some internally error comes.Please try again");
         }
@@ -93,7 +95,7 @@ public class ChessServiceImpl implements ChessService {
      */
     @Override
     public void lastTick(Person person) throws SQLException {
-        Node node = lru.getLastTick(person.getId(),"chess");
+        Node node = lru.get(String.valueOf(person.getId())  + "_chess");
 
         /**
          * when last tick present in lru cache
@@ -109,12 +111,7 @@ public class ChessServiceImpl implements ChessService {
 
         if(resultSet.next()) {
             logger.info("This is the last tick of Chess  ");
-
-            logger.info("Date : " + resultSet.getDate("day").toString() );
-            logger.info("Start time : " + resultSet.getTime("startTime"));
-            logger.info("End time : " + resultSet.getTime("endTime"));
-            logger.info("Number of player : " + resultSet.getInt("numMoves"));
-            logger.info("Result : " + resultSet.getString("result") );
+            logger.info("Chess id : " + resultSet.getInt(1));
         }else {
             logger.warning("No tick available for you");
         }
@@ -134,6 +131,10 @@ public class ChessServiceImpl implements ChessService {
          */
         SortedSet<String> days = new TreeSet<String>();
 
+        /**
+         * get all the details of person in chess table and perform operation on it.
+         * To find the longest streak
+         */
         while(resultSet.next()){
             days.add(resultSet.getDate("day").toString() );
         }
@@ -155,8 +156,16 @@ public class ChessServiceImpl implements ChessService {
     @Override
     public void latestStreak(Person person) throws SQLException {
         ResultSet resultSet = chessDao.longestChessStreak(person);
+
+        /**
+         * use to store dates in sorted order
+         */
         SortedSet<String> days = new TreeSet<String>();
 
+        /**
+         * get all the details of person in chess table and perform operation on it.
+         * To find the longest streak
+         */
         while(resultSet.next()){
             days.add(resultSet.getDate("day").toString() );
         }

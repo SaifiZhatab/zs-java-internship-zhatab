@@ -10,6 +10,9 @@ import java.sql.Time;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * This is a testing class for Timing dto class
+ */
 class TimingTest {
     Time start;
     Time end;
@@ -41,6 +44,7 @@ class TimingTest {
 
     @Test
     void setEndTime() {
+
     }
 
     @Test

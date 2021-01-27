@@ -10,6 +10,14 @@ public class VideoWatching extends Hobby{
     private Timing time;
     private String title;
 
+    /**
+     *  if the user give id by itself
+     * @param id the id
+     * @param person the person object
+     * @param time the timing object
+     * @param title the title of video
+     * @throws SQLException
+     */
     public VideoWatching(int id, Person person, Timing time, String title) throws SQLException {
         super(id);
         this.person = person;
@@ -17,6 +25,13 @@ public class VideoWatching extends Hobby{
         this.title = title;
     }
 
+    /**
+     * if the user doesn't give id, then it take automatically
+     * @param person the person object
+     * @param time the timing object
+     * @param title the title of video
+     * @throws SQLException
+     */
     public VideoWatching(Person person, Timing time, String title) throws SQLException {
         super(-1);
         this.person = person;
