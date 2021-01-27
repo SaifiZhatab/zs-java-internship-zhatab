@@ -1,6 +1,6 @@
 package main.test;
 
-import main.java.com.zs.bodmas.Bodmas;
+import com.zs.bodmas.Bodmas;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

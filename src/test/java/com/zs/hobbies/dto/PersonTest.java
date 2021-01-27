@@ -1,6 +1,6 @@
 package test.java.com.zs.hobbies.dto;
 
-import main.java.com.zs.hobbies.dto.Person;
+import com.zs.hobbies.dto.Person;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

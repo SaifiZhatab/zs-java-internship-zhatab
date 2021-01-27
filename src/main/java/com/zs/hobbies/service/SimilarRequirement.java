@@ -1,4 +1,4 @@
-package main.java.com.zs.hobbies.service;
+package com.zs.hobbies.service;
 
 import java.util.*;
 

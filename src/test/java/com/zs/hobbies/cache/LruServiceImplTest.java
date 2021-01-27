@@ -1,9 +1,9 @@
 package test.java.com.zs.hobbies.cache;
 
-import main.java.com.zs.hobbies.cache.LruService;
-import main.java.com.zs.hobbies.cache.LruServiceImpl;
-import main.java.com.zs.hobbies.cache.Node;
-import main.java.com.zs.hobbies.dto.*;
+import com.zs.hobbies.cache.LruService;
+import com.zs.hobbies.cache.LruServiceImpl;
+import com.zs.hobbies.cache.Node;
+import com.zs.hobbies.dto.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

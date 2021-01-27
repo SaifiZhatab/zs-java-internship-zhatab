@@ -1,13 +1,13 @@
-package main.java.com.zs.hobbies.controller;
+package com.zs.hobbies.controller;
 
-import main.java.com.zs.hobbies.Application;
-import main.java.com.zs.hobbies.cache.LruService;
-import main.java.com.zs.hobbies.dto.Person;
-import main.java.com.zs.hobbies.dto.Timing;
-import main.java.com.zs.hobbies.dto.Travelling;
-import main.java.com.zs.hobbies.exception.InvalidInputException;
-import main.java.com.zs.hobbies.service.TravellingService;
-import main.java.com.zs.hobbies.service.TravellingServiceImpl;
+import com.zs.hobbies.Application;
+import com.zs.hobbies.cache.LruService;
+import com.zs.hobbies.dto.Person;
+import com.zs.hobbies.dto.Timing;
+import com.zs.hobbies.dto.Travelling;
+import com.zs.hobbies.exception.InvalidInputException;
+import com.zs.hobbies.service.TravellingService;
+import com.zs.hobbies.service.TravellingServiceImpl;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,8 +34,7 @@ public class TravellingController {
         travellingService = new TravellingServiceImpl(con,lru);
         timingController = new TimingController();
 
-        LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
-        logger = Logger.getLogger(Application.class.getName());
+       logger = Logger.getLogger(Application.class.getName());
     }
 
     /**

@@ -1,13 +1,13 @@
-package main.java.com.zs.hobbies.controller;
+package com.zs.hobbies.controller;
 
-import main.java.com.zs.hobbies.Application;
-import main.java.com.zs.hobbies.cache.LruService;
-import main.java.com.zs.hobbies.dto.Chess;
-import main.java.com.zs.hobbies.dto.Person;
-import main.java.com.zs.hobbies.dto.Timing;
-import main.java.com.zs.hobbies.exception.InvalidInputException;
-import main.java.com.zs.hobbies.service.ChessService;
-import main.java.com.zs.hobbies.service.ChessServiceImpl;
+import com.zs.hobbies.Application;
+import com.zs.hobbies.cache.LruService;
+import com.zs.hobbies.dto.Chess;
+import com.zs.hobbies.dto.Person;
+import com.zs.hobbies.dto.Timing;
+import com.zs.hobbies.exception.InvalidInputException;
+import com.zs.hobbies.service.ChessService;
+import com.zs.hobbies.service.ChessServiceImpl;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,7 +34,6 @@ public class ChessController {
         chessService = new ChessServiceImpl(con,lru);
         timingController = new TimingController();
 
-        LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
     }
 

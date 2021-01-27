@@ -1,6 +1,6 @@
-package main.java.com.zs.hobbies.service;
+package com.zs.hobbies.service;
 
-import main.java.com.zs.hobbies.dto.Travelling;
+import com.zs.hobbies.dto.Travelling;
 
 import java.sql.SQLException;
 

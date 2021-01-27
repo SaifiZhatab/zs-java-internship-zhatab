@@ -1,11 +1,11 @@
-package main.java.com.zs.hobbies.service;
+package com.zs.hobbies.service;
 
-import main.java.com.zs.hobbies.Application;
-import main.java.com.zs.hobbies.cache.LruService;
-import main.java.com.zs.hobbies.dao.ChessDao;
-import main.java.com.zs.hobbies.dto.Chess;
-import main.java.com.zs.hobbies.dto.Person;
-import main.java.com.zs.hobbies.cache.Node;
+import com.zs.hobbies.Application;
+import com.zs.hobbies.cache.LruService;
+import com.zs.hobbies.dao.ChessDao;
+import com.zs.hobbies.dto.Chess;
+import com.zs.hobbies.dto.Person;
+import com.zs.hobbies.cache.Node;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -32,7 +32,6 @@ public class ChessServiceImpl implements ChessService {
      * @throws IOException
      */
     public ChessServiceImpl(Connection con,LruService lru) throws SQLException, ClassNotFoundException, IOException {
-        LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully Chess service start ");

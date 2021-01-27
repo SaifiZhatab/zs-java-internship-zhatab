@@ -1,4 +1,4 @@
-package main.java.com.zs.hobbies.cache;
+package com.zs.hobbies.cache;
 
 import java.util.HashMap;
 import java.util.Map;

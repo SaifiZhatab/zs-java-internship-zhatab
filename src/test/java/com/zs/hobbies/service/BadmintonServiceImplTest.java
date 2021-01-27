@@ -1,10 +1,10 @@
 package test.java.com.zs.hobbies.service;
 
-import main.java.com.zs.hobbies.dao.BadmintonDao;
-import main.java.com.zs.hobbies.util.DataBase;
-import main.java.com.zs.hobbies.dto.Badminton;
-import main.java.com.zs.hobbies.dto.Person;
-import main.java.com.zs.hobbies.dto.Timing;
+import com.zs.hobbies.dao.BadmintonDao;
+import com.zs.hobbies.util.DataBase;
+import com.zs.hobbies.dto.Badminton;
+import com.zs.hobbies.dto.Person;
+import com.zs.hobbies.dto.Timing;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

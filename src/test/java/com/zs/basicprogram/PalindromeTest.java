@@ -1,6 +1,6 @@
 package main.test;
 
-import main.java.com.zs.basicprogram.Palindrome;
+import com.zs.basicprogram.Palindrome;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

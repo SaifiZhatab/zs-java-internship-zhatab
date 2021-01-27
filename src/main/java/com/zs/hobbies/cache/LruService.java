@@ -1,4 +1,4 @@
-package main.java.com.zs.hobbies.cache;
+package com.zs.hobbies.cache;
 
 /**
  * This is a interface used for LruServiceImp class.

@@ -381,8 +381,7 @@ public class E_commerce {
             /**
              * initialize logger
              */
-            LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resources/logging.properties"));
-            logger = Logger.getLogger(E_commerce.class.getName());
+                logger = Logger.getLogger(E_commerce.class.getName());
             logger.info("logger connect successfully");
 
             /**

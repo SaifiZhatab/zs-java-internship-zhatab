@@ -1,8 +1,8 @@
-package main.java.com.zs.hobbies.controller;
+package com.zs.hobbies.controller;
 
-import main.java.com.zs.hobbies.Application;
-import main.java.com.zs.hobbies.dto.Timing;
-import main.java.com.zs.hobbies.exception.InvalidInputException;
+import com.zs.hobbies.Application;
+import com.zs.hobbies.dto.Timing;
+import com.zs.hobbies.exception.InvalidInputException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,7 +23,6 @@ public class TimingController {
     private Logger logger;
 
     public TimingController() throws IOException {
-        LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
     }
 

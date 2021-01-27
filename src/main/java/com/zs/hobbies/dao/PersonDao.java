@@ -1,7 +1,7 @@
-package main.java.com.zs.hobbies.dao;
+package com.zs.hobbies.dao;
 
-import main.java.com.zs.hobbies.Application;
-import main.java.com.zs.hobbies.dto.Person;
+import com.zs.hobbies.Application;
+import com.zs.hobbies.dto.Person;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,8 +18,7 @@ public class PersonDao {
     private PreparedStatement insertPerson, findHigherKey;
 
     public PersonDao(Connection con) throws SQLException, IOException, ClassNotFoundException {
-        LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
-        logger = Logger.getLogger(Application.class.getName());
+       logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully Person database start ");
 

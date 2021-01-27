@@ -1,11 +1,11 @@
-package main.java.com.zs.hobbies.controller;
+package com.zs.hobbies.controller;
 
-import main.java.com.zs.hobbies.Application;
-import main.java.com.zs.hobbies.cache.LruService;
-import main.java.com.zs.hobbies.dto.Person;
-import main.java.com.zs.hobbies.exception.InvalidInputException;
-import main.java.com.zs.hobbies.service.PersonService;
-import main.java.com.zs.hobbies.service.PersonServiceImpl;
+import com.zs.hobbies.Application;
+import com.zs.hobbies.cache.LruService;
+import com.zs.hobbies.dto.Person;
+import com.zs.hobbies.exception.InvalidInputException;
+import com.zs.hobbies.service.PersonService;
+import com.zs.hobbies.service.PersonServiceImpl;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,7 +30,6 @@ public class PersonController {
     public PersonController(Connection con, LruService lru) throws SQLException, IOException, ClassNotFoundException {
         personService = new PersonServiceImpl(con,lru);
 
-        LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
     }
 

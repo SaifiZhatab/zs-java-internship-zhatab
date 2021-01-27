@@ -1,4 +1,4 @@
-package main.java.com.zs.hobbies.exception;
+package com.zs.hobbies.exception;
 
 /**
  * This class is use for exception handling in my hobbies application

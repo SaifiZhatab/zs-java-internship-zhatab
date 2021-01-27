@@ -1,6 +1,6 @@
 package main.test;
 
-import main.java.com.zs.exercise2.Dictionary;
+import com.zs.exercise2.Dictionary;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

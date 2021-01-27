@@ -1,7 +1,7 @@
-package main.java.com.zs.hobbies.service;
+package com.zs.hobbies.service;
 
-import main.java.com.zs.hobbies.dto.Person;
-import main.java.com.zs.hobbies.dto.VideoWatching;
+import com.zs.hobbies.dto.Person;
+import com.zs.hobbies.dto.VideoWatching;
 
 import java.sql.Date;
 import java.sql.SQLException;

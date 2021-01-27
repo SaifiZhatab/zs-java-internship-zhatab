@@ -1,4 +1,4 @@
-package main.java.com.zs.hobbies.dto;
+package com.zs.hobbies.dto;
 
 /**
  * This is a main class which inherit by all hobbies

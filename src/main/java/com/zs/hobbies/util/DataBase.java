@@ -1,7 +1,7 @@
-package main.java.com.zs.hobbies.util;
+package com.zs.hobbies.util;
 
-import main.java.com.zs.hobbies.Application;
-import main.java.com.zs.hobbies.exception.InvalidInputException;
+import com.zs.hobbies.Application;
+import com.zs.hobbies.exception.InvalidInputException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,7 +30,6 @@ public class DataBase {
         }catch (Exception ex) {
             throw new InvalidInputException(500 , "Connection not create");
         }
-        LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
         logger = Logger.getLogger(Application.class.getName());
 
         logger.info("DataBase connect successfully ");

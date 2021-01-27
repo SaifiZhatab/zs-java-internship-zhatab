@@ -1,8 +1,8 @@
-package main.java.com.zs.hobbies.dao;
+package com.zs.hobbies.dao;
 
-import main.java.com.zs.hobbies.Application;
-import main.java.com.zs.hobbies.dto.Badminton;
-import main.java.com.zs.hobbies.dto.Person;
+import com.zs.hobbies.Application;
+import com.zs.hobbies.dto.Badminton;
+import com.zs.hobbies.dto.Person;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,8 +21,7 @@ public class BadmintonDao {
 
 
     public BadmintonDao(Connection con) throws SQLException, IOException, ClassNotFoundException {
-        LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
-        logger = Logger.getLogger(Application.class.getName());
+       logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully Badminton database start ");
 

@@ -204,8 +204,7 @@ public class Dictionary {
      */
     public static void main(String st[])  {
         try {
-            LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resources/logging.properties"));
-        } catch (Exception e) {
+            } catch (Exception e) {
             e.printStackTrace();
         }
         logger = Logger.getLogger(Dictionary.class.getName());

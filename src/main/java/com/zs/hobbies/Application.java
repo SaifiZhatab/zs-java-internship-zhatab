@@ -1,9 +1,12 @@
-package main.java.com.zs.hobbies;
+package com.zs.hobbies;
 
-import main.java.com.zs.hobbies.cache.LruService;
-import main.java.com.zs.hobbies.cache.LruServiceImpl;
-import main.java.com.zs.hobbies.controller.PersonController;
-import main.java.com.zs.hobbies.util.DataBase;
+import com.zs.hobbies.cache.LruService;
+import com.zs.hobbies.cache.LruServiceImpl;
+import com.zs.hobbies.controller.BadmintonController;
+import com.zs.hobbies.controller.ChessController;
+import com.zs.hobbies.controller.PersonController;
+import com.zs.hobbies.controller.TravellingController;
+import com.zs.hobbies.util.DataBase;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,7 +18,7 @@ public class Application {
     private static Logger logger;
 
     public static void main(String st[]) throws SQLException, ClassNotFoundException, IOException {
-        /**getMap
+        /**
          * initialize logger
          */
         LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
@@ -40,9 +43,15 @@ public class Application {
             PersonController personController = new PersonController(dataBase.getCon(),lru);
             personController.insert();
 
+            BadmintonController badmintonController = new BadmintonController(dataBase.getCon(),lru);
+            badmintonController.insert();
 
 
+            ChessController chessController = new ChessController(dataBase.getCon(),lru);
+            chessController.insert();
 
+            TravellingController travellingController = new TravellingController(dataBase.getCon(),lru);
+            travellingController.insert();
 
             /**
              * insert person in database table
