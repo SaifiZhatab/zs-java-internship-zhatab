@@ -6,46 +6,31 @@ import java.sql.SQLException;
  * this class provide all videoWatching facility
  */
 public class VideoWatching extends Hobby{
-    private Person person;
+    private int personId;
     private Timing time;
     private String title;
 
     /**
      *  if the user give id by itself
      * @param id the id
-     * @param person the person object
+     * @param personId the person object
      * @param time the timing object
      * @param title the title of video
      * @throws SQLException
      */
-    public VideoWatching(int id, Person person, Timing time, String title) throws SQLException {
+    public VideoWatching(int id, int personId, Timing time, String title) throws SQLException {
         super(id);
-        this.person = person;
+        this.personId = personId;
         this.time = time;
         this.title = title;
     }
 
-    /**
-     * if the user doesn't give id, then it take automatically
-     * @param person the person object
-     * @param time the timing object
-     * @param title the title of video
-     * @throws SQLException
-     */
-    public VideoWatching(Person person, Timing time, String title) throws SQLException {
-        super(-1);
-        this.person = person;
-        this.time = time;
-        this.title = title;
+    public int getPersonId() {
+        return personId;
     }
 
-
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
+    public void setPersonId(int personId) {
+        this.personId = personId;
     }
 
     public Timing getTime() {

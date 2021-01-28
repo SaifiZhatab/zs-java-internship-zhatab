@@ -1,12 +1,14 @@
 package com.zs.hobbies.dto;
 
 import java.sql.SQLException;
+import java.sql.Time;
+import java.util.Date;
 
 /**
  * this class provide all chess facility
  */
 public class Chess extends Hobby{
-    private Person person;
+    private int personId ;
     private Timing time;
     private int numMoves;
     private String result;
@@ -14,42 +16,26 @@ public class Chess extends Hobby{
     /**
      * if the user give id by itself
      * @param id the chess id
-     * @param person the person object
+     * @param personId the person object
      * @param time  the timing object
      * @param numMoves  number of moves
      * @param result the result
      * @throws SQLException
      */
-    public Chess(int id, Person person, Timing time, int numMoves, String result) throws SQLException {
+    public Chess(int id, int personId, Timing time, int numMoves, String result) throws SQLException {
         super(id);
-        this.person = person;
+        this.personId = personId;
         this.time = time;
         this.numMoves = numMoves;
         this.result = result;
     }
 
-    /**
-     * if the user doesn't give id, then it take automatically
-     * @param person the person object
-     * @param time  the timing object
-     * @param numMoves  number of moves
-     * @param result the result
-     * @throws SQLException
-     */
-    public Chess(Person person, Timing time, int numMoves, String result) throws SQLException {
-        super(-1);
-        this.person = person;
-        this.time = time;
-        this.numMoves = numMoves;
-        this.result = result;
+    public int getPersonId() {
+        return personId;
     }
 
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
+    public void setPersonId(int personId) {
+        this.personId = personId;
     }
 
     public Timing getTime() {

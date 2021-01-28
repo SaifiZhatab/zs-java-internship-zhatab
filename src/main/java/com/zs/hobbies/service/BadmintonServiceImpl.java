@@ -4,17 +4,17 @@ import com.zs.hobbies.Application;
 import com.zs.hobbies.cache.LruService;
 import com.zs.hobbies.dao.BadmintonDao;
 import com.zs.hobbies.dto.Badminton;
-import com.zs.hobbies.dto.Person;
 import com.zs.hobbies.cache.Node;
+import com.zs.hobbies.exception.InvalidInputException;
+import com.zs.hobbies.validator.Validator;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
-import java.util.logging.LogManager;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 /**
@@ -25,6 +25,7 @@ public class BadmintonServiceImpl implements BadmintonService {
     private Logger logger;
     private LruService lru;
     private SimilarRequirement similarRequirement;
+    private Validator validator;
 
     /**
      * This is a constructor
@@ -33,8 +34,9 @@ public class BadmintonServiceImpl implements BadmintonService {
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public BadmintonServiceImpl(Connection con,LruService lru) throws SQLException, ClassNotFoundException, IOException {
+    public BadmintonServiceImpl(Connection con,LruService lru) {
         logger = Logger.getLogger(Application.class.getName());
+        validator = new Validator();
 
         logger.info("Successfully Badminton Service class start ");
         this.lru = lru;
@@ -49,39 +51,30 @@ public class BadmintonServiceImpl implements BadmintonService {
      * @throws SQLException
      */
     @Override
-    public void insert(Badminton badminton) throws SQLException {
+    public void insert(Badminton badminton) throws InvalidInputException {
+        validator.checkTime(badminton.getTime().getStartTime(),badminton.getTime().getEndTime());
+        validator.checkDate(badminton.getTime().getDay());
+        validator.checkResult(badminton.getResult());
+
+        badmintonDao.insertBadminton(badminton);
+        logger.info("Successfully Badminton enter in database");
+
         /**
-         * if user doesn't give id, then it take automatically
+         * insert hobby into the LRU cache
          */
-        if(badminton.getId() == -1) {
-            badminton.setId(badmintonDao.findHigherKey());
-        }
-
-
-        int check = badmintonDao.insertBadminton(badminton);
-
-        if(check == 1) {
-            logger.info("Successfully Badminton enter in database");
-
-            /**
-             * insert hobby into the LRU cache
-             */
-            lru.put(String.valueOf(badminton.getPerson().getId()) + "_badminton" , new Node(badminton));
-        }else {
-            logger.warning("Some internally error comes.Please try again");
-        }
-
+        lru.put(String.valueOf(badminton.getPersonId()) + "_badminton" , new Node(badminton));
     }
 
     /**
      * This function help you to find the details of person on particular date
-     * @param person    the person object
+     * @param personId    the person id
      * @param date      particular date
      * @throws SQLException
      */
     @Override
-    public void dateDetails(Person person, Date date) throws SQLException {
-        ResultSet resultSet = badmintonDao.dateBadmintonDetails(person,date);
+    public void dateDetails(int personId, Date date) throws InvalidInputException, SQLException {
+        validator.checkDate(date);
+        ResultSet resultSet = badmintonDao.dateBadmintonDetails(personId,date);
 
         logger.info("This is all badminton details on " + date.toString());
 
@@ -94,12 +87,12 @@ public class BadmintonServiceImpl implements BadmintonService {
 
     /**
      * This function help you to find the last tick of person in badminton table
-     * @param person    the person object
+     * @param personId    the person object
      * @throws SQLException
      */
     @Override
-    public void lastTick(Person person) throws SQLException {
-        Node node = lru.get(String.valueOf(person.getId()) + "_badminton");
+    public void lastTick(int personId) throws SQLException {
+        Node node = lru.get(String.valueOf(personId) + "_badminton");
 
         /**
          * if the last tick present in cache
@@ -111,7 +104,7 @@ public class BadmintonServiceImpl implements BadmintonService {
             return;
         }
 
-        ResultSet resultSet = badmintonDao.lastTick(person);
+        ResultSet resultSet = badmintonDao.lastTick(personId);
 
         if(resultSet.next()) {
             logger.info("This   is the last tick of badminton ");
@@ -120,17 +113,16 @@ public class BadmintonServiceImpl implements BadmintonService {
         }else {
             logger.warning("No tick available for you");
         }
-
     }
 
     /**
      * This function help you to find the longest streak in the badminton table
-     * @param person    the person object
+     * @param personId    the person object
      * @throws SQLException
      */
     @Override
-    public void longestStreak(Person person) throws SQLException {
-        ResultSet resultSet = badmintonDao.longestBadmintonStreak(person);
+    public void longestStreak(int personId) throws SQLException {
+        ResultSet resultSet = badmintonDao.longestBadmintonStreak(personId);
 
         /**
          * use to store all dates in sorted order
@@ -147,7 +139,7 @@ public class BadmintonServiceImpl implements BadmintonService {
          */
         int longestStreak = similarRequirement.longestStreak(days);
 
-        logger.info("Longest Badminton Streak for " + person.getName() + " : " + longestStreak );
+        logger.info("Longest Badminton Streak for " + personId + " : " + longestStreak );
 
         if(longestStreak == 1) {
             logger.info(" day");
@@ -158,12 +150,12 @@ public class BadmintonServiceImpl implements BadmintonService {
 
     /**
      * This function help you to find the latest streak
-     * @param person    the person object
+     * @param personId    the person object
      * @throws SQLException
      */
     @Override
-    public void latestStreak(Person person) throws SQLException {
-        ResultSet resultSet = badmintonDao.longestBadmintonStreak(person);
+    public void latestStreak(int personId) throws SQLException {
+        ResultSet resultSet = badmintonDao.longestBadmintonStreak(personId);
 
         /**
          * use to store all dates in sorted order
@@ -178,7 +170,7 @@ public class BadmintonServiceImpl implements BadmintonService {
             days.add(resultSet.getDate("day").toString() );
         }
         int longestStreak = similarRequirement.latestStreak(days);
-        logger.info("Latest Badminton Streak for " + person.getName() + " : " + longestStreak );
+        logger.info("Latest Badminton Streak for " + personId+ " : " + longestStreak );
 
         if(longestStreak == 1) {
             logger.info(" day");

@@ -1,4 +1,4 @@
-package test.java.com.zs.hobbies.dto;
+package com.zs.hobbies.dto;
 
 import com.zs.hobbies.dto.Badminton;
 import com.zs.hobbies.dto.Person;
@@ -41,17 +41,17 @@ class BadmintonTest {
         /**
          * insert person in badminton object
          */
-        badminton = new Badminton(1,person,timing,numPlayers,result);
+        badminton = new Badminton(1,person.getId(),timing,numPlayers,result);
 
         /**
          * check the same object or data present in the badminton object
          */
-        assertEquals(person,badminton.getPerson());
+        assertEquals(person.getId(),badminton.getPersonId());
     }
 
     @Test
     void setWhenAlreadyPersonPresent() throws SQLException {
-        badminton = new Badminton(1,person,timing,numPlayers,result);
+        badminton = new Badminton(1,person.getId(),timing,numPlayers,result);
 
         /**
          * change the badminton person object and check it is successfully change or not
@@ -61,12 +61,12 @@ class BadmintonTest {
         /**
          * change the person object in badminton
          */
-        badminton.setPerson(personChange);
+        badminton.setPersonId(personChange.getId());
 
         /**
          * check the new object present or not in badminton object
          */
-        assertEquals(personChange,badminton.getPerson());
+        assertEquals(personChange.getId(),badminton.getPersonId());
     }
 
     @Test
@@ -76,17 +76,17 @@ class BadmintonTest {
         /**
          * insert person in badminton object
          */
-        badminton = new Badminton(1,person,timing,numPlayers,result);
+        badminton = new Badminton(1,person.getId(),timing,numPlayers,result);
 
         /**
          * check the same object or data present in the badminton object
          */
-        assertEquals(person,badminton.getPerson());
+        assertEquals(person.getId(),badminton.getPersonId());
     }
 
     @Test
     void setWhenAlreadyTimePresent() throws SQLException {
-        badminton = new Badminton(1,person,timing,numPlayers,result);
+        badminton = new Badminton(1,person.getId(),timing,numPlayers,result);
 
         /**
          * change the badminton timing object and check it is successfully change or not

@@ -2,12 +2,12 @@ package com.zs.hobbies.dao;
 
 import com.zs.hobbies.Application;
 import com.zs.hobbies.dto.Badminton;
-import com.zs.hobbies.dto.Person;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.sql.*;
-import java.util.logging.LogManager;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.Date;
 import java.util.logging.Logger;
 
 /**
@@ -16,22 +16,14 @@ import java.util.logging.Logger;
 public class BadmintonDao {
     private Logger logger;
     private Connection con;
-    private PreparedStatement insertBadminton, dateBadmintonDetails, longestBadmintonStreak,
-                            lastTick, findHigherKey;
+    private PreparedStatement insertBadminton, dateBadmintonDetails, longestBadmintonStreak, lastTick;
 
 
-    public BadmintonDao(Connection con) throws SQLException, IOException, ClassNotFoundException {
+    public BadmintonDao(Connection con) {
        logger = Logger.getLogger(Application.class.getName());
-
         logger.info("Successfully Badminton database start ");
 
         this.con = con;
-        insertBadminton = con.prepareStatement("insert into Badminton values (?,?,?,?,?,?,?)");
-        longestBadmintonStreak = con.prepareStatement("select * from Badminton where personid = ? order by day");
-        dateBadmintonDetails = con.prepareStatement("select * from Badminton where personid = ? and day=?");
-        lastTick = con.prepareStatement("select * from Badminton where personid = ? order by badminton_id desc LIMIT 1");
-        findHigherKey = con.prepareStatement("select badminton_id from Badminton order by badminton_id desc LIMIT 1");
-
     }
     /**
      * this function help you to insert the Badminton hobbies in database
@@ -39,65 +31,75 @@ public class BadmintonDao {
      * @return   return status
      * @throws SQLException
      */
-    public int insertBadminton(Badminton badminton) throws SQLException {
-        insertBadminton.setInt(1,badminton.getId());
-        insertBadminton.setInt(2,badminton.getPerson().getId());
-        insertBadminton.setTime(3,badminton.getTime().getStartTime());
-        insertBadminton.setTime(4,badminton.getTime().getEndTime());
-        insertBadminton.setInt(5,badminton.getNumPlayers());
-        insertBadminton.setString(6,badminton.getResult());
-        insertBadminton.setDate(7,badminton.getTime().getDay());
-
-        return insertBadminton.executeUpdate();
+    public void insertBadminton(Badminton badminton) {
+        try {
+            insertBadminton = con.prepareStatement("insert into Badminton values (?,?,?,?,?,?,?)");
+            insertBadminton.setInt(1, badminton.getId());
+            insertBadminton.setInt(2, badminton.getPersonId());
+            insertBadminton.setTime(3, badminton.getTime().getStartTime());
+            insertBadminton.setTime(4, badminton.getTime().getEndTime());
+            insertBadminton.setInt(5, badminton.getNumPlayers());
+            insertBadminton.setString(6, badminton.getResult());
+            insertBadminton.setDate(7, badminton.getTime().getDay());
+            insertBadminton.executeUpdate();
+            logger.info("Successfully insert Badminton in database");
+            insertBadminton.close();
+        }catch (SQLException e){
+            logger.warning(e.getMessage());
+        }
     }
 
     /**
      * this function send all the person badminton details
-     * @param person
+     * @param personId
      * @return
      * @throws SQLException
      */
-    public ResultSet longestBadmintonStreak(Person person) throws SQLException {
-        longestBadmintonStreak.setInt(1,person.getId());
-        return longestBadmintonStreak.executeQuery();
+    public ResultSet longestBadmintonStreak(int personId) {
+        try {
+            longestBadmintonStreak = con.prepareStatement("select * from Badminton where personid = ? order by day");
+
+            longestBadmintonStreak.setInt(1, personId);
+            return longestBadmintonStreak.executeQuery();
+        }catch (SQLException e) {
+            logger.warning(e.getMessage());
+        }
+        return null;
     }
 
     /**
      * this class help you to find the person details on a particular date
-     * @param person    the person object
+     * @param personId    the person id
      * @param date      specific date
      * @return      return the set of data
      * @throws SQLException
      */
-    public ResultSet dateBadmintonDetails(Person person, Date date) throws SQLException {
-        dateBadmintonDetails.setInt(1,person.getId());
-        dateBadmintonDetails.setDate(2,date);
-        return dateBadmintonDetails.executeQuery();
+    public ResultSet dateBadmintonDetails(int personId, Date date) {
+        try{
+            dateBadmintonDetails = con.prepareStatement("select * from Badminton where personid = ? and day=?");
+            dateBadmintonDetails.setInt(1,personId);
+            dateBadmintonDetails.setDate(2,date);
+            return dateBadmintonDetails.executeQuery();
+        }catch (SQLException e) {
+            logger.warning(e.getMessage());
+        }
+        return null;
     }
 
     /**
      * This class help you to fetch the last tick details
-     * @param person    the person object
+     * @param personId    the person id
      * @return      return the last tick details
      * @throws SQLException
      */
-    public ResultSet lastTick(Person person) throws SQLException {
-        lastTick.setInt(1,person.getId());
-        return lastTick.executeQuery();
-    }
-
-    /**
-     * This class help you to find the unique key that will not present in database table
-     * @return      return the unique key of table
-     * @throws SQLException
-     */
-    public int findHigherKey() throws SQLException {
-        ResultSet resultSet = findHigherKey.executeQuery();
-
-        if(resultSet.next()) {
-            return resultSet.getInt(1) + 1;
-        }else {
-            return 1;
+    public ResultSet lastTick(int personId) {
+        try{
+            lastTick = con.prepareStatement("select * from Badminton where personid = ? order by badminton_id desc LIMIT 1");
+            lastTick.setInt(1,personId);
+            return lastTick.executeQuery();
+        }catch (SQLException e) {
+            logger.warning(e.getMessage());
         }
+        return null;
     }
 }

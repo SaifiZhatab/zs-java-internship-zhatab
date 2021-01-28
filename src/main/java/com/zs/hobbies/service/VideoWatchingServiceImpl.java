@@ -3,11 +3,11 @@ package com.zs.hobbies.service;
 import com.zs.hobbies.Application;
 import com.zs.hobbies.cache.LruService;
 import com.zs.hobbies.dao.VideoWatchingDao;
-import com.zs.hobbies.dto.Person;
 import com.zs.hobbies.dto.VideoWatching;
 import com.zs.hobbies.cache.Node;
+import com.zs.hobbies.exception.InvalidInputException;
+import com.zs.hobbies.validator.Validator;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
@@ -15,8 +15,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
+
 
 /**
  * This class give service to Video watching hobby
@@ -26,6 +26,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
     private Logger logger;
     private LruService lru;
     private SimilarRequirement similarRequirement;
+    private Validator validator;
 
     public VideoWatchingServiceImpl(Connection con,LruService lru) throws SQLException, ClassNotFoundException, IOException {
         logger = Logger.getLogger(Application.class.getName());
@@ -35,6 +36,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
 
         this.lru = lru;
         similarRequirement = new SimilarRequirement();
+        validator = new Validator();
     }
 
     /**
@@ -43,37 +45,30 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
      * @throws SQLException
      */
     @Override
-    public void insert(VideoWatching videoWatching) throws SQLException {
+    public void insert(VideoWatching videoWatching) throws InvalidInputException {
         /**
-         * if user doesn't give id, then it take automatically
+         * check the given object data is valid or not
          */
-        if(videoWatching.getId() == -1) {
-            videoWatching.setId(videoWatchingDao.findHigherKey());
-        }
+        validator.checkTime(videoWatching.getTime().getStartTime(),videoWatching.getTime().getEndTime());
+        validator.checkDate(videoWatching.getTime().getDay());
 
-        int check = videoWatchingDao.insertVideo(videoWatching);
-
-        if(check == 1) {
-            logger.info("Successfully Chess enter in database");
-
-            /**
-             * insert hobby into the LRU cache
-             */
-            lru.put(String.valueOf(videoWatching.getPerson().getId()) + "_videoWatching", new Node(videoWatching));
-        }else {
-            logger.warning("Some internally error comes.Please try again");
-        }
+        videoWatchingDao.insertVideo(videoWatching);
     }
 
     /**
      * This function help you to find the details of person on particular date
-     * @param person    the person object
+     * @param personId    the person id
      * @param date      particular date
      * @throws SQLException
      */
     @Override
-    public void dateDetails(Person person, Date date) throws SQLException {
-        ResultSet resultSet = videoWatchingDao.dateVideoWatchingDetails(person,date);
+    public void dateDetails(int personId, Date date) throws SQLException {
+        /**
+         * check date is valid or not
+         */
+        validator.checkDate(date);
+
+        ResultSet resultSet = videoWatchingDao.dateVideoWatchingDetails(personId,date);
 
         logger.info("This is all VideoWatching details on " + date.toString());
         logger.info("startTime   :  EndTime   : Title  ");
@@ -85,12 +80,12 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
 
     /**
      * This function help you to find the last tick of person in video watching table
-     * @param person    the person object
+     * @param personId    the person id
      * @throws SQLException
      */
     @Override
-    public void lastTick(Person person) throws SQLException {
-        Node node = lru.get(String.valueOf(person.getId())  + "_videoWatching");
+    public void lastTick(int personId) throws SQLException {
+        Node node = lru.get(String.valueOf(personId)  + "_videoWatching");
 
         /**
          * when videoWatching present in lru cache
@@ -102,7 +97,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
             return;
         }
 
-        ResultSet resultSet = videoWatchingDao.lastTick(person);
+        ResultSet resultSet = videoWatchingDao.lastTick(personId);
 
         if(resultSet.next()) {
             logger.info("This is the last tick of Video Watching ");
@@ -114,12 +109,12 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
 
     /**
      * This function help you to find the longest streak in the video watching table
-     * @param person    the person object
+     * @param personId    the person id
      * @throws SQLException
      */
     @Override
-    public void longestStreak(Person person) throws SQLException {
-        ResultSet resultSet = videoWatchingDao.longestVideoWatchingStreak(person);
+    public void longestStreak(int personId) throws SQLException {
+        ResultSet resultSet = videoWatchingDao.longestVideoWatchingStreak(personId);
 
         /**
          * use to store all dates in sorted order
@@ -134,7 +129,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
             days.add(resultSet.getDate("day").toString() );
         }
         int longestStreak = similarRequirement.longestStreak(days);
-        logger.info("Longest Video Streak for " + person.getName() + " : " + longestStreak);
+        logger.info("Longest Video Streak for " + personId + " : " + longestStreak);
 
         if(longestStreak == 1) {
             logger.info(" day");
@@ -145,12 +140,12 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
 
     /**
      * This function help you to find the latest streak
-     * @param person    the person object
+     * @param personId    the person id
      * @throws SQLException
      */
     @Override
-    public void latestStreak(Person person) throws SQLException {
-        ResultSet resultSet = videoWatchingDao.longestVideoWatchingStreak(person);
+    public void latestStreak(int personId) throws SQLException {
+        ResultSet resultSet = videoWatchingDao.longestVideoWatchingStreak(personId);
 
         /**
          * use to store all dates in sorted order
@@ -166,7 +161,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         }
 
         int longestStreak = similarRequirement.latestStreak(days);
-        logger.info("Latest VideoWatching Streak for " + person.getName() + " : " + longestStreak );
+        logger.info("Latest VideoWatching Streak for " + personId + " : " + longestStreak );
 
         if(longestStreak == 1) {
             logger.info(" day");

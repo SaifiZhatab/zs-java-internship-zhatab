@@ -1,4 +1,4 @@
-package test.java.com.zs.hobbies.service;
+package com.zs.hobbies.service;
 
 import com.zs.hobbies.dao.BadmintonDao;
 import com.zs.hobbies.util.DataBase;
@@ -29,7 +29,7 @@ class BadmintonServiceImplTest {
     void setUp() throws SQLException, IOException, ClassNotFoundException {
         db = new DataBase();
         badmintonDao = new BadmintonDao(db.getCon());
-        badminton = new Badminton(5,person,time, 8,"win");
+        badminton = new Badminton(5,person.getId(),time, 8,"win");
     }
 
     @Test

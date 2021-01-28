@@ -10,5 +10,10 @@ import java.sql.SQLException;
  * this class control all the functionality
  */
 public interface BadmintonService extends HobbyService {
+    /**
+     * This function help you to insert the badminton object in database
+     * @param badminton the badminton object
+     * @throws SQLException
+     */
     void insert(Badminton badminton) throws SQLException;
 }

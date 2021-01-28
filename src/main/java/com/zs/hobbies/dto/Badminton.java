@@ -6,7 +6,7 @@ import java.sql.SQLException;
  * this class provide all badminton facility
  */
 public class Badminton extends Hobby{
-    private Person person;
+    private int personId;
     private Timing time;
     private int numPlayers ;
     private String result;
@@ -14,42 +14,26 @@ public class Badminton extends Hobby{
     /**
      * if the user give id by itself
      * @param id    the id
-     * @param person the person object
+     * @param personId the person id
      * @param time     the timing object
      * @param numPlayers  number of player
      * @param result  the result
      * @throws SQLException
      */
-    public Badminton(int id, Person person, Timing time, int numPlayers, String result) throws SQLException {
+    public Badminton(int id, int personId, Timing time, int numPlayers, String result) throws SQLException {
         super(id);
-        this.person = person;
+        this.personId = personId;
         this.time = time;
         this.numPlayers = numPlayers;
         this.result = result;
     }
 
-    /**
-     * Tif the user doesn't give id, then it take automatically
-     * @param person the person object
-     * @param time     the timing object
-     * @param numPlayers  number of player
-     * @param result  the result
-     * @throws SQLException
-     */
-    public Badminton(Person person, Timing time, int numPlayers, String result) throws SQLException {
-        super(-1);
-        this.person = person;
-        this.time = time;
-        this.numPlayers = numPlayers;
-        this.result = result;
+    public int getPersonId() {
+        return personId;
     }
 
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
+    public void setPersonId(int personId) {
+        this.personId = personId;
     }
 
     public Timing getTime() {

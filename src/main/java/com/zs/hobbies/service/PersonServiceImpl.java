@@ -4,6 +4,8 @@ import com.zs.hobbies.Application;
 import com.zs.hobbies.cache.LruService;
 import com.zs.hobbies.dao.PersonDao;
 import com.zs.hobbies.dto.Person;
+import com.zs.hobbies.exception.InvalidInputException;
+import com.zs.hobbies.validator.Validator;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,6 +21,7 @@ public class PersonServiceImpl implements PersonService {
     private PersonDao personDao;
     private LruService lru;
     private Logger logger;
+    private Validator validator;
 
     public PersonServiceImpl(Connection con,LruService lru) throws SQLException, ClassNotFoundException, IOException {
         logger = Logger.getLogger(Application.class.getName());
@@ -26,30 +29,25 @@ public class PersonServiceImpl implements PersonService {
         logger.info("Successfully Person Service start ");
 
         this.lru = lru;
+        validator = new Validator();
         personDao =  new PersonDao(con);
     }
 
     /**
      * This function help you to insert the person in database
      * @param person    the person object
-     * @throws SQLException
+     * @throws InvalidInputException
      */
     @Override
-    public void insert(Person person) throws SQLException {
+    public void insert(Person person) throws InvalidInputException {
         /**
-         * if user doesn't give id, then it take automatically
+         * check validity
          */
-        if(person.getId() == -1) {
-            person.setId(personDao.findHigherKey());
-        }
+        validator.checkName(person.getName());
+        validator.checkMobile(person.getMobile());
 
-        int check = personDao.insertPerson(person);
+        personDao.insertPerson(person);
 
-        if(check == 1) {
-            logger.info("Successfully person enter in database");
-        }else {
-            logger.warning("Some internally error comes.Please try again");
-        }
     }
 
 }

@@ -26,7 +26,7 @@ public class Node {
      * @param badminton badminton object which you want to insert in LRU cache
      */
     public Node(Badminton badminton) {
-        key = String.valueOf(badminton.getPerson().getId()) + "_badminton";
+        key = String.valueOf(badminton.getPersonId()) + "_badminton";
         this.badminton = badminton;
     }
 
@@ -35,7 +35,7 @@ public class Node {
      * @param travelling travelling object which you want to insert in LRU cache
      */
     public Node(Travelling travelling) {
-        key = String.valueOf(travelling.getPerson().getId()) + "_travelling";
+        key = String.valueOf(travelling.getPersonId()) + "_travelling";
         this.travelling = travelling;
     }
 
@@ -44,7 +44,7 @@ public class Node {
      * @param chess chess object which you want to insert in LRU cache
      */
     public Node(Chess chess) {
-        key = String.valueOf(chess.getPerson().getId()) + "_chess";
+        key = String.valueOf(chess.getPersonId()) + "_chess";
         this.chess = chess;
     }
 
@@ -53,7 +53,7 @@ public class Node {
      * @param videoWatching videoWatching object which you want to insert in LRU cache
      */
     public Node(VideoWatching videoWatching) {
-        key = String.valueOf(videoWatching.getPerson().getId()) + "_videoWatching";
+        key = String.valueOf(videoWatching.getPersonId()) + "_videoWatching";
         this.videoWatching = videoWatching;
     }
 

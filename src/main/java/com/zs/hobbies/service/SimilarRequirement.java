@@ -1,5 +1,7 @@
 package com.zs.hobbies.service;
 
+import com.zs.hobbies.exception.InvalidInputException;
+
 import java.util.*;
 
 /**
@@ -14,7 +16,7 @@ public class SimilarRequirement {
      * @param dates     Sorted Set of date data
      * @return      return the integer value
      */
-    public int longestStreak(SortedSet<String> dates){
+    public int longestStreak(SortedSet<String> dates) {
         int previous_day = -1, previous_month = -1, previous_year = -1;
         int max=0, count=0 ;
 

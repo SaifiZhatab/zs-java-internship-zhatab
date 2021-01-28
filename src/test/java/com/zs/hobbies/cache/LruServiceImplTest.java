@@ -1,10 +1,6 @@
-package test.java.com.zs.hobbies.cache;
+package com.zs.hobbies.cache;
 
-import com.zs.hobbies.cache.LruService;
-import com.zs.hobbies.cache.LruServiceImpl;
-import com.zs.hobbies.cache.Node;
 import com.zs.hobbies.dto.*;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,10 +32,10 @@ class LruServiceImplTest {
         person = new Person(13,"Rihan","9311851147","Dadri");
         time = new Timing(Time.valueOf("09:09:39"),Time.valueOf("10:49:39"), Date.valueOf("2021-01-25"));
 
-        travelling = new Travelling(16,person,time,"delhi","mumbi",5.6f);
-        chess  = new Chess(17,person,time,3,"win");
-        badminton = new Badminton(20,person,time, 8,"win");
-        videoWatching = new VideoWatching(14,person,time,"Lucifer morningstar");
+        travelling = new Travelling(16,12,time,"delhi","mumbi",5.6f);
+        chess  = new Chess(17,12,time,3,"win");
+        badminton = new Badminton(20,11,time, 8,"win");
+        videoWatching = new VideoWatching(14,13,time,"Lucifer morningstar");
     }
 
     /**
@@ -47,18 +43,18 @@ class LruServiceImplTest {
      */
     @Test
     void putWhenKeyIsAlreadyPresent() {
-        lru.put(String.valueOf(chess.getPerson().getId()) + "_chess" , new Node(chess));
+        lru.put(String.valueOf(chess.getPersonId()) + "_chess" , new Node(chess));
 
         /**
          * again insert same key in LRU
          */
         chess.setId(155);
-        lru.put(String.valueOf(chess.getPerson().getId()) + "_chess" , new Node(chess));
+        lru.put(String.valueOf(chess.getPersonId()) + "_chess" , new Node(chess));
 
         /**
          * check the chess dto id is 155
          */
-        assertEquals(155,lru.get(String.valueOf(chess.getPerson().getId()) + "_chess").getChess().getId());
+        assertEquals(155,lru.get(String.valueOf(chess.getPersonId()) + "_chess").getChess().getId());
 
     }
 
@@ -70,23 +66,23 @@ class LruServiceImplTest {
         /**
          * first try to full the LRU cache after that check the object is insert successfully or not in LRU cache
          */
-        lru.put(String.valueOf(badminton.getPerson().getId()) + "_badminton" , new Node(badminton));
-        lru.put(String.valueOf(chess.getPerson().getId()) + "_chess" , new Node(chess));
-        lru.put(String.valueOf(videoWatching.getPerson().getId()) + "_videoWatching" , new Node(videoWatching));
+        lru.put(String.valueOf(badminton.getPersonId()) + "_badminton" , new Node(badminton));
+        lru.put(String.valueOf(chess.getPersonId()) + "_chess" , new Node(chess));
+        lru.put(String.valueOf(videoWatching.getPersonId()) + "_videoWatching" , new Node(videoWatching));
 
 
         /**
          * try to insert in cache when cache is full
          */
-        lru.put(String.valueOf(travelling.getPerson().getId()) + "_travelling" , new Node(travelling));
+        lru.put(String.valueOf(travelling.getPersonId()) + "_travelling" , new Node(travelling));
 
-        assertEquals(String.valueOf(travelling.getPerson().getId()) + "_travelling",
-                lru.get(String.valueOf(travelling.getPerson().getId()) + "_travelling").getKey());
+        assertEquals(String.valueOf(travelling.getPersonId()) + "_travelling",
+                lru.get(String.valueOf(travelling.getPersonId()) + "_travelling").getKey());
 
         /**
          * least recent used badminton object will delete after, then check this object will not available in lru
          */
-        assertEquals(null , lru.get(String.valueOf(badminton.getPerson().getId()) + "_badminton"));
+        assertEquals(null , lru.get(String.valueOf(badminton.getPersonId()) + "_badminton"));
     }
 
     /**
@@ -94,10 +90,10 @@ class LruServiceImplTest {
      */
     @Test
     void putWhenSizeIsNotFull(){
-        lru.put(String.valueOf(travelling.getPerson().getId()) + "_travelling" , new Node(travelling));
+        lru.put(String.valueOf(travelling.getPersonId()) + "_travelling" , new Node(travelling));
 
-        assertEquals(String.valueOf(travelling.getPerson().getId()) + "_travelling",
-                lru.get(String.valueOf(travelling.getPerson().getId()) + "_travelling").getKey());
+        assertEquals(String.valueOf(travelling.getPersonId()) + "_travelling",
+                lru.get(String.valueOf(travelling.getPersonId()) + "_travelling").getKey());
 
     }
 
@@ -106,8 +102,15 @@ class LruServiceImplTest {
      */
     @Test
     void getWhenKeyPresent() {
-        lru.put(String.valueOf(chess.getPerson().getId()) + "_chess" , new Node(chess));
-        assertEquals(String.valueOf(chess.getPerson().getId()) + "_chess" , lru.get(String.valueOf(chess.getPerson().getId()) + "_chess").getKey());
+        /**
+         * first insert the object in LRU cache
+         */
+        lru.put(String.valueOf(chess.getPersonId()) + "_chess" , new Node(chess));
+
+        /**
+         * check the object is successfully get or not
+         */
+        assertEquals(String.valueOf(chess.getPersonId()) + "_chess" , lru.get(String.valueOf(chess.getPersonId()) + "_chess").getKey());
     }
 
     /**
@@ -115,7 +118,7 @@ class LruServiceImplTest {
      */
     @Test
     void getWhenKeyNotPresent() {
-        assertEquals(null , lru.get(String.valueOf(chess.getPerson().getId()) + "_chess"));
+        assertEquals(null , lru.get(String.valueOf(chess.getPersonId()) + "_chess"));
     }
 
     /**
@@ -139,7 +142,7 @@ class LruServiceImplTest {
         /**
          * first insert the object in LRU cache
          */
-        lru.put(String.valueOf(chess.getPerson().getId()) + "_chess" , chessObject);
+        lru.put(String.valueOf(chess.getPersonId()) + "_chess" , chessObject);
 
         /**
          * delete the object in LRU cache

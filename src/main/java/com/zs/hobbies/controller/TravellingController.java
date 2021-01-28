@@ -12,6 +12,7 @@ import com.zs.hobbies.service.TravellingServiceImpl;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Scanner;
@@ -25,67 +26,61 @@ import java.util.logging.Logger;
 public class TravellingController {
     private Person person;
     private TravellingService travellingService;
-    private TimingController timingController;
     private Logger logger;
 
     Scanner in = new Scanner(System.in);
 
     public TravellingController(Connection con, LruService lru) throws SQLException, IOException, ClassNotFoundException {
         travellingService = new TravellingServiceImpl(con,lru);
-        timingController = new TimingController();
 
        logger = Logger.getLogger(Application.class.getName());
-    }
-
-    /**
-     * This function check the given position is valid or not
-     * return true if the length of the position string is greater than 0 and less than 500
-     * else return false
-     * @param position  the position string
-     * @return  true/false
-     */
-    boolean checkPosition(String position) {
-        if(position.length() >0 && position.length() < 500) {
-            return true;
-        }else {
-            return false;
-        }
     }
 
     /**
      * This funciton help you to insert the travelling object in database
      * @throws ParseException
      * @throws SQLException
+     * @param travelling
      */
-    public void insert() throws ParseException {
-        Timing timing;
-        Travelling travelling;
-
-        timing = timingController.getTime();
-
-        String startPoint,endPoint;
-        float distance;
-
-        logger.info("Enter the starting position ");
-        startPoint = in.next();
-
-        if(!checkPosition(startPoint)) {
-            throw new InvalidInputException(400,"wrong start position given by user");
-        }
-
-        logger.info("Enter the end position ");
-        endPoint = in.next();
-
-        if(!checkPosition(endPoint)) {
-            throw new InvalidInputException(400,"wrong start position given by user");
-        }
-
-        logger.info("Enter the total travelling distance ");
-        distance = in.nextFloat();
-
-        if(distance <= 0.0f) {
-            throw new InvalidInputException(400,"Wrong distance given by user ");
-        }
-
+    public void insert(Travelling travelling) throws SQLException {
+        travellingService.insert(travelling);
     }
+
+    /**
+     * This function help you to find the longest streak in the chess
+     * @param personId  the person ID
+     * @throws SQLException
+     */
+    public void longestStreak(int personId) throws SQLException {
+        travellingService.longestStreak(personId);
+    }
+
+    /**
+     * This function help you to find the latest streak in the chess
+     * @param personId  the person ID
+     * @throws SQLException
+     */
+    public void latestStreak(int personId) throws SQLException {
+        travellingService.latestStreak(personId);
+    }
+
+    /**
+     * This function help you to find the last streak in the chess
+     * @param personId  the person ID
+     * @throws SQLException
+     */
+    public void lastTick(int personId) throws SQLException {
+        travellingService.lastTick(personId);
+    }
+
+    /**
+     * This function help you to find the details according to details in the travelling
+     * @param personId the person id
+     * @param date the date
+     * @throws SQLException
+     */
+    public void searchByDate(int personId, Date date) throws SQLException {
+        travellingService.dateDetails(personId,date);
+    }
+
 }

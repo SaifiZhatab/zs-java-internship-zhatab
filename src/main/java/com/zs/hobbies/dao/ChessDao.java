@@ -2,32 +2,25 @@ package com.zs.hobbies.dao;
 
 import com.zs.hobbies.Application;
 import com.zs.hobbies.dto.Chess;
-import com.zs.hobbies.dto.Person;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.*;
-import java.util.logging.LogManager;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.Date;
 import java.util.logging.Logger;
 
 public class ChessDao {
     private Logger logger;
     private Connection con;
-    private PreparedStatement insertChess, dateChessDetails, lastTick,longestChessStreak, findHigherKey;
+    private PreparedStatement insertChess, dateChessDetails, lastTick,longestChessStreak;
 
-    public ChessDao(Connection con) throws SQLException, IOException {
-         logger = Logger.getLogger(Application.class.getName());
-
+    public ChessDao(Connection con) {
+        logger = Logger.getLogger(Application.class.getName());
         logger.info("Successfully Chess database start ");
 
-
         this.con = con;
-
-        insertChess = con.prepareStatement("insert into Chess values (?,?,?,?,?,?,?)");
-        dateChessDetails = con.prepareStatement("select * from Chess where personid = ? and day = ?");
-        lastTick = con.prepareStatement("select * from Chess where personid = ? order by chess_id desc LIMIT 1");
-        longestChessStreak = con.prepareStatement("select * from Chess where personid = ? order by day");
-        findHigherKey = con.prepareStatement("select chess_id from Chess order by chess_id desc limit 1");
     }
 
     /**
@@ -36,68 +29,75 @@ public class ChessDao {
      * @return return status
      * @throws SQLException
      */
-    public int insertChess(Chess chess) throws SQLException {
-        insertChess.setInt(1,chess.getId());
-        insertChess.setInt(2,chess.getPerson().getId());
-        insertChess.setTime(3,chess.getTime().getStartTime());
-        insertChess.setTime(4,chess.getTime().getEndTime());
-        insertChess.setInt(5,chess.getNumMoves());
-        insertChess.setString(6,chess.getResult());
-        insertChess.setDate(7,chess.getTime().getDay());
-
-        return insertChess.executeUpdate();
+    public void insertChess(Chess chess) {
+       try{
+            insertChess = con.prepareStatement("insert into Chess values (?,?,?,?,?,?,?)");
+            insertChess.setInt(1,chess.getId());
+            insertChess.setInt(2,chess.getPersonId());
+            insertChess.setTime(3,chess.getTime().getStartTime());
+            insertChess.setTime(4,chess.getTime().getEndTime());
+            insertChess.setInt(5,chess.getNumMoves());
+            insertChess.setString(6,chess.getResult());
+            insertChess.setDate(7,chess.getTime().getDay());
+            insertChess.executeUpdate();
+            logger.info("Successfully insert chess in database");
+       }catch (SQLException e) {
+           logger.warning(e.getMessage());
+       }
     }
 
     /**
      * this class help you to find the chess details of person at particular date
-     * @param person    the person object
+     * @param personId    the person object
      * @param date      date
      * @return      return the details fetch by database
      * @throws SQLException
      */
-    public ResultSet dateChessDetails(Person person, Date date) throws SQLException {
-        dateChessDetails.setInt(1,person.getId());
-        dateChessDetails.setDate(2,date);
+    public ResultSet dateChessDetails(int personId, Date date) {
+        try{
+            dateChessDetails = con.prepareStatement("select * from Chess where personid = ? and day = ?");
+            dateChessDetails.setInt(1,personId);
+            dateChessDetails.setDate(2,date);
 
-        return dateChessDetails.executeQuery();
+            return dateChessDetails.executeQuery();
+        }catch (SQLException e) {
+            logger.warning(e.getMessage());
+        }
+        return null;
     }
 
 
     /**
      * This function help you to find the last tick of chess
-     * @param person    the person object
+     * @param personId    the person object
      * @return      return the last tick by person
      * @throws SQLException
      */
-    public ResultSet lastTick(Person person) throws SQLException {
-        lastTick.setInt(1,person.getId());
-        return lastTick.executeQuery();
+    public ResultSet lastTick(int personId) {
+        try{
+            lastTick = con.prepareStatement("select * from Chess where personid = ? order by chess_id desc LIMIT 1");
+            lastTick.setInt(1,personId);
+            return lastTick.executeQuery();
+        }catch (SQLException e) {
+            logger.warning(e.getMessage());
+        }
+        return null;
     }
 
     /**
      * This function help you to find the longest streak of person
-     * @param person    the person object
+     * @param personId    the person object
      * @return      return the all details of person available in database
      * @throws SQLException
      */
-    public ResultSet longestChessStreak(Person person) throws SQLException {
-        longestChessStreak.setInt(1,person.getId());
-        return longestChessStreak.executeQuery();
-
-    }
-
-    /**
-     * This class help you to find the unique key that will not present in database table
-     * @return      return the unique key of table
-     * @throws SQLException
-     */
-    public int findHigherKey() throws SQLException {
-        ResultSet resultSet = findHigherKey.executeQuery();
-
-        if(resultSet.next()) {
-            return resultSet.getInt(1) + 1;
-        }else {
-            return 1;
+    public ResultSet longestChessStreak(int personId) {
+        try{
+            longestChessStreak = con.prepareStatement("select * from Chess where personid = ? order by day");
+            longestChessStreak.setInt(1,personId);
+            return longestChessStreak.executeQuery();
+        }catch (SQLException e) {
+            logger.warning(e.getMessage());
         }
+        return null;
     }
 }

@@ -1,4 +1,4 @@
-package test.java.com.zs.hobbies.dto;
+package com.zs.hobbies.dto;
 
 import com.zs.hobbies.dto.Timing;
 import org.junit.jupiter.api.BeforeAll;

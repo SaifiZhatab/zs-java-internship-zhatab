@@ -4,18 +4,15 @@ import com.zs.hobbies.Application;
 import com.zs.hobbies.cache.LruService;
 import com.zs.hobbies.dto.Badminton;
 import com.zs.hobbies.dto.Person;
-import com.zs.hobbies.dto.Timing;
-import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.service.BadmintonService;
 import com.zs.hobbies.service.BadmintonServiceImpl;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.sql.Date;
 import java.util.Scanner;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
@@ -24,7 +21,6 @@ import java.util.logging.Logger;
  */
 public class BadmintonController {
     private Person person;
-    private TimingController timingController;
     private Logger logger;
 
 
@@ -33,46 +29,7 @@ public class BadmintonController {
 
     public BadmintonController(Connection con,LruService lru) throws SQLException, IOException, ClassNotFoundException {
         badmintonService = new BadmintonServiceImpl(con,lru);
-        timingController = new TimingController();
         logger = Logger.getLogger(Application.class.getName());
-    }
-
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
-    }
-
-    /**
-     * This function check the number of player is valid or not
-     * if the number of player greater than 0, then return true else return false
-     * @param numOfPlayer   the number of player
-     * @return  true / false
-     */
-    boolean checkNumOfPlayer(int numOfPlayer){
-        if(numOfPlayer > 0) {
-            return true;
-        }else {
-            return false;
-        }
-    }
-
-    /**
-     * This function check the result is valid or not
-     * the only valid string is win/draw/losse
-     * if the string is either win,draw or losse, then it return true else return false
-     * @param result  the result string
-     * @return true/false
-     */
-    boolean checkResult(String result) {
-        if(result.compareToIgnoreCase("win")==0 || result.compareToIgnoreCase("draw")==0
-                || result.compareToIgnoreCase("loose")==0 ) {
-            return true;
-        }else {
-            return false;
-        }
     }
 
     /**
@@ -80,34 +37,44 @@ public class BadmintonController {
      * @throws ParseException
      * @throws SQLException
      */
-    public void insert() throws ParseException, SQLException {
-        Badminton badminton;
-        Timing timing;
-        int numOfPlayer;
-        String result;
-
-        timing = timingController.getTime();
-
-        logger.info("Enter number of player in badminton : ");
-        numOfPlayer = in.nextInt();
-
-        if(!checkNumOfPlayer(numOfPlayer)) {
-            throw new InvalidInputException(400,"Wrong player details given by user");
-        }
-
-        logger.info("Enter the result of game ");
-        result = in.next();
-
-        if(!checkResult(result)) {
-            throw new InvalidInputException(400,"Wrong result status given by user");
-        }
-
-        badminton = new Badminton(person,timing,numOfPlayer,result);
-
+    public void insert(Badminton badminton) throws ParseException, SQLException {
         badmintonService.insert(badminton);
     }
-    public void insert(Person person) throws ParseException, SQLException {
-        insert();
-        this.person = person;
+
+    /**
+     * This function help you to find the longest streak in the badminton
+     * @param personId  the person ID
+     * @throws SQLException
+     */
+    public void longestStreak(int personId) throws SQLException {
+        badmintonService.longestStreak(personId);
+    }
+
+    /**
+     * This function help you to find the latest streak in the badminton
+     * @param personId  the person ID
+     * @throws SQLException
+     */
+    public void latestStreak(int personId) throws SQLException {
+        badmintonService.latestStreak(personId);
+    }
+
+    /**
+     * This function help you to find the last streak in the badminton
+     * @param personId  the person ID
+     * @throws SQLException
+     */
+    public void lastTick(int personId) throws SQLException {
+        badmintonService.lastTick(personId);
+    }
+
+    /**
+     * This function help you to find the details according to details in the badminton
+     * @param personId the person id
+     * @param date the date
+     * @throws SQLException
+     */
+    public void searchByDate(int personId, Date date) throws SQLException {
+        badmintonService.dateDetails(personId,date);
     }
 }

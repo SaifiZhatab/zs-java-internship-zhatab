@@ -1,4 +1,4 @@
-package test.java.com.zs.hobbies.dto;
+package com.zs.hobbies.dto;
 
 import com.zs.hobbies.dto.Person;
 import org.junit.jupiter.api.BeforeEach;

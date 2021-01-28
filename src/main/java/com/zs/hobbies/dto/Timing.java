@@ -1,17 +1,14 @@
 package com.zs.hobbies.dto;
 
-import java.sql.Date;
 import java.sql.Time;
+import java.sql.Date;
 
-/**
- * this class provide all time facility
- */
 public class Timing {
     private Time startTime;
     private Time endTime;
     private Date day;
 
-    public Timing(Time startTime, Time endTime,Date day) {
+    public Timing(Time startTime, Time endTime, Date day) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.day = day;

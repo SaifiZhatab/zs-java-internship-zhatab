@@ -1,7 +1,5 @@
 package com.zs.hobbies.dto;
 
-import java.sql.SQLException;
-
 /**
  * this class provide all person facility
  */
@@ -25,18 +23,6 @@ public class Person {
         this.address = address;
     }
 
-    /**
-     * if the user doesn't give id, then it take automatically
-     * @param name  name of user
-     * @param mobile mobile number string
-     * @param address address of user
-     */
-    public Person(String name, String mobile, String address) throws SQLException {
-        this.id = -1;
-        this.name = name;
-        this.mobile = mobile;
-        this.address = address;
-    }
 
     public int getId() {
         return id;

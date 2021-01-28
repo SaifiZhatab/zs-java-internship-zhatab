@@ -1,8 +1,5 @@
-package test.java.com.zs.hobbies.dto;
+package com.zs.hobbies.dto;
 
-import com.zs.hobbies.dto.Chess;
-import com.zs.hobbies.dto.Person;
-import com.zs.hobbies.dto.Timing;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,12 +25,12 @@ class ChessTest {
         timing = new Timing(Time.valueOf("10:59:59"),Time.valueOf("12:59:59"), Date.valueOf("2015-04-05"));
         numMoves = 5;
         result = "Draw";
-        chess = new Chess(2,person,timing,numMoves,result);
+        chess = new Chess(2,person.getId(),timing,numMoves,result);
     }
 
     @Test
     void getPerson() {
-        assertEquals(person,chess.getPerson());
+        assertEquals(person.getId(),chess.getPersonId());
     }
 
     @Test

@@ -7,16 +7,15 @@ public class InvalidInputException extends RuntimeException{
     int errorCode;
     String errorDescription;
 
+    public InvalidInputException(String message) {
+        super(message);
+    }
+
     public InvalidInputException(int errorCode, String errorDescription) {
+        this(String.valueOf(errorCode + " " + errorDescription));
+
         this.errorCode = errorCode;
         this.errorDescription = errorDescription;
     }
 
-    /**
-     * This function override the Exception getMessage() method
-     * @return the string message
-     */
-    public String getMessage(){
-        return  (errorCode + " " + errorDescription);
-    }
 }

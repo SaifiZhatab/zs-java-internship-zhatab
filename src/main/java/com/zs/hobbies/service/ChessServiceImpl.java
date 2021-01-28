@@ -4,17 +4,17 @@ import com.zs.hobbies.Application;
 import com.zs.hobbies.cache.LruService;
 import com.zs.hobbies.dao.ChessDao;
 import com.zs.hobbies.dto.Chess;
-import com.zs.hobbies.dto.Person;
 import com.zs.hobbies.cache.Node;
+import com.zs.hobbies.exception.InvalidInputException;
+import com.zs.hobbies.validator.Validator;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
-import java.util.logging.LogManager;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 /**
@@ -25,13 +25,14 @@ public class ChessServiceImpl implements ChessService {
     private Logger logger;
     private LruService lru;
     private SimilarRequirement similarRequirement;
+    private Validator validator;
     /**
      * This is a constructor
      * @throws SQLException
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public ChessServiceImpl(Connection con,LruService lru) throws SQLException, ClassNotFoundException, IOException {
+    public ChessServiceImpl(Connection con,LruService lru) {
         logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully Chess service start ");
@@ -39,45 +40,38 @@ public class ChessServiceImpl implements ChessService {
         this.lru = lru;
         chessDao = new ChessDao(con);
         similarRequirement = new SimilarRequirement();
+        validator = new Validator();
     }
 
     /**
      * This function help you to insert Chess details into Chess database table
      * @param chess the chess object
-     * @throws SQLException
+     * @throws InvalidInputException custom exception
      */
     @Override
-    public void insert(Chess chess) throws SQLException {
+    public void insert(Chess chess) throws InvalidInputException {
         /**
-         * if user doesn't give id, then it take automatically
+         * check the given data is valid or not
          */
-        if(chess.getId() == -1) {
-            chess.setId(chessDao.findHigherKey());
-        }
+        validator.checkTime(chess.getTime().getStartTime(),chess.getTime().getEndTime());
+        validator.checkDate(chess.getTime().getDay());
+        validator.checkResult(chess.getResult());
+        validator.checkNumOfMove(chess.getNumMoves());
 
-        int check = chessDao.insertChess(chess);
-
-        if(check == 1) {
-            logger.info("Successfully Chess enter in database");
-
-            /**
-             * insert hobby into the LRU cache
-             */
-            lru.put(String.valueOf(chess.getPerson().getId()) + "_chess",new Node(chess));
-        }else {
-            logger.warning("Some internally error comes.Please try again");
-        }
+        chessDao.insertChess(chess);
     }
 
     /**
      * This function help you to fetch the data on the basis of date
-     * @param person    the person object
+     * @param personId    the person id
      * @param date      date
-     * @throws SQLException
+     * @throws InvalidInputException
      */
     @Override
-    public void dateDetails(Person person, Date date) throws SQLException {
-        ResultSet resultSet = chessDao.dateChessDetails(person,date);
+    public void dateDetails(int personId, Date date) throws InvalidInputException, SQLException {
+        validator.checkDate(date);
+
+        ResultSet resultSet = chessDao.dateChessDetails(personId,date);
 
         logger.info("This is all Chess details on " + date.toString());
         logger.info("startTime   :  EndTime   : Number of Moves   :   result");
@@ -89,12 +83,12 @@ public class ChessServiceImpl implements ChessService {
 
     /**
      * This function help you to find the last tick of Chess
-     * @param person    the person object
+     * @param personId    the person object
      * @throws SQLException
      */
     @Override
-    public void lastTick(Person person) throws SQLException {
-        Node node = lru.get(String.valueOf(person.getId())  + "_chess");
+    public void lastTick(int personId) throws SQLException {
+        Node node = lru.get(String.valueOf(personId)  + "_chess");
 
         /**
          * when last tick present in lru cache
@@ -106,7 +100,7 @@ public class ChessServiceImpl implements ChessService {
             return ;
         }
 
-        ResultSet resultSet = chessDao.lastTick(person);
+        ResultSet resultSet = chessDao.lastTick(personId);
 
         if(resultSet.next()) {
             logger.info("This is the last tick of Chess  ");
@@ -118,12 +112,12 @@ public class ChessServiceImpl implements ChessService {
 
     /**
      * This function help you to find the longest streak in chess
-     * @param person    the peron object
+     * @param personId    the peron id
      * @throws SQLException
      */
     @Override
-    public void longestStreak(Person person) throws SQLException {
-        ResultSet resultSet = chessDao.longestChessStreak(person);
+    public void longestStreak(int personId) throws SQLException {
+        ResultSet resultSet = chessDao.longestChessStreak(personId);
 
         /**
          * use to store dates in sorted order
@@ -138,7 +132,7 @@ public class ChessServiceImpl implements ChessService {
             days.add(resultSet.getDate("day").toString() );
         }
         int longestStreak = similarRequirement.longestStreak(days);
-        logger.info("Longest Chess Streak for " + person.getName() + " : " + longestStreak);
+        logger.info("Longest Chess Streak for " + personId + " : " + longestStreak);
 
         if(longestStreak == 1) {
             logger.info(" day");
@@ -149,12 +143,12 @@ public class ChessServiceImpl implements ChessService {
 
     /**
      * This function help you to find latest streak in chess
-     * @param person    the person object
+     * @param personId    the person id
      * @throws SQLException
      */
     @Override
-    public void latestStreak(Person person) throws SQLException {
-        ResultSet resultSet = chessDao.longestChessStreak(person);
+    public void latestStreak(int personId) throws SQLException {
+        ResultSet resultSet = chessDao.longestChessStreak(personId);
 
         /**
          * use to store dates in sorted order
@@ -170,7 +164,7 @@ public class ChessServiceImpl implements ChessService {
         }
 
         int longestStreak = similarRequirement.latestStreak(days);
-        logger.info("Latest Chess Streak for " + person.getName() + " : " + longestStreak );
+        logger.info("Latest Chess Streak for " + personId + " : " + longestStreak );
 
         if(longestStreak == 1) {
             logger.info(" day");

@@ -2,134 +2,433 @@ package com.zs.hobbies;
 
 import com.zs.hobbies.cache.LruService;
 import com.zs.hobbies.cache.LruServiceImpl;
-import com.zs.hobbies.controller.BadmintonController;
-import com.zs.hobbies.controller.ChessController;
-import com.zs.hobbies.controller.PersonController;
-import com.zs.hobbies.controller.TravellingController;
+import com.zs.hobbies.controller.*;
+import com.zs.hobbies.dto.*;
 import com.zs.hobbies.util.DataBase;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.text.ParseException;
+import java.sql.Date;
+import java.util.Scanner;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class Application {
     private static Logger logger;
+    static Scanner in = new Scanner(System.in);
 
-    public static void main(String st[]) throws SQLException, ClassNotFoundException, IOException {
-        /**
-         * initialize logger
-         */
-        LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
-        logger = Logger.getLogger(Application.class.getName());
-        logger.info("Successfully logger start");
+    /**
+     * use to perform all operation on person
+     */
+    static void personOperation(PersonController personController) throws SQLException {
+        logger.info("1. for person entry ");
+        logger.info("2. exit");
 
-        /**
-         * apply LRU cache on Hobby application
-         */
+        int choice = 0;
+        do{
+            choice = in.nextInt();
+
+            switch (choice) {
+                case 1:
+                        int id ;
+                        String name, mobile, address;
+
+                        logger.info("Enter person id = ");
+                        id = in.nextInt();
+
+                        logger.info("Enter person name = ");
+                        name = in.next();
+
+                        logger.info("Enter person mobile number = ");
+                        mobile = in.next();
+
+                        logger.info("Enter person address = ");
+                        address = in.next();
+
+                        Person person = new Person(id,name,mobile,address);
+
+                        personController.insert(person);
+                         break;
+                case 2: break;
+            }
+        }while (choice != 2);
+    }
+
+    static void badmintonOperation(BadmintonController badmintonController) throws ParseException, SQLException, IOException, ClassNotFoundException {
+        logger.info("1. for insert badminton hobby");
+        logger.info("2. for longest streak in badminton");
+        logger.info("3. for latest streak in badminton");
+        logger.info("4. for last badminton tick");
+        logger.info("5. for search by date in badminton");
+        logger.info("6. for exit in badminton");
+
+        int choice;
+        do{
+            choice = in.nextInt();
+            int badminton_id, personId;
+            Time startTime, endTime;
+            Date date;
+            int numOfPlayer;
+            String result;
+
+            switch (choice) {
+                case 1:
+                    logger.info("Enter badminton id = ");
+                    badminton_id = in.nextInt();
+
+                    logger.info("Enter user id = ");
+                    personId = in.nextInt();
+
+                    logger.info("Enter starting time = ");
+                    startTime = Time.valueOf(in.next());
+
+                    logger.info("Enter end time = ");
+                    endTime = Time.valueOf(in.next());
+
+                    logger.info("Enter the date(YYYY-MM-DD) = ");
+                    date = Date.valueOf(in.next());
+
+                    logger.info("Enter the number of player = ");
+                    numOfPlayer = in.nextInt();
+
+                    logger.info("Enter the result = ");
+                    result = in.next();
+
+                    Timing time = new Timing(startTime,endTime,date);
+                    Badminton badminton = new Badminton(badminton_id,personId,time,numOfPlayer,result);
+                    badmintonController.insert(badminton);
+                    break;
+
+                case 2:
+                    logger.info("Enter person id = ");
+                    personId = in.nextInt();
+
+                    badmintonController.longestStreak(personId);
+                    break;
+
+                case 3:
+                    logger.info("Enter person id = ");
+                    personId = in.nextInt();
+                    badmintonController.latestStreak(personId);
+                    break;
+
+                case 4:
+                    logger.info("Enter person id = ");
+                    personId = in.nextInt();
+                    badmintonController.lastTick(personId);
+                    break;
+
+                case 5:
+                    logger.info("Enter person id = ");
+                    personId = in.nextInt();
+
+                    logger.info("enter date = ");
+                    date = Date.valueOf(in.next());
+                    badmintonController.searchByDate(personId,date);
+                    break;
+
+                case 6:
+                    break;
+            }
+        }while(choice != 5);
+    }
+
+    static void chessOperation(ChessController chessController) throws ParseException, SQLException, IOException, ClassNotFoundException {
+        logger.info("1. for insert chess hobby");
+        logger.info("2. for longest streak in chess");
+        logger.info("3. for latest streak in chess");
+        logger.info("4. for last chess tick");
+        logger.info("5. for search by date in chess");
+        logger.info("6. for exit in chess");
+
+        int choice;
+        do{
+            choice = in.nextInt();
+            int chessId, personId;
+            Time startTime, endTime;
+            Date date;
+            int numOfMoves;
+            String result;
+
+            switch (choice) {
+                case 1:
+                    logger.info("Enter badminton id = ");
+                    chessId = in.nextInt();
+
+                    logger.info("Enter user id = ");
+                    personId = in.nextInt();
+
+                    logger.info("Enter starting time = ");
+                    startTime = Time.valueOf(in.next());
+
+                    logger.info("Enter end time = ");
+                    endTime = Time.valueOf(in.next());
+
+                    logger.info("Enter the date = ");
+                    date = Date.valueOf(in.next());
+
+                    logger.info("Enter the number of player = ");
+                    numOfMoves = in.nextInt();
+
+                    logger.info("Enter the result = ");
+                    result = in.next();
+
+                    Timing time = new Timing(startTime,endTime,date);
+                    Chess chess = new Chess(chessId,personId,time,numOfMoves,result);
+                    chessController.insert(chess);
+                    break;
+
+                case 2:
+                    logger.info("Enter person id = ");
+                    personId = in.nextInt();
+
+                    chessController.longestStreak(personId);
+                    break;
+
+                case 3:
+                    logger.info("Enter person id = ");
+                    personId = in.nextInt();
+                    chessController.latestStreak(personId);
+                    break;
+
+                case 4:
+                    logger.info("Enter person id = ");
+                    personId = in.nextInt();
+                    chessController.lastTick(personId);
+                    break;
+
+                case 5:
+                    logger.info("Enter person id = ");
+                    personId = in.nextInt();
+
+                    logger.info("enter date = ");
+                    date = Date.valueOf(in.next());
+                    chessController.searchByDate(personId,date);
+                    break;
+
+                case 6:
+                    break;
+            }
+        }while(choice != 5);
+    }
+
+    static void travellingOperation(TravellingController travellingController) throws SQLException {
+        logger.info("1. for insert travelling hobby");
+        logger.info("2. for longest streak in travelling");
+        logger.info("3. for latest streak in travelling");
+        logger.info("4. for last travelling tick");
+        logger.info("5. for search by date in travelling");
+        logger.info("6. for exit in travelling");
+
+        int choice;
+        do{
+            choice = in.nextInt();
+            int travellingId, personId;
+            Time startTime, endTime;
+            Date date;
+            String startPosition, endPosition;
+            float distance;
+
+            switch (choice) {
+                case 1:
+                    logger.info("Enter travelling id = ");
+                    travellingId = in.nextInt();
+
+                    logger.info("Enter user id = ");
+                    personId = in.nextInt();
+
+                    logger.info("Enter starting time = ");
+                    startTime = Time.valueOf(in.next());
+
+                    logger.info("Enter end time = ");
+                    endTime = Time.valueOf(in.next());
+
+                    logger.info("Enter the date = ");
+                    date = Date.valueOf(in.next());
+
+                    logger.info("Enter the starting position = ");
+                    startPosition = in.next();
+
+                    logger.info("Enter the ending position = ");
+                    endPosition = in.next();
+
+                    logger.info("Enter total distance = ");
+                    distance = in.nextFloat();
+
+                    Timing time = new Timing(startTime,endTime,date);
+                    Travelling travelling = new Travelling(travellingId,personId,time,startPosition,endPosition,distance);
+                    travellingController.insert(travelling);
+                    break;
+
+                case 2:
+                    logger.info("Enter person id = ");
+                    personId = in.nextInt();
+
+                    travellingController.longestStreak(personId);
+                    break;
+
+                case 3:
+                    logger.info("Enter person id = ");
+                    personId = in.nextInt();
+                    travellingController.latestStreak(personId);
+                    break;
+
+                case 4:
+                    logger.info("Enter person id = ");
+                    personId = in.nextInt();
+                    travellingController.lastTick(personId);
+                    break;
+
+                case 5:
+                    logger.info("Enter person id = ");
+                    personId = in.nextInt();
+
+                    logger.info("enter date = ");
+                    date = Date.valueOf(in.next());
+                    travellingController.searchByDate(personId,date);
+                    break;
+
+                case 6:
+                    break;
+            }
+        }while(choice != 5);
+    }
+
+    static void videoWatchingOperation(VideoWatchingController videoWatchingController) throws SQLException, ParseException {
+        logger.info("1. for insert video watching hobby");
+        logger.info("2. for longest streak in video watching");
+        logger.info("3. for latest streak in video watching");
+        logger.info("4. for last video watching tick");
+        logger.info("5. for search by date in video watching");
+        logger.info("6. for exit in video watching");
+
+        int choice;
+        do{
+            choice = in.nextInt();
+            int videoWatchingId, personId;
+            Time startTime, endTime;
+            Date date;
+            String title;
+
+            switch (choice) {
+                case 1:
+                    logger.info("Enter badminton id = ");
+                    videoWatchingId = in.nextInt();
+
+                    logger.info("Enter user id = ");
+                    personId = in.nextInt();
+
+                    logger.info("Enter starting time = ");
+                    startTime = Time.valueOf(in.next());
+
+                    logger.info("Enter end time = ");
+                    endTime = Time.valueOf(in.next());
+
+                    logger.info("Enter the date = ");
+                    date = Date.valueOf(in.next());
+
+
+                    logger.info("Enter the title video watching = ");
+                    title = in.next();
+
+                    Timing time = new Timing(startTime,endTime,date);
+                    VideoWatching videoWatching = new VideoWatching(videoWatchingId,personId,time,title);
+                    videoWatchingController.insert(videoWatching);
+                    break;
+
+                case 2:
+                    logger.info("Enter person id = ");
+                    personId = in.nextInt();
+                    videoWatchingController.longestStreak(personId);
+                    break;
+
+                case 3:
+                    logger.info("Enter person id = ");
+                    personId = in.nextInt();
+                    videoWatchingController.latestStreak(personId);
+                    break;
+
+                case 4:
+                    logger.info("Enter person id = ");
+                    personId = in.nextInt();
+                    videoWatchingController.lastTick(personId);
+                    break;
+
+                case 5:
+                    logger.info("Enter person id = ");
+                    personId = in.nextInt();
+
+                    logger.info("enter date = ");
+                    date = Date.valueOf(in.next());
+                    videoWatchingController.searchByDate(personId,date);
+                    break;
+
+                case 6:
+                    break;
+            }
+        }while(choice != 5);
+    }
+
+    public static void main(String st[]) throws IOException, SQLException, ClassNotFoundException {
+
         try{
+            LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
+            logger = Logger.getLogger(Application.class.getName());
+
+            logger.info("Enter the LRU cache capacity = ");
+            int capacity = in.nextInt();
             LruService lru = new LruServiceImpl(5);
 
-            /**
-             * is use to make the connection between java program and database
-             */
             DataBase dataBase = new DataBase();
-
-
-            /**
-             * call person Controller
-             */
             PersonController personController = new PersonController(dataBase.getCon(),lru);
-            personController.insert();
-
             BadmintonController badmintonController = new BadmintonController(dataBase.getCon(),lru);
-            badmintonController.insert();
-
-
             ChessController chessController = new ChessController(dataBase.getCon(),lru);
-            chessController.insert();
-
             TravellingController travellingController = new TravellingController(dataBase.getCon(),lru);
-            travellingController.insert();
+            VideoWatchingController videoWatchingController = new VideoWatchingController(dataBase.getCon(),lru);
 
-            /**
-             * insert person in database table
-             */
-    //        Person person = new Person(13,"Rihan","9311851147","Dadri");
-    //        PersonService personService = new PersonServiceImpl(dataBase.getCon(),lru);
-    //        personService.insert(person);
+            logger.info("1. wanna perform operation on Person  ");
+            logger.info("2. wanna perform operation on Badminton");
+            logger.info("3. wanna perform operation on chess");
+            logger.info("4. wanna perform operation on travelling");
+            logger.info("5. wanna perform operation on video watching ");
 
+            int choice;
+            do{
+                choice = in.nextInt();
 
-            /**
-             * insert travel hobbies
-             */
-    //        Timing time = new Timing(Time.valueOf("09:09:39"),Time.valueOf("10:49:39"), Date.valueOf("2021-01-25"));
-    //        Travelling travelling = new Travelling(16,person,time,"delhi","mumbi",5.6f);
-    //        TravellingService travellingService = new TravellingServiceImpl(dataBase.getCon(),lru);
-    //        travellingService.insert(travelling);
+                switch (choice) {
+                    case 1:
+                        personOperation(personController);
+                        break;
 
+                    case 2:
+                        badmintonOperation(badmintonController);
+                        break;
 
-            /**
-             * insert chess hobbies
-             */
-    //        Chess chess = new Chess(17,person,time,3,"win");
-    //        ChessService chessService = new ChessServiceImpl(dataBase.getCon(),lru);
-    //        chessService.insert(chess);
+                    case 3:
+                        chessOperation(chessController);
+                        break;
 
+                    case 4:
+                        travellingOperation(travellingController);
+                        break;
+                    case 5:
+                        videoWatchingOperation(videoWatchingController);
+                        break;
+                    default:
+                        break;
+                }
 
-            /**
-             * insert badminton hobbie
-             */
-    //        Badminton badminton = new Badminton(20,person,time, 8,"win");
-    //        BadmintonService badmintonService = new BadmintonServiceImpl(dataBase.getCon(),lru);
-    //        badmintonService.insert(badminton);
+            }while (choice != 6);
 
-
-            /**
-             * insert Video Watching hobbies in table
-             */
-    //        VideoWatching videoWatching = new VideoWatching(14,person,time,"Lucifer morningstar");
-    //        VideoWatchingService videoWatchingService = new VideoWatchingServiceImpl(dataBase.getCon(),lru);
-    //        videoWatchingService.insert(videoWatching);
-
-
-            /**
-             * find the hobbies on date
-             */
-    //        badmintonService.dateDetails(person, Date.valueOf("2015-04-02"));
-    //        travellingService.dateDetails(person, Date.valueOf("2015-04-02"));
-    //        videoWatchingService.dateDetails(person, Date.valueOf("2015-04-02"));
-    //        chessService.dateDetails(person, Date.valueOf("2015-04-02"));
-
-            /**
-             * check last tick
-             */
-    //        badmintonService.lastTick(person);
-    //        travellingService.lastTick(person);
-    //        videoWatchingService.lastTick(person);
-    //        chessService.lastTick(person);
-
-            /**
-             * longest streak
-             */
-    //        badmintonService.longestStreak(person);
-    //        travellingService.longestStreak(person);
-    //        videoWatchingService.longestStreak(person);
-    //        chessService.longestStreak(person);
-
-            /**
-             * latest streak
-             */
-    //        badmintonService.latestStreak(person);
-    //        travellingService.latestStreak(person);
-    //        videoWatchingService.latestStreak(person);
-    //        chessService.latestStreak(person);
 
             dataBase.getCon().close();
 
-        }catch (Exception ex) {
-            logger.warning(ex.getMessage());
+        }catch (Exception e) {
+            logger.warning(e.getMessage());
         }
     }
 }
