@@ -1,10 +1,10 @@
 package com.zs.hobbies.service;
 
 import com.zs.hobbies.Application;
-import com.zs.hobbies.cache.LruService;
+import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.dao.VideoWatchingDao;
+import com.zs.hobbies.dto.Timing;
 import com.zs.hobbies.dto.VideoWatching;
-import com.zs.hobbies.cache.Node;
 import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.validator.Validator;
 
@@ -13,6 +13,8 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
@@ -24,11 +26,11 @@ import java.util.logging.Logger;
 public class VideoWatchingServiceImpl implements VideoWatchingService {
     private VideoWatchingDao videoWatchingDao;
     private Logger logger;
-    private LruService lru;
+    private Cache lru;
     private SimilarRequirement similarRequirement;
     private Validator validator;
 
-    public VideoWatchingServiceImpl(Connection con,LruService lru) throws SQLException, ClassNotFoundException, IOException {
+    public VideoWatchingServiceImpl(Connection con,Cache lru) throws SQLException, ClassNotFoundException, IOException {
         logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully VideoWatching service start ");
@@ -53,6 +55,27 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         validator.checkDate(videoWatching.getTime().getDay());
 
         videoWatchingDao.insertVideo(videoWatching);
+
+        /**
+         * put object in cache memory
+         */
+        lru.put(videoWatching.getPersonId() + "_videoWatching" , videoWatching);
+
+        /**
+         * change longest streak in cache memory
+         */
+        Integer longestStreak = (Integer) lru.get(videoWatching.getPersonId() + "_videoWatching_longestStreak");
+        if(longestStreak != null) {
+            lru.put(videoWatching.getPersonId() + "_videoWatching_longestStreak" , null);
+        }
+
+        /**
+         * change latest streak in cache memory
+         */
+        Integer latestStreak = (Integer) lru.get(videoWatching.getPersonId() + "_videoWatching_latestStreak");
+        if(latestStreak != null) {
+            lru.put(videoWatching.getPersonId() + "_videoWatching_latestStreak" , null);
+        }
     }
 
     /**
@@ -62,7 +85,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
      * @throws SQLException
      */
     @Override
-    public void dateDetails(int personId, Date date) throws SQLException {
+    public Set<VideoWatching> dateDetails(int personId, Date date) throws SQLException {
         /**
          * check date is valid or not
          */
@@ -70,41 +93,65 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
 
         ResultSet resultSet = videoWatchingDao.dateVideoWatchingDetails(personId,date);
 
-        logger.info("This is all VideoWatching details on " + date.toString());
-        logger.info("startTime   :  EndTime   : Title  ");
-        while(resultSet.next()){
-            logger.info(resultSet.getTime("startTime") + " " + resultSet.getTime("endTime")
-                    + " "+  resultSet.getString("title") ) ;
+        /**
+         * if details are not present of given date
+         */
+        if(!resultSet.next()) {
+            throw new InvalidInputException(400,"Not present any entity");
         }
+
+        /**
+         * use to store the objects
+         */
+        Set<VideoWatching> setDetails = new HashSet<VideoWatching>();
+
+        /**
+         * query result
+         */
+        while(resultSet.next()){
+            Timing timing = new Timing(resultSet.getTime("startTime"),resultSet.getTime("endTime"),
+                    resultSet.getDate("day"));
+
+            VideoWatching videoWatching = new VideoWatching(resultSet.getInt("videoWatching_id"), resultSet.getInt("personid"),
+                    timing,resultSet.getString("title"));
+
+            setDetails.add(videoWatching);
+        }
+        return setDetails;
     }
 
     /**
      * This function help you to find the last tick of person in video watching table
      * @param personId    the person id
      * @throws SQLException
+     * @return
      */
     @Override
-    public void lastTick(int personId) throws SQLException {
-        Node node = lru.get(String.valueOf(personId)  + "_videoWatching");
+    public VideoWatching lastTick(int personId) throws SQLException {
+        /**
+         * check in the cache memory
+         */
+        VideoWatching videoWatching = (VideoWatching) lru.get(personId + "_videoWatching");
 
         /**
-         * when videoWatching present in lru cache
+         * present in cache memory
          */
-        if(node != null && node.getVideoWatching() != null) {
-            logger.info("This is video Watching class in cache");
-            logger.info("Video Watching id :" + node.getVideoWatching().getId());
-
-            return;
+        if(videoWatching != null) {
+            return videoWatching;
         }
 
         ResultSet resultSet = videoWatchingDao.lastTick(personId);
 
         if(resultSet.next()) {
-            logger.info("This is the last tick of Video Watching ");
-            logger.info("Video Watching id : " + resultSet.getInt(1));
+            Timing timing = new Timing(resultSet.getTime("startTime"),resultSet.getTime("endTime"),
+                    resultSet.getDate("day"));
+
+            videoWatching = new VideoWatching(resultSet.getInt("videoWatching_id"), resultSet.getInt("personid"),
+                    timing,resultSet.getString("title"));
         }else {
             logger.warning("No tick available for you");
         }
+        return videoWatching;
     }
 
     /**
@@ -113,7 +160,20 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
      * @throws SQLException
      */
     @Override
-    public void longestStreak(int personId) throws SQLException {
+    public int longestStreak(int personId) throws SQLException {
+        /**
+         * check the longest streak is available or not in cache memory
+         */
+        Integer longestStreak = (Integer) lru.get(personId + "_videoWatching_longestStreak");
+
+        /**
+         * if longest streak is available in cache then just return it.
+         * if not available, then if condition doesn't execute
+         */
+        if(longestStreak != null){
+            return longestStreak;
+        }
+
         ResultSet resultSet = videoWatchingDao.longestVideoWatchingStreak(personId);
 
         /**
@@ -128,23 +188,41 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         while(resultSet.next()){
             days.add(resultSet.getDate("day").toString() );
         }
-        int longestStreak = similarRequirement.longestStreak(days);
-        logger.info("Longest Video Streak for " + personId + " : " + longestStreak);
 
-        if(longestStreak == 1) {
-            logger.info(" day");
-        }else {
-            logger.info(" days");
-        }
+        /**
+         * get all the details of person in badminton table and perform operation on it.
+         * To find the longest streak
+         */
+        longestStreak =  similarRequirement.longestStreak(days);
+
+        /**
+         * insert into cache
+         */
+        lru.put(personId + "_videoWatching_longestStreak" , longestStreak);
+
+        return  longestStreak;
     }
 
     /**
      * This function help you to find the latest streak
      * @param personId    the person id
      * @throws SQLException
+     * @return
      */
     @Override
-    public void latestStreak(int personId) throws SQLException {
+    public int latestStreak(int personId) throws SQLException {
+        /**
+         * check the latest streak is available in cache or not
+         */
+        Integer latestStreak = (Integer) lru.get(personId + "_videoWatching_latestStreak");
+
+        /**
+         * if latest streak is available in cache, then just return it.
+         * if not available, then if condition doesn't execute
+         */
+        if(latestStreak != null) {
+            return latestStreak;
+        }
         ResultSet resultSet = videoWatchingDao.longestVideoWatchingStreak(personId);
 
         /**
@@ -160,13 +238,13 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
             days.add(resultSet.getDate("day").toString() );
         }
 
-        int longestStreak = similarRequirement.latestStreak(days);
-        logger.info("Latest VideoWatching Streak for " + personId + " : " + longestStreak );
+        latestStreak =  similarRequirement.latestStreak(days);
 
-        if(longestStreak == 1) {
-            logger.info(" day");
-        }else {
-            logger.info(" days");
-        }
+        /**
+         * insert into cache
+         */
+        lru.put(personId + "_videoWatching_latestStreak" , latestStreak);
+        return latestStreak;
     }
+
 }

@@ -1,7 +1,8 @@
 package com.zs.hobbies.controller;
 
 import com.zs.hobbies.Application;
-import com.zs.hobbies.cache.LruService;
+import com.zs.hobbies.cache.Cache;
+import com.zs.hobbies.dto.Badminton;
 import com.zs.hobbies.dto.Chess;
 import com.zs.hobbies.dto.Person;
 import com.zs.hobbies.service.ChessService;
@@ -12,7 +13,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.sql.Date;
+import java.util.Iterator;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -26,7 +29,7 @@ public class ChessController {
     private ChessService chessService;
     Scanner in = new Scanner(System.in);
 
-    public ChessController(Connection con, LruService lru) throws SQLException, IOException, ClassNotFoundException {
+    public ChessController(Connection con, Cache lru) throws SQLException, IOException, ClassNotFoundException {
         chessService = new ChessServiceImpl(con,lru);
 
         logger = Logger.getLogger(Application.class.getName());
@@ -57,7 +60,8 @@ public class ChessController {
      * @throws SQLException
      */
     public void longestStreak(int personId) throws SQLException {
-        chessService.longestStreak(personId);
+        int longestStreak = chessService.longestStreak(personId);
+        logger.info("Chess longest streak : " + longestStreak);
     }
 
     /**
@@ -66,7 +70,8 @@ public class ChessController {
      * @throws SQLException
      */
     public void latestStreak(int personId) throws SQLException {
-        chessService.latestStreak(personId);
+        int latestStreak = chessService.latestStreak(personId);
+        logger.info("Chess latest Streak : " + latestStreak);
     }
 
     /**
@@ -75,7 +80,13 @@ public class ChessController {
      * @throws SQLException
      */
     public void lastTick(int personId) throws SQLException {
-        chessService.lastTick(personId);
+        Chess chess = (Chess) chessService.lastTick(personId);
+
+        if(chess != null) {
+            logger.info("Chess last tick id : " + chess.getId());
+        }else {
+            logger.warning("No last tick present");
+        }
     }
 
     /**
@@ -84,6 +95,12 @@ public class ChessController {
      * @throws SQLException
      */
     public void searchByDate(int personId, Date date) throws SQLException {
-        chessService.dateDetails(personId,date);
+        Set<Chess> setDetails = chessService.dateDetails(personId,date);
+
+        Iterator<Chess> iterator = setDetails.iterator();
+
+        while(iterator.hasNext()) {
+            logger.info("Chess id : " + iterator.next().getId());
+        }
     }
 }

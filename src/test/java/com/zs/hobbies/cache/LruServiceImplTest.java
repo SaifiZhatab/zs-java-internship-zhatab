@@ -11,7 +11,7 @@ import java.sql.Time;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * This is a testing class for LruService class
+ * This is a testing class for Cache class
  */
 class LruServiceImplTest {
     private  int capacity ;
@@ -39,7 +39,7 @@ class LruServiceImplTest {
     }
 
     /**
-     * This test function help you to test the put when key is already present in LRU cache
+     * This test function help you to test the put when key is already present in LRU Cache
      */
     @Test
     void putWhenKeyIsAlreadyPresent() {
@@ -59,12 +59,12 @@ class LruServiceImplTest {
     }
 
     /**
-     *  This test function help you to test the put when Lru cache is full
+     *  This test function help you to test the put when Lru Cache is full
      */
     @Test
     void putWhenSizeIsFull() {
         /**
-         * first try to full the LRU cache after that check the object is insert successfully or not in LRU cache
+         * first try to full the LRU Cache after that check the object is insert successfully or not in LRU Cache
          */
         lru.put(String.valueOf(badminton.getPersonId()) + "_badminton" , new Node(badminton));
         lru.put(String.valueOf(chess.getPersonId()) + "_chess" , new Node(chess));
@@ -72,7 +72,7 @@ class LruServiceImplTest {
 
 
         /**
-         * try to insert in cache when cache is full
+         * try to insert in Cache when Cache is full
          */
         lru.put(String.valueOf(travelling.getPersonId()) + "_travelling" , new Node(travelling));
 
@@ -98,12 +98,12 @@ class LruServiceImplTest {
     }
 
     /**
-     * This test function help you to test the get function when Key is present in lru cache
+     * This test function help you to test the get function when Key is present in lru Cache
      */
     @Test
     void getWhenKeyPresent() {
         /**
-         * first insert the object in LRU cache
+         * first insert the object in LRU Cache
          */
         lru.put(String.valueOf(chess.getPersonId()) + "_chess" , new Node(chess));
 
@@ -114,7 +114,7 @@ class LruServiceImplTest {
     }
 
     /**
-     * This test function help you to test the get function when key is not present in LRU cache
+     * This test function help you to test the get function when key is not present in LRU Cache
      */
     @Test
     void getWhenKeyNotPresent() {
@@ -140,18 +140,18 @@ class LruServiceImplTest {
         Node chessObject = new Node(chess);
 
         /**
-         * first insert the object in LRU cache
+         * first insert the object in LRU Cache
          */
         lru.put(String.valueOf(chess.getPersonId()) + "_chess" , chessObject);
 
         /**
-         * delete the object in LRU cache
+         * delete the object in LRU Cache
          */
         lru.delete(chessObject);
 
         /**
-         * check the object is present or not in LRU cache
-         * match head next object and last object in lru cache
+         * check the object is present or not in LRU Cache
+         * match head next object and last object in lru Cache
          */
         assertEquals(lru.getLast() , lru.getHead().getNext());
     }

@@ -1,4 +1,4 @@
-package main.test;
+package com.zs.basicprogram;
 
 import com.zs.basicprogram.DecimalToBinary;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +17,6 @@ class DecimalToBinaryTest {
 
     @Test
     void binaryToDecimal() {
-        assertEquals("1010",dtb.binaryToDecimal(10));
+        assertEquals("1010",dtb.decimalToBinary(10));
     }
 }

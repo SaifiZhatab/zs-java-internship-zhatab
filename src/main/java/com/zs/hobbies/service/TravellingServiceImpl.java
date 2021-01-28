@@ -1,10 +1,10 @@
 package com.zs.hobbies.service;
 
 import com.zs.hobbies.Application;
-import com.zs.hobbies.cache.LruService;
+import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.dao.TravellingDao;
+import com.zs.hobbies.dto.Timing;
 import com.zs.hobbies.dto.Travelling;
-import com.zs.hobbies.cache.Node;
 import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.validator.Validator;
 
@@ -13,6 +13,8 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
@@ -23,7 +25,7 @@ import java.util.logging.Logger;
 public class TravellingServiceImpl implements TravellingService {
     private TravellingDao travellingDao;
     private Logger logger;
-    private LruService lru;
+    private Cache lru;
     private SimilarRequirement similarRequirement;
     private Validator validator;
 
@@ -34,7 +36,7 @@ public class TravellingServiceImpl implements TravellingService {
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public TravellingServiceImpl(Connection con,LruService lru) throws SQLException, ClassNotFoundException, IOException {
+    public TravellingServiceImpl(Connection con,Cache lru) throws SQLException, ClassNotFoundException, IOException {
         logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully Travelling service start ");
@@ -61,6 +63,26 @@ public class TravellingServiceImpl implements TravellingService {
         validator.checkPosition(travelling.getEndPoint());
         travellingDao.insertTravelling(travelling);
 
+        /**
+         * put object in cache memory
+         */
+        lru.put(travelling.getPersonId() + "_travelling" , travelling);
+
+        /**
+         * change longest streak in cache memory
+         */
+        Integer longestStreak = (Integer) lru.get(travelling.getPersonId() + "_travelling_longestStreak");
+        if(longestStreak != null) {
+            lru.put(travelling.getPersonId() + "_travelling_longestStreak" , null);
+        }
+
+        /**
+         * change latest streak in cache memory
+         */
+        Integer latestStreak = (Integer) lru.get(travelling.getPersonId() + "_travelling_latestStreak");
+        if(latestStreak != null) {
+            lru.put(travelling.getPersonId() + "_travelling_latestStreak" , null);
+        }
     }
 
     /**
@@ -70,7 +92,7 @@ public class TravellingServiceImpl implements TravellingService {
      * @throws SQLException
      */
     @Override
-    public void dateDetails(int personId, Date date) throws SQLException {
+    public Set<Travelling> dateDetails(int personId, Date date) throws SQLException {
         /**
          * check date is valid or not
          */
@@ -78,13 +100,33 @@ public class TravellingServiceImpl implements TravellingService {
 
         ResultSet resultSet = travellingDao.dateTravellingDetails(personId,date);
 
-        logger.info("This is all Travelling details on " + date.toString());
-        logger.info("startTime   :  EndTime   : startPoint   :   endPoint  : distance");
-        while(resultSet.next()){
-            logger.info(resultSet.getTime("startTime") + " " + resultSet.getTime("endTime")
-                    + " "+  resultSet.getString("startPoint") + " " + resultSet.getString("endPoint") +
-                    " : " + resultSet.getFloat("distance")) ;
+        /**
+         * if details are not present of given date
+         */
+        if(!resultSet.next()) {
+            throw new InvalidInputException(400,"Not present any entity");
         }
+
+        /**
+         * setDetails use to store the object
+         */
+        Set<Travelling> setDetails = new HashSet<Travelling>();
+
+        /**
+         * query result
+         */
+        while(resultSet.next()){
+            Timing timing = new Timing(resultSet.getTime("startTime"),resultSet.getTime("endTime"),
+                    resultSet.getDate("day"));
+
+            Travelling travelling = new Travelling(resultSet.getInt("travelling_id"),resultSet.getInt("personid"),
+                    timing,resultSet.getString("startPoint"),resultSet.getString("endPoint"),
+                    resultSet.getFloat("distance"));
+
+            setDetails.add(travelling);
+
+        }
+        return setDetails;
     }
 
     /**
@@ -92,29 +134,36 @@ public class TravellingServiceImpl implements TravellingService {
      * if the last tick isn't present, then it nothing print
      * @param personId    the person id
      * @throws SQLException
+     * @return
      */
     @Override
-    public void lastTick(int personId) throws SQLException {
-        Node node = lru.get(String.valueOf(personId) + "_travelling");
+    public Travelling lastTick(int personId) throws SQLException {
+        /**
+         * check in cache memeory
+         */
+        Travelling travelling = (Travelling) lru.get(personId + "_travelling");
 
         /**
-         * if last tick of travelling present in the cache
+         * present in cache memory
          */
-        if(node != null && node.getTravelling() != null) {
-            logger.info("This is the last tick of travelling");
-            logger.info("Travelling id : " + node.getTravelling().getId());
-
-            return;
+        if(travelling != null) {
+            return travelling;
         }
 
         ResultSet resultSet = travellingDao.lastTick(personId);
 
         if(resultSet.next()) {
-            logger.info("This is the last tick of Travelling ");
-            logger.info(("Travelling id : " + resultSet.getInt(1)));
+            Timing timing = new Timing(resultSet.getTime("startTime"),resultSet.getTime("endTime"),
+                    resultSet.getDate("day"));
+
+            travelling = new Travelling(resultSet.getInt("travelling_id"),resultSet.getInt("personid"),
+                    timing,resultSet.getString("startPoint"),resultSet.getString("endPoint"),
+                    resultSet.getFloat("distance"));
+
         }else {
             logger.warning("No tick available for you");
         }
+        return travelling;
     }
 
     /**
@@ -124,7 +173,20 @@ public class TravellingServiceImpl implements TravellingService {
      * @throws SQLException
      */
     @Override
-    public void longestStreak(int personId) throws SQLException {
+    public int longestStreak(int personId) throws SQLException {
+        /**
+         * check the longest streak is available or not in cache memory
+         */
+        Integer longestStreak = (Integer) lru.get(personId + "_travelling_longestStreak");
+
+        /**
+         * if longest streak is available in cache then just return it.
+         * if not available, then if condition doesn't execute
+         */
+        if(longestStreak != null){
+            return longestStreak;
+        }
+
         ResultSet resultSet = travellingDao.longestTravellingStreak(personId);
 
         /**
@@ -140,14 +202,18 @@ public class TravellingServiceImpl implements TravellingService {
             days.add(resultSet.getDate("day").toString() );
         }
 
-        int longestStreak = similarRequirement.longestStreak(days);
-        logger.info("Longest Travelling Streak for " + personId + " : " + longestStreak);
+        /**
+         * get all the details of person in badminton table and perform operation on it.
+         * To find the longest streak
+         */
+        longestStreak =  similarRequirement.longestStreak(days);
 
-        if(longestStreak == 1) {
-            logger.info(" day");
-        }else {
-            logger.info(" days");
-        }
+        /**
+         * insert into cache
+         */
+        lru.put(personId + "_travelling_longestStreak" , longestStreak);
+
+        return  longestStreak;
     }
 
     /**
@@ -155,9 +221,23 @@ public class TravellingServiceImpl implements TravellingService {
      * if there is no streak then it return 0
      * @param personId    the person id
      * @throws SQLException
+     * @return
      */
     @Override
-    public void latestStreak(int personId) throws SQLException {
+    public int latestStreak(int personId) throws SQLException {
+        /**
+         * check the latest streak is available in cache or not
+         */
+        Integer latestStreak = (Integer) lru.get(personId + "_travelling_latestStreak");
+
+        /**
+         * if latest streak is available in cache, then just return it.
+         * if not available, then if condition doesn't execute
+         */
+        if(latestStreak != null) {
+            return latestStreak;
+        }
+
         ResultSet resultSet = travellingDao.longestTravellingStreak(personId);
 
         /**
@@ -173,13 +253,12 @@ public class TravellingServiceImpl implements TravellingService {
             days.add(resultSet.getDate("day").toString() );
         }
 
-        int longestStreak = similarRequirement.latestStreak(days);
-        logger.info("Latest Travelling Streak for " + personId + " : " + longestStreak );
+        latestStreak =  similarRequirement.latestStreak(days);
 
-        if(longestStreak == 1) {
-            logger.info(" day");
-        }else {
-            logger.info(" days");
-        }
+        /**
+         * insert into cache
+         */
+        lru.put(personId + "_travelling_latestStreak" , latestStreak);
+        return latestStreak;
     }
 }

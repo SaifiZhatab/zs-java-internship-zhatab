@@ -3,7 +3,7 @@ package com.zs.hobbies.cache;
 import com.zs.hobbies.dto.*;
 
 /**
- * This class is represent Object in LRU cache
+ * This class is represent Object in LRU Cache
  */
 public class Node {
     private String key;
@@ -23,7 +23,7 @@ public class Node {
 
     /**
      * set the badminton object
-     * @param badminton badminton object which you want to insert in LRU cache
+     * @param badminton badminton object which you want to insert in LRU Cache
      */
     public Node(Badminton badminton) {
         key = String.valueOf(badminton.getPersonId()) + "_badminton";
@@ -32,7 +32,7 @@ public class Node {
 
     /**
      * set the travelling object in node
-     * @param travelling travelling object which you want to insert in LRU cache
+     * @param travelling travelling object which you want to insert in LRU Cache
      */
     public Node(Travelling travelling) {
         key = String.valueOf(travelling.getPersonId()) + "_travelling";
@@ -41,7 +41,7 @@ public class Node {
 
     /**
      * set the chess object in node
-     * @param chess chess object which you want to insert in LRU cache
+     * @param chess chess object which you want to insert in LRU Cache
      */
     public Node(Chess chess) {
         key = String.valueOf(chess.getPersonId()) + "_chess";
@@ -50,7 +50,7 @@ public class Node {
 
     /**
      * set the videoWatching object in node
-     * @param videoWatching videoWatching object which you want to insert in LRU cache
+     * @param videoWatching videoWatching object which you want to insert in LRU Cache
      */
     public Node(VideoWatching videoWatching) {
         key = String.valueOf(videoWatching.getPersonId()) + "_videoWatching";

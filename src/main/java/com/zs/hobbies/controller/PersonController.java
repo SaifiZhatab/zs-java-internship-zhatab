@@ -1,7 +1,7 @@
 package com.zs.hobbies.controller;
 
 import com.zs.hobbies.Application;
-import com.zs.hobbies.cache.LruService;
+import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.dto.Person;
 import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.service.PersonService;
@@ -25,7 +25,7 @@ public class PersonController {
 
     Scanner in = new Scanner(System.in);
 
-    public PersonController(Connection con, LruService lru) throws SQLException, IOException, ClassNotFoundException {
+    public PersonController(Connection con, Cache lru) throws SQLException, IOException, ClassNotFoundException {
         personService = new PersonServiceImpl(con, lru);
 
         logger = Logger.getLogger(Application.class.getName());

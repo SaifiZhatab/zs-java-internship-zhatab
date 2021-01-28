@@ -2,7 +2,7 @@ package com.zs.hobbies.controller;
 
 
 import com.zs.hobbies.Application;
-import com.zs.hobbies.cache.LruService;
+import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.dto.Badminton;
 import com.zs.hobbies.dto.Person;
 import com.zs.hobbies.dto.Timing;
@@ -15,6 +15,8 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class VideoWatchingController {
@@ -24,7 +26,7 @@ public class VideoWatchingController {
 
     private VideoWatchingService videoWatchingService;
 
-    public VideoWatchingController(Connection con, LruService lru) throws SQLException, IOException, ClassNotFoundException {
+    public VideoWatchingController(Connection con, Cache lru) throws SQLException, IOException, ClassNotFoundException {
         videoWatchingService = new VideoWatchingServiceImpl(con,lru);
         logger = Logger.getLogger(Application.class.getName());
     }
@@ -44,7 +46,8 @@ public class VideoWatchingController {
      * @throws SQLException
      */
     public void longestStreak(int personId) throws SQLException {
-        videoWatchingService.longestStreak(personId);
+        int longestStreak = videoWatchingService.longestStreak(personId);
+        logger.info("Video latest streak : " + longestStreak);
     }
 
     /**
@@ -53,7 +56,9 @@ public class VideoWatchingController {
      * @throws SQLException
      */
     public void latestStreak(int personId) throws SQLException {
-        videoWatchingService.latestStreak(personId);
+        int latestStreak = videoWatchingService.latestStreak(personId);
+
+        logger.info("Video latest streak : " + latestStreak);
     }
 
     /**
@@ -62,7 +67,10 @@ public class VideoWatchingController {
      * @throws SQLException
      */
     public void lastTick(int personId) throws SQLException {
-        videoWatchingService.lastTick(personId);
+        VideoWatching videoWatching = (VideoWatching) videoWatchingService.lastTick(personId);
+        if(videoWatching != null) {
+            logger.info("Last tick video id : " + videoWatching.getId());
+        }
     }
 
     /**
@@ -72,6 +80,12 @@ public class VideoWatchingController {
      * @throws SQLException
      */
     public void searchByDate(int personId, Date date) throws SQLException {
-        videoWatchingService.dateDetails(personId,date);
+        Set<VideoWatching> setDetails = videoWatchingService.dateDetails(personId,date);
+
+        Iterator<VideoWatching> iterator = setDetails.iterator();
+
+        while(iterator.hasNext()) {
+            logger.info("Video watching id : " + iterator.next().getId());
+        }
     }
 }

@@ -8,9 +8,7 @@ import java.util.Scanner;
 public class DecimalToBinary {
 
 
-    public String binaryToDecimal(int num){
-
-    void decimalToBinary(int num){
+    public String decimalToBinary(int num){
 
         String binary = "";
         while(num != 0) {

@@ -3,7 +3,6 @@ package com.zs.hobbies.dao;
 import com.zs.hobbies.Application;
 import com.zs.hobbies.dto.Travelling;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

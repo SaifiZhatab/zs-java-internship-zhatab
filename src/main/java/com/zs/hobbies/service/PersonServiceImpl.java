@@ -1,17 +1,15 @@
 package com.zs.hobbies.service;
 
 import com.zs.hobbies.Application;
-import com.zs.hobbies.cache.LruService;
+import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.dao.PersonDao;
 import com.zs.hobbies.dto.Person;
 import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.validator.Validator;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
@@ -19,11 +17,11 @@ import java.util.logging.Logger;
  */
 public class PersonServiceImpl implements PersonService {
     private PersonDao personDao;
-    private LruService lru;
+    private Cache lru;
     private Logger logger;
     private Validator validator;
 
-    public PersonServiceImpl(Connection con,LruService lru) throws SQLException, ClassNotFoundException, IOException {
+    public PersonServiceImpl(Connection con,Cache lru) throws SQLException, ClassNotFoundException, IOException {
         logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully Person Service start ");

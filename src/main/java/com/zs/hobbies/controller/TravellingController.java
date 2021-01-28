@@ -1,7 +1,8 @@
 package com.zs.hobbies.controller;
 
 import com.zs.hobbies.Application;
-import com.zs.hobbies.cache.LruService;
+import com.zs.hobbies.cache.Cache;
+import com.zs.hobbies.dto.Badminton;
 import com.zs.hobbies.dto.Person;
 import com.zs.hobbies.dto.Timing;
 import com.zs.hobbies.dto.Travelling;
@@ -15,7 +16,9 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Iterator;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -30,7 +33,7 @@ public class TravellingController {
 
     Scanner in = new Scanner(System.in);
 
-    public TravellingController(Connection con, LruService lru) throws SQLException, IOException, ClassNotFoundException {
+    public TravellingController(Connection con, Cache lru) throws SQLException, IOException, ClassNotFoundException {
         travellingService = new TravellingServiceImpl(con,lru);
 
        logger = Logger.getLogger(Application.class.getName());
@@ -52,7 +55,8 @@ public class TravellingController {
      * @throws SQLException
      */
     public void longestStreak(int personId) throws SQLException {
-        travellingService.longestStreak(personId);
+        int longestStreak = travellingService.longestStreak(personId);
+        logger.info("Travelling longest streak : " + longestStreak);
     }
 
     /**
@@ -61,7 +65,8 @@ public class TravellingController {
      * @throws SQLException
      */
     public void latestStreak(int personId) throws SQLException {
-        travellingService.latestStreak(personId);
+        int latestStreak = travellingService.latestStreak(personId);
+        logger.info("Travelling latest streak : " + latestStreak);
     }
 
     /**
@@ -70,7 +75,12 @@ public class TravellingController {
      * @throws SQLException
      */
     public void lastTick(int personId) throws SQLException {
-        travellingService.lastTick(personId);
+        Travelling travelling = (Travelling) travellingService.lastTick(personId);
+        if(travelling != null) {
+            logger.info("Travelling last tick id : " + travelling.getId());
+        }else {
+            logger.warning("No last tick present");
+        }
     }
 
     /**
@@ -80,7 +90,14 @@ public class TravellingController {
      * @throws SQLException
      */
     public void searchByDate(int personId, Date date) throws SQLException {
-        travellingService.dateDetails(personId,date);
+        Set<Travelling> setDetails = travellingService.dateDetails(personId,date);
+
+        Iterator<Travelling> iterator = setDetails.iterator();
+
+        while(iterator.hasNext()) {
+            logger.info("Travelling id : " + iterator.next().getId());
+        }
+
     }
 
 }

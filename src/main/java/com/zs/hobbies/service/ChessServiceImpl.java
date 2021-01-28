@@ -1,10 +1,10 @@
 package com.zs.hobbies.service;
 
 import com.zs.hobbies.Application;
-import com.zs.hobbies.cache.LruService;
+import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.dao.ChessDao;
 import com.zs.hobbies.dto.Chess;
-import com.zs.hobbies.cache.Node;
+import com.zs.hobbies.dto.Timing;
 import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.validator.Validator;
 
@@ -13,6 +13,8 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
@@ -23,7 +25,7 @@ import java.util.logging.Logger;
 public class ChessServiceImpl implements ChessService {
     private ChessDao chessDao;
     private Logger logger;
-    private LruService lru;
+    private Cache lru;
     private SimilarRequirement similarRequirement;
     private Validator validator;
     /**
@@ -32,7 +34,7 @@ public class ChessServiceImpl implements ChessService {
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public ChessServiceImpl(Connection con,LruService lru) {
+    public ChessServiceImpl(Connection con,Cache lru) {
         logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully Chess service start ");
@@ -59,6 +61,27 @@ public class ChessServiceImpl implements ChessService {
         validator.checkNumOfMove(chess.getNumMoves());
 
         chessDao.insertChess(chess);
+
+        /**
+         * insert into cache
+         */
+        lru.put(chess.getPersonId() + "_chess", chess);
+
+        /**
+         * change longest streak in cache memory
+         */
+        Integer longestStreak = (Integer) lru.get(chess.getPersonId() + "_chess_longestStreak");
+        if(longestStreak != null) {
+            lru.put(chess.getPersonId() + "_chess_longestStreak" , null);
+        }
+
+        /**
+         * change latest streak in cache memory
+         */
+        Integer latestStreak = (Integer) lru.get(chess.getPersonId() + "_chess_latestStreak");
+        if(latestStreak != null) {
+            lru.put(chess.getPersonId() + "_chess_latestStreak" , null);
+        }
     }
 
     /**
@@ -68,46 +91,64 @@ public class ChessServiceImpl implements ChessService {
      * @throws InvalidInputException
      */
     @Override
-    public void dateDetails(int personId, Date date) throws InvalidInputException, SQLException {
+    public Set<Chess> dateDetails(int personId, Date date) throws InvalidInputException, SQLException {
         validator.checkDate(date);
+        Set<Chess> setDetails = new HashSet<Chess>();
 
         ResultSet resultSet = chessDao.dateChessDetails(personId,date);
 
-        logger.info("This is all Chess details on " + date.toString());
-        logger.info("startTime   :  EndTime   : Number of Moves   :   result");
-        while(resultSet.next()){
-            logger.info(resultSet.getTime("startTime") + " " + resultSet.getTime("endTime")
-                    + " "+  resultSet.getInt("nummoves") + " " + resultSet.getString("result")) ;
+        /**
+         * if details are not present of given date
+         */
+        if(!resultSet.next()) {
+            throw new InvalidInputException(400,"Not present any entity");
         }
+
+        while(resultSet.next()) {
+            Timing timing = new Timing(resultSet.getTime("startTime"), resultSet.getTime("endTime"),
+                    resultSet.getDate("day"));
+
+            Chess chess = new Chess(resultSet.getInt("chess_id"),resultSet.getInt("personid"),
+                    timing,resultSet.getInt("numMoves"),resultSet.getString("result"));
+
+            setDetails.add(chess);
+        }
+        return setDetails;
     }
 
     /**
      * This function help you to find the last tick of Chess
      * @param personId    the person object
      * @throws SQLException
+     * @return
      */
     @Override
-    public void lastTick(int personId) throws SQLException {
-        Node node = lru.get(String.valueOf(personId)  + "_chess");
+    public Chess lastTick(int personId) throws SQLException {
+        /**
+         * check in cache memory
+         */
+        Chess chess = (Chess) lru.get(personId + "_chess");
 
         /**
-         * when last tick present in lru cache
+         * if present in cache
          */
-        if(node != null && node.getChess() != null) {
-            logger.info("This is the last tick of Chess");
-            logger.info("Chess id : " + node.getChess().getId());
-
-            return ;
+        if(chess != null) {
+            return chess;
         }
 
         ResultSet resultSet = chessDao.lastTick(personId);
 
         if(resultSet.next()) {
-            logger.info("This is the last tick of Chess  ");
-            logger.info("Chess id : " + resultSet.getInt(1));
+            Timing timing = new Timing(resultSet.getTime("startTime"), resultSet.getTime("endTime"),
+                    resultSet.getDate("day"));
+
+            chess = new Chess(resultSet.getInt("chess_id"),resultSet.getInt("personid"),
+                    timing,resultSet.getInt("numMoves"),resultSet.getString("result"));
+
         }else {
             logger.warning("No tick available for you");
         }
+        return chess;
     }
 
     /**
@@ -116,7 +157,20 @@ public class ChessServiceImpl implements ChessService {
      * @throws SQLException
      */
     @Override
-    public void longestStreak(int personId) throws SQLException {
+    public int longestStreak(int personId) throws SQLException {
+        /**
+         * check the longest streak is available or not in cache memory
+         */
+        Integer longestStreak = (Integer) lru.get(personId + "_chess_longestStreak");
+
+        /**
+         * if longest streak is available in cache then just return it.
+         * if not available, then if condition doesn't execute
+         */
+        if(longestStreak != null){
+            return longestStreak;
+        }
+
         ResultSet resultSet = chessDao.longestChessStreak(personId);
 
         /**
@@ -131,23 +185,38 @@ public class ChessServiceImpl implements ChessService {
         while(resultSet.next()){
             days.add(resultSet.getDate("day").toString() );
         }
-        int longestStreak = similarRequirement.longestStreak(days);
-        logger.info("Longest Chess Streak for " + personId + " : " + longestStreak);
 
-        if(longestStreak == 1) {
-            logger.info(" day");
-        }else {
-            logger.info(" days");
-        }
+        longestStreak =  similarRequirement.longestStreak(days);
+
+        /**
+         * insert into cache
+         */
+        lru.put(personId + "_chess_longestStreak" , longestStreak);
+
+        return  longestStreak;
     }
 
     /**
      * This function help you to find latest streak in chess
      * @param personId    the person id
      * @throws SQLException
+     * @return
      */
     @Override
-    public void latestStreak(int personId) throws SQLException {
+    public int latestStreak(int personId) throws SQLException {
+        /**
+         * check the latest streak is available in cache or not
+         */
+        Integer latestStreak = (Integer) lru.get(personId + "_chess_latestStreak");
+
+        /**
+         * if latest streak is available in cache, then just return it.
+         * if not available, then if condition doesn't execute
+         */
+        if(latestStreak != null) {
+            return latestStreak;
+        }
+
         ResultSet resultSet = chessDao.longestChessStreak(personId);
 
         /**
@@ -163,13 +232,12 @@ public class ChessServiceImpl implements ChessService {
             days.add(resultSet.getDate("day").toString() );
         }
 
-        int longestStreak = similarRequirement.latestStreak(days);
-        logger.info("Latest Chess Streak for " + personId + " : " + longestStreak );
+        latestStreak =  similarRequirement.latestStreak(days);
 
-        if(longestStreak == 1) {
-            logger.info(" day");
-        }else {
-            logger.info(" days");
-        }
+        /**
+         * insert into cache
+         */
+        lru.put(personId + "_chess_latestStreak" , latestStreak);
+        return latestStreak;
     }
 }

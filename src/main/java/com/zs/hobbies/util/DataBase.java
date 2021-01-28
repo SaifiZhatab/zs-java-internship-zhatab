@@ -1,8 +1,8 @@
 package com.zs.hobbies.util;
 
 import com.zs.hobbies.Application;
-import com.zs.hobbies.exception.InternalServerException;
 import com.zs.hobbies.exception.InvalidInputException;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.DriverManager;
@@ -27,7 +27,7 @@ public class DataBase {
         try {
             con = DriverManager.getConnection("jdbc:postgresql://0.0.0.0:2006/hobbies", "zhatab", "zhatab");
         }catch (Exception ex) {
-            throw new InternalServerException(500 , "Connection not create");
+            throw new InvalidInputException(500 , "Connection not create");
         }
         logger = Logger.getLogger(Application.class.getName());
 

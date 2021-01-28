@@ -1,21 +1,24 @@
 package com.zs.hobbies.cache;
 
+import com.zs.hobbies.cache.LruService;
+import com.zs.hobbies.cache.Node;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class is used for LRU cache implementation
+ * This class is LRU Cache implementation which used hashmap data structure
  * In this class we use map and double linkedlist concept
  * It take O(1) time complexity for both put and get method
  */
 public class LruServiceImpl implements LruService {
     /**
-     * it is the capacity of the LRU cache i.e. how many number of object LRU cache store at time
+     * it is the capacity of the LRU Cache i.e. how many number of object LRU Cache store at time
      */
     int capacity;
 
     /**
-     * this node is indicate the head and last node of the lru cache
+     * this node is indicate the head and last node of the lru Cache
      * head always point to the first object of double linkedlist
      * last always point to the last object of double linkedlist
      */
@@ -29,8 +32,8 @@ public class LruServiceImpl implements LruService {
 
     /**
      * This is a constructor.
-     * this constructor initialise all the private variables and set the capacity of lru cache
-     * @param capacity  capacity of LRU cache
+     * this constructor initialise all the private variables and set the capacity of lru Cache
+     * @param capacity  capacity of LRU Cache
      */
     public LruServiceImpl(int capacity){
         this.capacity = capacity;
@@ -47,7 +50,7 @@ public class LruServiceImpl implements LruService {
     }
 
     /**
-     * this method help you to delete the object in LRU cache
+     * this method help you to delete the object in LRU Cache
      * this function take O(1) time to delete a object
      * @param node  delete node
      */
@@ -60,7 +63,7 @@ public class LruServiceImpl implements LruService {
     }
 
     /**
-     * This function help you to insert the object in LRU cache
+     * This function help you to insert the object in LRU Cache
      * This function take O(1) time to inset in LRU cahce
      * @param node  insert node
      */
@@ -74,12 +77,12 @@ public class LruServiceImpl implements LruService {
 
     /**
      * This function help you to find to get the object on the basis of given key
-     * This function use map for checking the key is present in LRU cache or not
-     *      if the key present in LRU cache, then it insert into starting or LRU list and return the object
-     *      if the key isn't present in LRU cache, then it return null
-     * @param key   key to find the object in LRU cache
-     * @return  if the key is present in LRU cache, then return key mapped object
-     *          if the key isn't present in LRY cache, then return null object
+     * This function use map for checking the key is present in LRU Cache or not
+     *      if the key present in LRU Cache, then it insert into starting or LRU list and return the object
+     *      if the key isn't present in LRU Cache, then it return null
+     * @param key   key to find the object in LRU Cache
+     * @return  if the key is present in LRU Cache, then return key mapped object
+     *          if the key isn't present in LRY Cache, then return null object
      */
     public Node get(String key){
         Node node = null;
@@ -102,33 +105,33 @@ public class LruServiceImpl implements LruService {
     }
 
     /**
-     * This function help you to insert the object in LRU cache using key
-     * If the key is already present in LRU cache, then it will replace by object
-     * if the key isn't present, then check the capacity of LRU cache is full or not
-     * if the LRU cache is not full means you can directly enter the object in it.
-     * if the LRu cache is full, then you need to delete the least recent used object in LRU cache
+     * This function help you to insert the object in LRU Cache using key
+     * If the key is already present in LRU Cache, then it will replace by object
+     * if the key isn't present, then check the capacity of LRU Cache is full or not
+     * if the LRU Cache is not full means you can directly enter the object in it.
+     * if the LRu Cache is full, then you need to delete the least recent used object in LRU Cache
      * and insert the new object in it
      */
     public void put(String key, Node node) {
         /**
-         * if key is already present in lru cache, then you delete the object and insert new object on the
+         * if key is already present in lru Cache, then you delete the object and insert new object on the
          * same key
          */
         if (map.containsKey(key)) {
             /**
-             * delete the already present object in lru cache
+             * delete the already present object in lru Cache
              */
             delete(map.get(key));
             map.remove(key);
         }
         /**
-         * if key isn't present in lru cache
-         * then check the size of LUR cache and based on it take action
+         * if key isn't present in lru Cache
+         * then check the size of LUR Cache and based on it take action
          */
         else {
 
             /**
-             * if the size of LRU cache is full, then you need to delete the least recent used object in LRU cache
+             * if the size of LRU Cache is full, then you need to delete the least recent used object in LRU Cache
              */
             if (map.size() >= capacity) {
 
@@ -138,14 +141,14 @@ public class LruServiceImpl implements LruService {
                 String leastRecentUsedKey = last.getPrevious().getKey();
 
                 /**
-                 * delete the least recent used object in LRU cache
+                 * delete the least recent used object in LRU Cache
                  */
                 delete(map.get(leastRecentUsedKey));
                 map.remove(leastRecentUsedKey);
             }
         }
         /**
-         * insert new object in the LRU cache
+         * insert new object in the LRU Cache
          */
         map.put(key, node);
         insert(node);

@@ -1,7 +1,6 @@
 package com.zs.hobbies;
 
-import com.zs.hobbies.cache.LruService;
-import com.zs.hobbies.cache.LruServiceImpl;
+import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.controller.*;
 import com.zs.hobbies.dto.*;
 import com.zs.hobbies.util.DataBase;
@@ -29,6 +28,7 @@ public class Application {
 
         int choice = 0;
         do{
+            logger.info("Enter your choice = ");
             choice = in.nextInt();
 
             switch (choice) {
@@ -67,6 +67,7 @@ public class Application {
 
         int choice;
         do{
+            logger.info("Enter your choice = ");
             choice = in.nextInt();
             int badminton_id, personId;
             Time startTime, endTime;
@@ -146,6 +147,7 @@ public class Application {
 
         int choice;
         do{
+            logger.info("Enter your choice = ");
             choice = in.nextInt();
             int chessId, personId;
             Time startTime, endTime;
@@ -225,6 +227,7 @@ public class Application {
 
         int choice;
         do{
+            logger.info("Enter your choice = ");
             choice = in.nextInt();
             int travellingId, personId;
             Time startTime, endTime;
@@ -307,6 +310,7 @@ public class Application {
 
         int choice;
         do{
+            logger.info("Enter your choice = ");
             choice = in.nextInt();
             int videoWatchingId, personId;
             Time startTime, endTime;
@@ -375,12 +379,12 @@ public class Application {
     public static void main(String st[]) throws IOException, SQLException, ClassNotFoundException {
 
         try{
-            LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resource/logging.properties"));
+            LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resources/logging.properties"));
             logger = Logger.getLogger(Application.class.getName());
 
-            logger.info("Enter the LRU cache capacity = ");
+            logger.info("Enter the LRU Cache capacity = ");
             int capacity = in.nextInt();
-            LruService lru = new LruServiceImpl(5);
+            Cache lru = new Cache(capacity);
 
             DataBase dataBase = new DataBase();
             PersonController personController = new PersonController(dataBase.getCon(),lru);
@@ -389,14 +393,18 @@ public class Application {
             TravellingController travellingController = new TravellingController(dataBase.getCon(),lru);
             VideoWatchingController videoWatchingController = new VideoWatchingController(dataBase.getCon(),lru);
 
-            logger.info("1. wanna perform operation on Person  ");
-            logger.info("2. wanna perform operation on Badminton");
-            logger.info("3. wanna perform operation on chess");
-            logger.info("4. wanna perform operation on travelling");
-            logger.info("5. wanna perform operation on video watching ");
+
 
             int choice;
             do{
+                logger.info("1. wanna perform operation on Person  ");
+                logger.info("2. wanna perform operation on Badminton");
+                logger.info("3. wanna perform operation on chess");
+                logger.info("4. wanna perform operation on travelling");
+                logger.info("5. wanna perform operation on video watching ");
+                logger.info("6. for exit");
+
+                logger.info("Enter your choice = ");
                 choice = in.nextInt();
 
                 switch (choice) {

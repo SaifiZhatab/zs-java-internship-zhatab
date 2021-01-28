@@ -1,7 +1,7 @@
 package com.zs.hobbies.controller;
 
 import com.zs.hobbies.Application;
-import com.zs.hobbies.cache.LruService;
+import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.dto.Badminton;
 import com.zs.hobbies.dto.Person;
 import com.zs.hobbies.service.BadmintonService;
@@ -12,7 +12,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.sql.Date;
+import java.util.Iterator;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -27,7 +29,7 @@ public class BadmintonController {
     BadmintonService badmintonService;
     Scanner in = new Scanner(System.in);
 
-    public BadmintonController(Connection con,LruService lru) throws SQLException, IOException, ClassNotFoundException {
+    public BadmintonController(Connection con, Cache lru) throws SQLException, IOException, ClassNotFoundException {
         badmintonService = new BadmintonServiceImpl(con,lru);
         logger = Logger.getLogger(Application.class.getName());
     }
@@ -47,7 +49,8 @@ public class BadmintonController {
      * @throws SQLException
      */
     public void longestStreak(int personId) throws SQLException {
-        badmintonService.longestStreak(personId);
+        int longestStreak = badmintonService.longestStreak(personId);
+        logger.info("Badminton longest streak : " + longestStreak);
     }
 
     /**
@@ -56,7 +59,8 @@ public class BadmintonController {
      * @throws SQLException
      */
     public void latestStreak(int personId) throws SQLException {
-        badmintonService.latestStreak(personId);
+        int latestStreak = badmintonService.latestStreak(personId);
+        logger.info("Badminton latest streak : " + latestStreak);
     }
 
     /**
@@ -65,7 +69,12 @@ public class BadmintonController {
      * @throws SQLException
      */
     public void lastTick(int personId) throws SQLException {
-        badmintonService.lastTick(personId);
+        Badminton badminton = (Badminton) badmintonService.lastTick(personId);
+        if(badminton != null) {
+            logger.info("Badminton last tick id : " + badminton.getId());
+        }else {
+            logger.warning("Not present last tick");
+        }
     }
 
     /**
@@ -75,6 +84,12 @@ public class BadmintonController {
      * @throws SQLException
      */
     public void searchByDate(int personId, Date date) throws SQLException {
-        badmintonService.dateDetails(personId,date);
+        Set<Badminton> setDetails = badmintonService.dateDetails(personId,date);
+
+        Iterator<Badminton> iterator = setDetails.iterator();
+
+        while(iterator.hasNext()) {
+            logger.info("Badminton id : " + iterator.next().getId());
+        }
     }
 }
