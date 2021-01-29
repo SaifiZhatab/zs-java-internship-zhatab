@@ -1,12 +1,12 @@
 package com.zs.hobbies.service;
 
 import com.zs.hobbies.Application;
+import com.zs.hobbies.constent.StringConstents;
 import com.zs.hobbies.dao.BadmintonDao;
 import com.zs.hobbies.dto.Badminton;
 import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.dto.Timing;
 import com.zs.hobbies.exception.ApplicationException;
-import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.validator.Validator;
 
 import java.sql.Connection;
@@ -50,13 +50,9 @@ public class BadmintonServiceImpl implements BadmintonService {
     @Override
     public void insert(Badminton badminton) {
         /**
-         * check the details is valid or not
-         * start time will always less than end time and end time will always less than or equal to current time
-         * date will always less than or equal to current date
+         * check the badminton object details
          */
-        validator.checkTime(badminton.getTime().getStartTime(),badminton.getTime().getEndTime());
-        validator.checkDate(badminton.getTime().getDay());
-        validator.checkResult(badminton.getResult());
+        validator.validateBadminton(badminton);
 
         badmintonDao.insert(badminton);
         logger.info("Successfully Badminton enter in database");
@@ -64,22 +60,22 @@ public class BadmintonServiceImpl implements BadmintonService {
         /**
          * insert hobby into the LRU Cache
          */
-       lru.put(badminton.getPersonId() + "_badminton" , badminton);
+       lru.put(badminton.getPersonId() + StringConstents.BADMINTON + "LastTick" , badminton.getId());
 
         /**
          * change longest streak in cache memory
          */
-        Integer longestStreak = (Integer) lru.get(badminton.getPersonId() + "_badminton_longestStreak");
+        Integer longestStreak = (Integer) lru.get(badminton.getPersonId() + StringConstents.BADMINTON + "LongestStreak");
         if(longestStreak != null) {
-            lru.put(badminton.getPersonId() + "_badminton_longestStreak" , null);
+            lru.put(badminton.getPersonId() + StringConstents.BADMINTON + "LongestStreak" , null);
         }
 
         /**
          * change latest streak in cache memory
          */
-        Integer latestStreak = (Integer) lru.get(badminton.getPersonId() + "_badminton_latestStreak");
+        Integer latestStreak = (Integer) lru.get(badminton.getPersonId() + StringConstents.BADMINTON + "LatestStreak");
         if(latestStreak != null) {
-            lru.put(badminton.getPersonId() + "_badminton_latestStreak" , null);
+            lru.put(badminton.getPersonId() + StringConstents.BADMINTON +  "LatestStreak" , null);
         }
     }
 
@@ -88,18 +84,16 @@ public class BadmintonServiceImpl implements BadmintonService {
      * and return set of badminton
      * @param personId the person id
      * @param date the date
-     * @throws InvalidInputException  custom exception
-     * @throws ApplicationException  custom exception
      * return return set of badminton
      */
     @Override
-    public Set<Badminton> dateDetails(int personId, Date date) throws ApplicationException {
+    public Set<Badminton> dateDetails(int personId, Date date) {
         /**
          * check the date is valid or not
          * start time will always less than end time and end time will always less than or equal to current time
          * date will always less than or equal to current date
          */
-        validator.checkDate(date);
+        validator.validDate(date);
         ResultSet resultSet = badmintonDao.dateDetails(personId,date);
 
         try {
@@ -137,36 +131,31 @@ public class BadmintonServiceImpl implements BadmintonService {
      * @return
      */
     @Override
-    public Badminton lastTick(int personId) {
+    public int lastTick(int personId) {
 
         /**
          * check in cache memory key is present or not
          */
-        Badminton badminton = (Badminton) lru.get(personId + "_badminton");
+        Integer badmintonId = (Integer) lru.get(personId + StringConstents.BADMINTON + "LastTick");
 
         /**
          * if key present in cache memory
          */
-        if (badminton != null) {
-            return badminton;
+        if (badmintonId != null) {
+            return badmintonId;
         }
 
         ResultSet resultSet = badmintonDao.lastTick(personId);
 
         try{
             if (resultSet.next()) {
-                Timing timing = new Timing(resultSet.getTime("startTime"), resultSet.getTime("endTime"),
-                        resultSet.getDate("day"));
-
-                badminton = new Badminton(resultSet.getInt("badminton_id"), resultSet.getInt("personid"),
-                        timing, resultSet.getInt("numPlayers"), resultSet.getString("result"));
-
+                badmintonId = resultSet.getInt("badminton_id");
                 /**
                  * if not available in cache, then insert it
                  */
-                lru.put(personId + "_badminton", badminton);
+                lru.put(personId + StringConstents.BADMINTON + "LastTick", badmintonId);
             }
-            return badminton;
+            return badmintonId;
         }catch (SQLException e) {
             throw new ApplicationException(500,"Sorry, some internal error comes in badminton service");
         }
@@ -182,7 +171,7 @@ public class BadmintonServiceImpl implements BadmintonService {
         /**
          * check the longest streak is available or not in cache memory
          */
-        Integer longestStreak = (Integer) lru.get(personId + "_badminton_longestStreak");
+        Integer longestStreak = (Integer) lru.get(personId + StringConstents.BADMINTON + "LongestStreak");
 
         /**
          * if longest streak is available in cache then just return it.
@@ -213,7 +202,7 @@ public class BadmintonServiceImpl implements BadmintonService {
             /**
              * insert into cache
              */
-            lru.put(personId + "_badminton_longestStreak", longestStreak);
+            lru.put(personId + StringConstents.BADMINTON + "LongestStreak", longestStreak);
 
             return longestStreak;
         }catch (SQLException e){
@@ -231,7 +220,7 @@ public class BadmintonServiceImpl implements BadmintonService {
         /**
          * check the latest streak is available in cache or not
          */
-        Integer latestStreak = (Integer) lru.get(personId + "_badminton_latestStreak");
+        Integer latestStreak = (Integer) lru.get(personId + StringConstents.BADMINTON + "LatestStreak");
 
         /**
          * if latest streak is available in cache, then just return it.
@@ -261,7 +250,7 @@ public class BadmintonServiceImpl implements BadmintonService {
             /**
              * insert into cache
              */
-            lru.put(personId + "_badminton_latestStreak", latestStreak);
+            lru.put(personId + StringConstents.BADMINTON + "LatestStreak", latestStreak);
             return latestStreak;
         }catch (SQLException e) {
             throw new ApplicationException(500,"Sorry, some internal error comes");

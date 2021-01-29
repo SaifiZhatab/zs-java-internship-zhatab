@@ -60,9 +60,9 @@ public class TravellingController {
      * @param personId  the person ID
      */
     public void lastTick(int personId) {
-        Travelling travelling = (Travelling) travellingService.lastTick(personId);
-        if(travelling != null) {
-            logger.info("Travelling last tick id : " + travelling.getId());
+        Integer travellingId = (Integer) travellingService.lastTick(personId);
+        if(travellingId != null) {
+            logger.info("Travelling last tick id : " + travellingId);
         }else {
             logger.warning("No last tick present");
         }

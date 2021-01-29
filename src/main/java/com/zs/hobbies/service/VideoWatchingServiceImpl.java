@@ -2,6 +2,7 @@ package com.zs.hobbies.service;
 
 import com.zs.hobbies.Application;
 import com.zs.hobbies.cache.Cache;
+import com.zs.hobbies.constent.StringConstents;
 import com.zs.hobbies.dao.VideoWatchingDao;
 import com.zs.hobbies.dto.Timing;
 import com.zs.hobbies.dto.VideoWatching;
@@ -52,30 +53,29 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         /**
          * check the given object data is valid or not
          */
-        validator.checkTime(videoWatching.getTime().getStartTime(),videoWatching.getTime().getEndTime());
-        validator.checkDate(videoWatching.getTime().getDay());
+        validator.validateVideoWatching(videoWatching);
 
         videoWatchingDao.insert(videoWatching);
 
         /**
          * put object in cache memory
          */
-        lru.put(videoWatching.getPersonId() + "_videoWatching" , videoWatching);
+        lru.put(videoWatching.getPersonId() + StringConstents.VIDEOWATCHING + "LastTick" , videoWatching);
 
         /**
          * change longest streak in cache memory
          */
-        Integer longestStreak = (Integer) lru.get(videoWatching.getPersonId() + "_videoWatching_longestStreak");
+        Integer longestStreak = (Integer) lru.get(videoWatching.getPersonId() +StringConstents.VIDEOWATCHING + "LongestStreak");
         if(longestStreak != null) {
-            lru.put(videoWatching.getPersonId() + "_videoWatching_longestStreak" , null);
+            lru.put(videoWatching.getPersonId() + StringConstents.VIDEOWATCHING + "LongestStreak" , null);
         }
 
         /**
          * change latest streak in cache memory
          */
-        Integer latestStreak = (Integer) lru.get(videoWatching.getPersonId() + "_videoWatching_latestStreak");
+        Integer latestStreak = (Integer) lru.get(videoWatching.getPersonId() + StringConstents.VIDEOWATCHING + "LatestStreak");
         if(latestStreak != null) {
-            lru.put(videoWatching.getPersonId() + "_videoWatching_latestStreak" , null);
+            lru.put(videoWatching.getPersonId() + StringConstents.VIDEOWATCHING + "LatestStreak" , null);
         }
     }
 
@@ -89,7 +89,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         /**
          * check date is valid or not
          */
-        validator.checkDate(date);
+        validator.validDate(date);
 
         ResultSet resultSet = videoWatchingDao.dateDetails(personId,date);
 
@@ -130,32 +130,28 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
      * @return
      */
     @Override
-    public VideoWatching lastTick(int personId) {
+    public int lastTick(int personId) {
         /**
          * check in the cache memory
          */
-        VideoWatching videoWatching = (VideoWatching) lru.get(personId + "_videoWatching");
+        Integer videoWatchingId = (Integer) lru.get(personId + StringConstents.VIDEOWATCHING + "LastTick");
 
         /**
          * present in cache memory
          */
-        if(videoWatching != null) {
-            return videoWatching;
+        if(videoWatchingId != null) {
+            return videoWatchingId;
         }
 
         ResultSet resultSet = videoWatchingDao.lastTick(personId);
 
         try {
             if (resultSet.next()) {
-                Timing timing = new Timing(resultSet.getTime("startTime"), resultSet.getTime("endTime"),
-                        resultSet.getDate("day"));
+                videoWatchingId = resultSet.getInt("videoWatching_id");
 
-                videoWatching = new VideoWatching(resultSet.getInt("videoWatching_id"), resultSet.getInt("personid"),
-                        timing, resultSet.getString("title"));
-            } else {
-                logger.warning("No tick available for you");
+                lru.put(personId + StringConstents.VIDEOWATCHING + "LastTick" , videoWatchingId);
             }
-            return videoWatching;
+            return videoWatchingId;
         }catch (SQLException e) {
             throw new ApplicationException(500, "Sorry, some internal error comes");
         }
@@ -170,7 +166,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         /**
          * check the longest streak is available or not in cache memory
          */
-        Integer longestStreak = (Integer) lru.get(personId + "_videoWatching_longestStreak");
+        Integer longestStreak = (Integer) lru.get(personId + StringConstents.VIDEOWATCHING + "LongestStreak");
 
         /**
          * if longest streak is available in cache then just return it.
@@ -205,7 +201,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
             /**
              * insert into cache
              */
-            lru.put(personId + "_videoWatching_longestStreak", longestStreak);
+            lru.put(personId + StringConstents.VIDEOWATCHING + "LongestStreak", longestStreak);
 
             return longestStreak;
         }catch (SQLException e) {
@@ -223,7 +219,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         /**
          * check the latest streak is available in cache or not
          */
-        Integer latestStreak = (Integer) lru.get(personId + "_videoWatching_latestStreak");
+        Integer latestStreak = (Integer) lru.get(personId + StringConstents.VIDEOWATCHING + "LatestStreak");
 
         /**
          * if latest streak is available in cache, then just return it.
@@ -253,7 +249,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
             /**
              * insert into cache
              */
-            lru.put(personId + "_videoWatching_latestStreak", latestStreak);
+            lru.put(personId + StringConstents.VIDEOWATCHING + "LatestStreak", latestStreak);
             return latestStreak;
         }catch (SQLException e) {
             throw new ApplicationException(500, "Sorry, some internal error comes");

@@ -51,7 +51,7 @@ class ChessDaoTest {
     }
 
     @Test
-    void insertWithoutNullObject() throws SQLException {
+    void insertObject() throws SQLException {
         /**
          * when connection.prepareStatement(anyString()) instruction come, then it return preparedStatement
          */
@@ -67,25 +67,12 @@ class ChessDaoTest {
         /**
          * verify the connection.prepareStatement(anyString()) will execute only 1 time
          */
-        verify(connection.prepareStatement(anyString()) , times(1));
+        verify(connection.prepareStatement(anyString()) , times(1)).executeUpdate();
     }
 
-    /**
-     * check insert function in ChessDao when you pass null object
-     * @throws SQLException
-     */
-    @Test
-    public void insertWithNullObject() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(connection.prepareStatement(anyString()).executeUpdate()).thenReturn(1);
-
-        chessDao.insert(null);
-
-        verify(connection.prepareStatement(anyString()), times(1));
-    }
 
     /**
-     * check the deta details function of badminton dao class
+     * check the date details function of badminton dao class
      * @throws SQLException
      */
     @Test

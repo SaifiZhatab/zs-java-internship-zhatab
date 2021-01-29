@@ -8,7 +8,6 @@ import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.util.DataBase;
 import com.zs.hobbies.util.ResourceLoader;
 
-import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Date;
 import java.util.Scanner;
@@ -21,10 +20,8 @@ public class Application {
     /**
      * This function is used to perform all person operation
      * @param personController  person controller class
-     * @throws ApplicationException  custom internal server exception
-     * @throws InvalidInputException  custom exception exception
      */
-    static void personOperation(PersonController personController) throws ApplicationException,InvalidInputException  {
+    static void personOperation(PersonController personController) {
         logger.info("1. for person entry ");
         logger.info("2. exit");
 
@@ -63,10 +60,8 @@ public class Application {
     /**
      * The function is used to perform all badminton operation
      * @param badmintonController  the badminton controller class
-     * @throws ApplicationException  custom internal server exception
-     * @throws InvalidInputException  custom exception exception
      */
-    static void badmintonOperation(BadmintonController badmintonController) throws ApplicationException,InvalidInputException {
+    static void badmintonOperation(BadmintonController badmintonController) {
         logger.info("1. for insert badminton hobby");
         logger.info("2. for longest streak in badminton");
         logger.info("3. for latest streak in badminton");
@@ -149,10 +144,8 @@ public class Application {
     /**
      * The function is used to perform all Chess operation
      * @param chessController  the chess controller class
-     * @throws ApplicationException  custom internal server exception
-     * @throws InvalidInputException  custom exception exception
      */
-    static void chessOperation(ChessController chessController) throws ApplicationException,InvalidInputException  {
+    static void chessOperation(ChessController chessController) {
         logger.info("1. for insert chess hobby");
         logger.info("2. for longest streak in chess");
         logger.info("3. for latest streak in chess");
@@ -235,10 +228,8 @@ public class Application {
     /**
      * The function is used to perform all travelling operation
      * @param travellingController  the travelling controller class
-     * @throws ApplicationException  custom internal server exception
-     * @throws InvalidInputException  custom exception exception
      */
-    static void travellingOperation(TravellingController travellingController)throws ApplicationException,InvalidInputException  {
+    static void travellingOperation(TravellingController travellingController) {
         logger.info("1. for insert travelling hobby");
         logger.info("2. for longest streak in travelling");
         logger.info("3. for latest streak in travelling");
@@ -324,10 +315,8 @@ public class Application {
     /**
      * The function is used to perform all video watching operation
      * @param videoWatchingController  the video watching controller class
-     * @throws ApplicationException  custom internal server exception
-     * @throws InvalidInputException  custom exception exception
      */
-    static void videoWatchingOperation(VideoWatchingController videoWatchingController) throws ApplicationException,InvalidInputException {
+    static void videoWatchingOperation(VideoWatchingController videoWatchingController) {
         logger.info("1. for insert video watching hobby");
         logger.info("2. for longest streak in video watching");
         logger.info("3. for latest streak in video watching");
@@ -409,7 +398,6 @@ public class Application {
             /**
              * set logger class
              */
-             ResourceLoader.loggerManager();
              logger = Logger.getLogger(Application.class.getName());
 
             /**
@@ -417,8 +405,9 @@ public class Application {
              * and set into the cache memory
              * properties.getProperty("cache") give exception when the value is not present or when the value is not integer
              */
-            ResourceLoader.loadApplicationResource();
-            int capacity = Integer.parseInt(ResourceLoader.getParameter("cache")) ;
+            ResourceLoader resourceLoader = new ResourceLoader();
+            resourceLoader.loadApplicationResource();
+            int capacity = resourceLoader.getCacheSize() ;
 
             Cache lru = new Cache(capacity);
 
@@ -468,14 +457,12 @@ public class Application {
             }while (choice < 6);
 
 
-            dataBase.getCon().close();
+            dataBase.closeConnection();
 
         }catch (InvalidInputException e) {
             logger.warning("Error code : " + e.getErrorCode() + "   Error message : " + e.getErrorDescription());
         }catch(ApplicationException e) {
             logger.warning("Error code : " + e.getErrorCode() + "   Error message : " + e.getErrorDescription());
-        }catch (SQLException e) {
-            logger.warning("Sorry, some internal error comes in application");
         }
     }
 }

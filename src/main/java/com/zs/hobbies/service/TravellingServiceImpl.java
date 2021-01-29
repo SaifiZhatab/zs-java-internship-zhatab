@@ -2,6 +2,7 @@ package com.zs.hobbies.service;
 
 import com.zs.hobbies.Application;
 import com.zs.hobbies.cache.Cache;
+import com.zs.hobbies.constent.StringConstents;
 import com.zs.hobbies.dao.TravellingDao;
 import com.zs.hobbies.dto.Timing;
 import com.zs.hobbies.dto.Travelling;
@@ -51,31 +52,29 @@ public class TravellingServiceImpl implements TravellingService {
         /**
          * check the data is valid or not
          */
-        validator.checkTime(travelling.getTime().getStartTime(),travelling.getTime().getEndTime());
-        validator.checkDate(travelling.getTime().getDay());
-        validator.checkPosition(travelling.getStartPoint());
-        validator.checkPosition(travelling.getEndPoint());
+        validator.validateTravelling(travelling);
+
         travellingDao.insert(travelling);
 
         /**
          * put object in cache memory
          */
-        lru.put(travelling.getPersonId() + "_travelling" , travelling);
+        lru.put(travelling.getPersonId() + StringConstents.TRAVELLING + "LastTick" , travelling.getId());
 
         /**
          * change longest streak in cache memory
          */
-        Integer longestStreak = (Integer) lru.get(travelling.getPersonId() + "_travelling_longestStreak");
+        Integer longestStreak = (Integer) lru.get(travelling.getPersonId() + StringConstents.TRAVELLING + "LongestStreak");
         if(longestStreak != null) {
-            lru.put(travelling.getPersonId() + "_travelling_longestStreak" , null);
+            lru.put(travelling.getPersonId() + StringConstents.TRAVELLING + "LongestStreak" , null);
         }
 
         /**
          * change latest streak in cache memory
          */
-        Integer latestStreak = (Integer) lru.get(travelling.getPersonId() + "_travelling_latestStreak");
+        Integer latestStreak = (Integer) lru.get(travelling.getPersonId() + StringConstents.TRAVELLING + "LatestStreak");
         if(latestStreak != null) {
-            lru.put(travelling.getPersonId() + "_travelling_latestStreak" , null);
+            lru.put(travelling.getPersonId() + StringConstents.TRAVELLING + "LatestStreak" , null);
         }
     }
 
@@ -89,7 +88,7 @@ public class TravellingServiceImpl implements TravellingService {
         /**
          * check date is valid or not
          */
-        validator.checkDate(date);
+        validator.validDate(date);
 
         ResultSet resultSet = travellingDao.dateDetails(personId,date);
 
@@ -133,32 +132,28 @@ public class TravellingServiceImpl implements TravellingService {
      * @return
      */
     @Override
-    public Travelling lastTick(int personId) {
+    public int lastTick(int personId) {
         /**
          * check in cache memeory
          */
-        Travelling travelling = (Travelling) lru.get(personId + "_travelling");
+        Integer travellingId = (Integer) lru.get(personId + "LastTick");
 
         /**
          * present in cache memory
          */
-        if(travelling != null) {
-            return travelling;
+        if(travellingId != null) {
+            return travellingId;
         }
 
         ResultSet resultSet = travellingDao.lastTick(personId);
 
         try {
             if (resultSet.next()) {
-                Timing timing = new Timing(resultSet.getTime("startTime"), resultSet.getTime("endTime"),
-                        resultSet.getDate("day"));
+                travellingId = resultSet.getInt("travelling_id");
 
-                travelling = new Travelling(resultSet.getInt("travelling_id"), resultSet.getInt("personid"),
-                        timing, resultSet.getString("startPoint"), resultSet.getString("endPoint"),
-                        resultSet.getFloat("distance"));
-
+                lru.put(personId + StringConstents.TRAVELLING + "LastTick" , travellingId);
             }
-            return travelling;
+            return travellingId;
         }catch (SQLException e) {
             throw new ApplicationException(500, "Sorry, some internal error comes");
         }
@@ -174,7 +169,7 @@ public class TravellingServiceImpl implements TravellingService {
         /**
          * check the longest streak is available or not in cache memory
          */
-        Integer longestStreak = (Integer) lru.get(personId + "_travelling_longestStreak");
+        Integer longestStreak = (Integer) lru.get(personId +  StringConstents.TRAVELLING + "LongestStreak");
 
         /**
          * if longest streak is available in cache then just return it.
@@ -209,7 +204,7 @@ public class TravellingServiceImpl implements TravellingService {
             /**
              * insert into cache
              */
-            lru.put(personId + "_travelling_longestStreak", longestStreak);
+            lru.put(personId +  StringConstents.TRAVELLING + "LongestStreak", longestStreak);
 
             return longestStreak;
         }catch (SQLException e) {
@@ -228,7 +223,7 @@ public class TravellingServiceImpl implements TravellingService {
         /**
          * check the latest streak is available in cache or not
          */
-        Integer latestStreak = (Integer) lru.get(personId + "_travelling_latestStreak");
+        Integer latestStreak = (Integer) lru.get(personId +  StringConstents.TRAVELLING + "latestStreak");
 
         /**
          * if latest streak is available in cache, then just return it.
@@ -259,7 +254,7 @@ public class TravellingServiceImpl implements TravellingService {
             /**
              * insert into cache
              */
-            lru.put(personId + "_travelling_latestStreak", latestStreak);
+            lru.put(personId +  StringConstents.TRAVELLING + "LatestStreak", latestStreak);
             return latestStreak;
         }catch (SQLException e) {
             throw new ApplicationException(500, "Sorry, some internal error comes");

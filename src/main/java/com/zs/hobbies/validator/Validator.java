@@ -1,5 +1,6 @@
 package com.zs.hobbies.validator;
 
+import com.zs.hobbies.dto.*;
 import com.zs.hobbies.exception.InvalidInputException;
 
 import java.sql.Date;
@@ -18,8 +19,7 @@ public class Validator {
      * @param result  the result string
      * @return true/false
      */
-
-    public boolean checkResult(String result) {
+    public boolean validResult(String result) {
         if(result.compareToIgnoreCase("win")==0 || result.compareToIgnoreCase("draw")==0
                 || result.compareToIgnoreCase("lost")==0 ) {
             return true;
@@ -34,7 +34,7 @@ public class Validator {
      * @param numOfPlayer   the number of player
      * @return  true / false
      */
-    public boolean checkNumOfPlayer(int numOfPlayer) {
+    public boolean validNumberOfPlayer(int numOfPlayer) {
         if(numOfPlayer > 0) {
             return true;
         }else {
@@ -48,7 +48,7 @@ public class Validator {
      * @param move   the number of move
      * @return  true / false
      */
-    public boolean checkNumOfMove(int move) {
+    public boolean validNumberOfMoves(int move) {
         if(move >=0 && move <= 100) {
             return true;
         }else {
@@ -62,7 +62,7 @@ public class Validator {
      * @param mobile  the mobile number string
      * @return true/false
      */
-    public boolean checkMobile(String mobile) {
+    public boolean validMobile(String mobile) {
         int length = mobile.length();
 
         /**
@@ -92,7 +92,7 @@ public class Validator {
      * @param check the name string
      * @return true/false
      */
-    public boolean checkName(String check) {
+    public boolean validName(String check) {
         int length = check.length();
 
         /**
@@ -116,7 +116,7 @@ public class Validator {
      * @param position  the position string
      * @return  true/false
      */
-    public boolean checkPosition(String position) {
+    public boolean validPosition(String position) {
         if(position.length() >0 && position.length() < 100) {
             return true;
         }else {
@@ -131,7 +131,7 @@ public class Validator {
      * @param endTime the end time
      * @return  true/false
      */
-    public boolean checkTime(Time startTime, Time endTime) {
+    public boolean validTime(Time startTime, Time endTime) {
         if(startTime.compareTo(endTime) < 0 && endTime.compareTo(Time.valueOf(LocalTime.now())) < 0) {
             return true;
         }else {
@@ -145,11 +145,84 @@ public class Validator {
      * @param date  the given date
      * @return true or exception
      */
-    public boolean checkDate(Date date) {
+    public boolean validDate(Date date) {
         if(date.after(new Date(System.currentTimeMillis())) ){
             throw new InvalidInputException(400,"Date cannot be greater than today's date");
         }else {
             return true;
+        }
+    }
+
+    /**
+     * this function check the badminton object data is correct
+     * @param badminton the badminton object
+     * @return true or invalid input exception
+     */
+    public boolean validateBadminton(Badminton badminton) {
+        if( validTime(badminton.getTime().getStartTime(),badminton.getTime().getEndTime()) &&
+            validDate(badminton.getTime().getDay()) && validNumberOfPlayer(badminton.getNumPlayers()) &&
+                validResult(badminton.getResult()) ){
+            return true;
+        }else{
+            throw new InvalidInputException(400,"Wrong data given by user");
+        }
+    }
+
+    /**
+     * this function check the person object data is correct
+     * @param person the person object
+     * @return true or invalid input exception
+     */
+    public  boolean validatePerson(Person person) {
+        if(validName(person.getName()) && validMobile(person.getMobile()) ) {
+            return true;
+        }else {
+            throw new InvalidInputException(400,"Wrong data given by user");
+        }
+    }
+
+    /**
+     * this function check the chess object data is correct
+     * @param chess the chess object
+     * @return true or invalid input exception
+     */
+    public boolean validateChess(Chess chess) {
+        if(validTime(chess.getTime().getStartTime(),chess.getTime().getEndTime()) &&
+            validDate(chess.getTime().getDay()) && validResult(chess.getResult()) &&
+                validNumberOfMoves(chess.getNumMoves()) ) {
+            return true;
+        }else {
+            throw new InvalidInputException(400,"Wrong data given by user");
+        }
+    }
+
+    /**
+     * this function check the videoWatching object data is correct
+     * @param videoWatching the videoWatching object
+     * @return true or invalid input exception
+     */
+    public boolean validateVideoWatching(VideoWatching videoWatching) {
+        if (validTime(videoWatching.getTime().getStartTime(),videoWatching.getTime().getEndTime()) &&
+                validDate(videoWatching.getTime().getDay()) ) {
+            return true;
+        }else {
+            throw new InvalidInputException(400,"Wrong data given by user");
+        }
+
+    }
+
+    /**
+     * this function check the travelling object data is correct
+     * @param travelling the travelling object
+     * @return true or invalid input exception
+     */
+    public boolean validateTravelling(Travelling travelling) {
+        if (validTime(travelling.getTime().getStartTime(),travelling.getTime().getEndTime()) &&
+                validDate(travelling.getTime().getDay()) && validPosition(travelling.getStartPoint()) &&
+                validPosition(travelling.getEndPoint()) ){
+            return true;
+        }else {
+            throw new InvalidInputException(400,"Wrong data given by user");
         }
     }
 }

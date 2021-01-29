@@ -57,9 +57,9 @@ public class BadmintonController {
      * @param personId  the person ID
      */
     public void lastTick(int personId) {
-        Badminton badminton = (Badminton) badmintonService.lastTick(personId);
-        if(badminton != null) {
-            logger.info("Badminton last tick id : " + badminton.getId());
+        Integer badmintonId = (Integer) badmintonService.lastTick(personId);
+        if(badmintonId != null) {
+            logger.info("Badminton last tick id : " +badmintonId);
         }else {
             logger.warning("Not present last tick");
         }

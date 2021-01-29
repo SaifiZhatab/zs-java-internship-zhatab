@@ -54,9 +54,9 @@ public class VideoWatchingController {
      * @param personId  the person ID
      */
     public void lastTick(int personId) {
-        VideoWatching videoWatching = (VideoWatching) videoWatchingService.lastTick(personId);
-        if(videoWatching != null) {
-            logger.info("Last tick video id : " + videoWatching.getId());
+        Integer videoWatchingId = (Integer) videoWatchingService.lastTick(personId);
+        if(videoWatchingId != null) {
+            logger.info("Last tick video id : " + videoWatchingId);
         }
     }
 

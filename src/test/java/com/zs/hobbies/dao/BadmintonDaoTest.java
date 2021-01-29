@@ -19,8 +19,8 @@ import static org.mockito.Mockito.*;
  */
 public class BadmintonDaoTest {
 
-    private Connection connection = mock(Connection.class);
-    private PreparedStatement preparedStatement = mock(PreparedStatement.class);
+     Connection connection = mock(Connection.class);
+     PreparedStatement preparedStatement = mock(PreparedStatement.class);
 
     @InjectMocks
     private BadmintonDao badmintonDao ;
@@ -81,23 +81,10 @@ public class BadmintonDaoTest {
         /**
          * verify the connection.prepareStatement(anyString()) will execute only 1 time
          */
-       // verify(connection.prepareStatement(anyString()) , times(1));
+        verify(connection.prepareStatement(anyString()) , times(1)).executeUpdate();
 
     }
 
-    /**
-     * check insert function in badmintonDao when you pass null object
-     * @throws SQLException
-     */
-    @Test
-    public void insertWithNullObject() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(connection.prepareStatement(anyString()).executeUpdate()).thenReturn(1);
-
-        badmintonDao.insert(null);
-
-       // verify(connection.prepareStatement(anyString()), times(0));
-    }
 
     /**
      * check longest streak function

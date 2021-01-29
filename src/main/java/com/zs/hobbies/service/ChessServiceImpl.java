@@ -2,6 +2,7 @@ package com.zs.hobbies.service;
 
 import com.zs.hobbies.Application;
 import com.zs.hobbies.cache.Cache;
+import com.zs.hobbies.constent.StringConstents;
 import com.zs.hobbies.dao.ChessDao;
 import com.zs.hobbies.dto.Chess;
 import com.zs.hobbies.dto.Timing;
@@ -51,32 +52,29 @@ public class ChessServiceImpl implements ChessService {
         /**
          * check the given data is valid or not
          */
-        validator.checkTime(chess.getTime().getStartTime(),chess.getTime().getEndTime());
-        validator.checkDate(chess.getTime().getDay());
-        validator.checkResult(chess.getResult());
-        validator.checkNumOfMove(chess.getNumMoves());
+        validator.validateChess(chess);
 
         chessDao.insert(chess);
 
         /**
          * insert into cache
          */
-        lru.put(chess.getPersonId() + "_chess", chess);
+        lru.put(chess.getPersonId() + StringConstents.CHESS + "LastTick", chess.getId());
 
         /**
          * change longest streak in cache memory
          */
-        Integer longestStreak = (Integer) lru.get(chess.getPersonId() + "_chess_longestStreak");
+        Integer longestStreak = (Integer) lru.get(chess.getPersonId() + StringConstents.CHESS + "LongestStreak");
         if(longestStreak != null) {
-            lru.put(chess.getPersonId() + "_chess_longestStreak" , null);
+            lru.put(chess.getPersonId() + StringConstents.CHESS + "LongestStreak" , null);
         }
 
         /**
          * change latest streak in cache memory
          */
-        Integer latestStreak = (Integer) lru.get(chess.getPersonId() + "_chess_latestStreak");
+        Integer latestStreak = (Integer) lru.get(chess.getPersonId() + StringConstents.CHESS + "LatestStreak");
         if(latestStreak != null) {
-            lru.put(chess.getPersonId() + "_chess_latestStreak" , null);
+            lru.put(chess.getPersonId() + StringConstents.CHESS + "LatestStreak" , null);
         }
     }
 
@@ -87,7 +85,7 @@ public class ChessServiceImpl implements ChessService {
      */
     @Override
     public Set<Chess> dateDetails(int personId, Date date) {
-        validator.checkDate(date);
+        validator.validDate(date);
         Set<Chess> setDetails = new HashSet<Chess>();
 
         ResultSet resultSet = chessDao.dateDetails(personId,date);
@@ -121,30 +119,27 @@ public class ChessServiceImpl implements ChessService {
      * @return
      */
     @Override
-    public Chess lastTick(int personId) {
+    public int lastTick(int personId) {
         /**
          * check in cache memory
          */
-        Chess chess = (Chess) lru.get(personId + "_chess");
+        Integer chessId = (Integer) lru.get(personId + StringConstents.CHESS + "LastTick");
 
         /**
          * if present in cache
          */
-        if(chess != null) {
-            return chess;
+        if(chessId != null) {
+            return chessId;
         }
 
         ResultSet resultSet = chessDao.lastTick(personId);
         try {
             if (resultSet.next()) {
-                Timing timing = new Timing(resultSet.getTime("startTime"), resultSet.getTime("endTime"),
-                        resultSet.getDate("day"));
+                chessId = resultSet.getInt("chess_id");
 
-                chess = new Chess(resultSet.getInt("chess_id"), resultSet.getInt("personid"),
-                        timing, resultSet.getInt("numMoves"), resultSet.getString("result"));
-
+                lru.put(personId + StringConstents.CHESS + "LastTick",chessId);
             }
-            return chess;
+            return chessId;
         }catch (SQLException e) {
             throw new ApplicationException(500,"Sorry, some internal error comes");
         }
@@ -159,7 +154,7 @@ public class ChessServiceImpl implements ChessService {
         /**
          * check the longest streak is available or not in cache memory
          */
-        Integer longestStreak = (Integer) lru.get(personId + "_chess_longestStreak");
+        Integer longestStreak = (Integer) lru.get(personId + StringConstents.CHESS + "LongestStreak");
 
         /**
          * if longest streak is available in cache then just return it.
@@ -190,7 +185,7 @@ public class ChessServiceImpl implements ChessService {
             /**
              * insert into cache
              */
-            lru.put(personId + "_chess_longestStreak", longestStreak);
+            lru.put(personId + StringConstents.CHESS + "LongestStreak", longestStreak);
 
             return longestStreak;
         }catch (SQLException e) {
@@ -208,7 +203,7 @@ public class ChessServiceImpl implements ChessService {
         /**
          * check the latest streak is available in cache or not
          */
-        Integer latestStreak = (Integer) lru.get(personId + "_chess_latestStreak");
+        Integer latestStreak = (Integer) lru.get(personId + StringConstents.CHESS + "LatestStreak");
 
         /**
          * if latest streak is available in cache, then just return it.
@@ -239,7 +234,7 @@ public class ChessServiceImpl implements ChessService {
             /**
              * insert into cache
              */
-            lru.put(personId + "_chess_latestStreak", latestStreak);
+            lru.put(personId + StringConstents.CHESS + "LatestStreak", latestStreak);
             return latestStreak;
         }catch (SQLException e) {
             throw new ApplicationException(500,"Sorry, some internal error comes");

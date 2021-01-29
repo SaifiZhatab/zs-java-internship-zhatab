@@ -16,7 +16,7 @@ public interface HobbyService<E> {
      * @param personId the person id
      * @return
      */
-    E lastTick(int personId);
+    int lastTick(int personId);
 
     /**
      * This function help you to find the longest streak in databse

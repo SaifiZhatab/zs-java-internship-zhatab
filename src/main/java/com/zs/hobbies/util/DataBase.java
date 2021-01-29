@@ -5,6 +5,7 @@ import com.zs.hobbies.exception.ApplicationException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 
 /**
@@ -17,7 +18,6 @@ public class DataBase {
     /**
      *  This is constructor which help you to connect your program to database
      * set all the prepare statement
-     * @throws ApplicationException  internal server exception custom class
      */
     public DataBase() {
         try {
@@ -26,8 +26,10 @@ public class DataBase {
 
             logger = Logger.getLogger(Application.class.getName());
             logger.info("DataBase connect successfully ");
-        }catch (Exception e) {
+        }catch (SQLException e) {
             throw new ApplicationException(500,"Some internal exception comes in database connectivity");
+        }catch (ClassNotFoundException e) {
+            throw new ApplicationException(500, "Sorry, class not found");
         }
     }
 
@@ -39,11 +41,11 @@ public class DataBase {
         return con;
     }
 
-    /**
-     * This function set the connection
-     * @param con the connection object
-     */
-    public void setCon(Connection con) {
-        this.con = con;
+    public void closeConnection(){
+        try{
+            con.close();
+        }catch (SQLException e){
+            throw new ApplicationException(500,"Sorry, some internal error comes in connection close");
+        }
     }
 }

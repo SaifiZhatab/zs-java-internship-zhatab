@@ -35,7 +35,7 @@ class BadmintonTest {
      *  This function help you to check the person object available in badminton object
      */
     @Test
-    void checkPersonAvailable() throws SQLException {
+    void validatePersonAvailable() throws SQLException {
         person = new Person(1,"zhatab" , "8024987656","UP");
 
         /**
@@ -70,7 +70,7 @@ class BadmintonTest {
     }
 
     @Test
-    void checkTimeAvailable() throws SQLException {
+    void ValidTimeAvailable() throws SQLException {
         timing = new Timing(Time.valueOf("10:59:59"),Time.valueOf("12:59:59"), Date.valueOf("2015-04-05"));
 
         /**

@@ -58,10 +58,10 @@ public class ChessController {
      * @param personId  the person ID
      */
     public void lastTick(int personId) {
-        Chess chess = (Chess) chessService.lastTick(personId);
+        Integer chessId = (Integer) chessService.lastTick(personId);
 
-        if(chess != null) {
-            logger.info("Chess last tick id : " + chess.getId());
+        if(chessId != null) {
+            logger.info("Chess last tick id : " + chessId);
         }else {
             logger.warning("No last tick present");
         }

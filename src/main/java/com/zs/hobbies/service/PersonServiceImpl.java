@@ -39,9 +39,7 @@ public class PersonServiceImpl implements PersonService {
         /**
          * check validity
          */
-        validator.checkName(person.getName());
-        validator.checkMobile(person.getMobile());
-
+        validator.validatePerson(person);
         personDao.insert(person);
     }
 
