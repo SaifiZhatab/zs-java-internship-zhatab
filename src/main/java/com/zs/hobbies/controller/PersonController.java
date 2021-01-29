@@ -15,7 +15,6 @@ import java.util.logging.Logger;
  * that call the person service call and using service interact with database
  */
 public class PersonController {
-    private Person person;
     private PersonService personService;
     private Logger logger;
 

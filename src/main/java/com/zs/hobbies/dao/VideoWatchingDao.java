@@ -19,7 +19,6 @@ public class VideoWatchingDao {
 
     public VideoWatchingDao(Connection con) {
         logger = Logger.getLogger(Application.class.getName());
-        logger.info("Successfully VideoWatching database start ");
         this.con = con;
     }
 

@@ -3,12 +3,10 @@ package com.zs.hobbies.controller;
 import com.zs.hobbies.Application;
 import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.dto.Badminton;
-import com.zs.hobbies.dto.Person;
 import com.zs.hobbies.service.BadmintonService;
 import com.zs.hobbies.service.BadmintonServiceImpl;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Date;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -20,10 +18,7 @@ import java.util.logging.Logger;
  * that call the badminton service call and using service interact with database
  */
 public class BadmintonController {
-    private Person person;
     private Logger logger;
-
-
     BadmintonService badmintonService;
     Scanner in = new Scanner(System.in);
 
@@ -78,8 +73,12 @@ public class BadmintonController {
     public void searchByDate(int personId, Date date) {
         Set<Badminton> setDetails = badmintonService.dateDetails(personId,date);
 
-        Iterator<Badminton> iterator = setDetails.iterator();
+        if(setDetails == null) {
+            logger.warning("No details present at this date");
+            return;
+        }
 
+        Iterator<Badminton> iterator = setDetails.iterator();
         while(iterator.hasNext()) {
             logger.info("Badminton id : " + iterator.next().getId());
         }

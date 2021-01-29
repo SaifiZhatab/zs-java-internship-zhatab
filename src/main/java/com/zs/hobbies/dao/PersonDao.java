@@ -17,7 +17,6 @@ public class PersonDao {
 
     public PersonDao(Connection con) {
         logger = Logger.getLogger(Application.class.getName());
-        logger.info("Successfully Person database start ");
         this.con = con;
     }
 

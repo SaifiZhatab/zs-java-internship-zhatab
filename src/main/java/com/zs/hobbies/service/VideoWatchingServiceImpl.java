@@ -6,7 +6,6 @@ import com.zs.hobbies.dao.VideoWatchingDao;
 import com.zs.hobbies.dto.Timing;
 import com.zs.hobbies.dto.VideoWatching;
 import com.zs.hobbies.exception.ApplicationException;
-import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.validator.Validator;
 
 import java.sql.Connection;
@@ -30,10 +29,13 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
     private SimilarRequirement similarRequirement;
     private Validator validator;
 
+    /**
+     * This is constructor and it set the connection and lru object
+     * @param con database connection
+     * @param lru lru cache object
+     */
     public VideoWatchingServiceImpl(Connection con,Cache lru) {
         logger = Logger.getLogger(Application.class.getName());
-
-        logger.info("Successfully VideoWatching service start ");
         videoWatchingDao = new VideoWatchingDao(con);
 
         this.lru = lru;
@@ -93,10 +95,10 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
 
         try {
             /**
-             * if details are not present of given date
+             * if details are not present at given date
              */
             if (!resultSet.next()) {
-                throw new InvalidInputException(400, "Not present any entity");
+                return null;
             }
 
             /**

@@ -2,11 +2,7 @@ package com.zs.hobbies.controller;
 
 import com.zs.hobbies.Application;
 import com.zs.hobbies.cache.Cache;
-import com.zs.hobbies.dto.Badminton;
-import com.zs.hobbies.dto.Person;
-import com.zs.hobbies.dto.Timing;
 import com.zs.hobbies.dto.Travelling;
-import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.service.TravellingService;
 import com.zs.hobbies.service.TravellingServiceImpl;
 
@@ -15,7 +11,6 @@ import java.sql.Date;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
@@ -23,7 +18,6 @@ import java.util.logging.Logger;
  * that call the travelling service call and using service interact with database
  */
 public class TravellingController {
-    private Person person;
     private TravellingService travellingService;
     private Logger logger;
 
@@ -36,7 +30,7 @@ public class TravellingController {
     }
 
     /**
-     * This funciton help you to insert the travelling object in database
+     * This function help you to insert the travelling object in database
      * @param travelling
      */
     public void insert(Travelling travelling){
@@ -82,12 +76,14 @@ public class TravellingController {
     public void searchByDate(int personId, Date date) {
         Set<Travelling> setDetails = travellingService.dateDetails(personId,date);
 
-        Iterator<Travelling> iterator = setDetails.iterator();
+        if(setDetails == null) {
+            logger.warning("No details present at this date");
+            return;
+        }
 
+        Iterator<Travelling> iterator = setDetails.iterator();
         while(iterator.hasNext()) {
             logger.info("Travelling id : " + iterator.next().getId());
         }
-
     }
-
 }

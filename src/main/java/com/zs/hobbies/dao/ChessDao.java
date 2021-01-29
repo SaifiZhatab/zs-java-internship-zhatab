@@ -19,7 +19,6 @@ public class ChessDao {
 
     public ChessDao(Connection con) {
         logger = Logger.getLogger(Application.class.getName());
-        logger.info("Successfully Chess database start ");
         this.con = con;
     }
 

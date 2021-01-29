@@ -19,7 +19,6 @@ public class TravellingDao {
 
     public TravellingDao(Connection con) {
          logger = Logger.getLogger(Application.class.getName());
-        logger.info("Successfully Travelling database start ");
         this.con = con;
     }
 

@@ -23,8 +23,6 @@ public class BadmintonDao {
 
     public BadmintonDao(Connection con) {
        logger = Logger.getLogger(Application.class.getName());
-       logger.info("Successfully Badminton database start ");
-
         this.con = con;
     }
     /**

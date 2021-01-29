@@ -54,7 +54,8 @@ public class Application {
 
                         personController.insert(person);
                          break;
-                case 2: break;
+                default:
+                    break;
             }
         }while (choice != 2);
     }
@@ -139,7 +140,7 @@ public class Application {
                     badmintonController.searchByDate(personId,date);
                     break;
 
-                case 6:
+                default:
                     break;
             }
         }while(choice != 6);
@@ -225,10 +226,10 @@ public class Application {
                     chessController.searchByDate(personId,date);
                     break;
 
-                case 6:
+                default:
                     break;
             }
-        }while(choice != 6);
+        }while(choice < 6);
     }
 
     /**
@@ -314,10 +315,10 @@ public class Application {
                     travellingController.searchByDate(personId,date);
                     break;
 
-                case 6:
+                default:
                     break;
             }
-        }while(choice != 6);
+        }while(choice < 6);
     }
 
     /**
@@ -396,10 +397,10 @@ public class Application {
                     videoWatchingController.searchByDate(personId,date);
                     break;
 
-                case 6:
+                default:
                     break;
             }
-        }while(choice != 6);
+        }while(choice < 6);
     }
 
     public static void main(String st[]) {
@@ -431,11 +432,11 @@ public class Application {
 
             int choice;
             do{
-                logger.info("1. wanna perform operation on Person  ");
-                logger.info("2. wanna perform operation on Badminton");
-                logger.info("3. wanna perform operation on chess");
-                logger.info("4. wanna perform operation on travelling");
-                logger.info("5. wanna perform operation on video watching ");
+                logger.info("1. perform operation on Person");
+                logger.info("2. perform operation on Badminton hobby");
+                logger.info("3. perform operation on chess hobby");
+                logger.info("4. perform operation on travelling hobby");
+                logger.info("5. perform operation on video watching hobby");
                 logger.info("6. for exit");
 
                 logger.info("Enter your choice = ");
@@ -464,7 +465,7 @@ public class Application {
                         break;
                 }
 
-            }while (choice != 6);
+            }while (choice < 6);
 
 
             dataBase.getCon().close();
@@ -474,7 +475,7 @@ public class Application {
         }catch(ApplicationException e) {
             logger.warning("Error code : " + e.getErrorCode() + "   Error message : " + e.getErrorDescription());
         }catch (SQLException e) {
-            logger.warning("Sorry, some erorr comes");
+            logger.warning("Sorry, some internal error comes in application");
         }
     }
 }

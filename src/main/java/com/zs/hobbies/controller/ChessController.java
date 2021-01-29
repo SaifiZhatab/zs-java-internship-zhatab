@@ -3,7 +3,6 @@ package com.zs.hobbies.controller;
 import com.zs.hobbies.Application;
 import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.dto.Chess;
-import com.zs.hobbies.dto.Person;
 import com.zs.hobbies.service.ChessService;
 import com.zs.hobbies.service.ChessServiceImpl;
 
@@ -19,9 +18,7 @@ import java.util.logging.Logger;
  * that call the chess service call and using service interact with database
  */
 public class ChessController {
-    private Person person;
     private Logger logger;
-
     private ChessService chessService;
     Scanner in = new Scanner(System.in);
 
@@ -30,16 +27,6 @@ public class ChessController {
 
         logger = Logger.getLogger(Application.class.getName());
     }
-
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
-    }
-
-
 
     /**
      * This function help you to insert the chess object in database
@@ -87,8 +74,12 @@ public class ChessController {
     public void searchByDate(int personId, Date date) {
         Set<Chess> setDetails = chessService.dateDetails(personId,date);
 
-        Iterator<Chess> iterator = setDetails.iterator();
+        if(setDetails == null) {
+            logger.warning("No details present at this date");
+            return;
+        }
 
+        Iterator<Chess> iterator = setDetails.iterator();
         while(iterator.hasNext()) {
             logger.info("Chess id : " + iterator.next().getId());
         }

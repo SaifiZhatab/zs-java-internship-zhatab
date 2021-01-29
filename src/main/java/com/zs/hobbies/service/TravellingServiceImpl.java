@@ -6,10 +6,8 @@ import com.zs.hobbies.dao.TravellingDao;
 import com.zs.hobbies.dto.Timing;
 import com.zs.hobbies.dto.Travelling;
 import com.zs.hobbies.exception.ApplicationException;
-import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.validator.Validator;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -31,15 +29,12 @@ public class TravellingServiceImpl implements TravellingService {
     private Validator validator;
 
     /**
-     * This is a constructor
-     * This connect class with logger and initialize the Travelling Database also
-     * @throws SQLException
-     * @throws ClassNotFoundException
-     * @throws IOException
+     * This is constructor and it set the connection and lru object
+     * @param con database connection
+     * @param lru lru cache object
      */
     public TravellingServiceImpl(Connection con,Cache lru) {
         logger = Logger.getLogger(Application.class.getName());
-        logger.info("Successfully Travelling service start ");
 
         this.lru = lru;
         travellingDao = new TravellingDao(con);
@@ -100,10 +95,10 @@ public class TravellingServiceImpl implements TravellingService {
 
         try {
             /**
-             * if details are not present of given date
+             * if details are not present at given date
              */
             if (!resultSet.next()) {
-                throw new InvalidInputException(400, "Not present any entity");
+                return null;
             }
 
             /**

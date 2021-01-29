@@ -18,9 +18,13 @@ public class PersonServiceImpl implements PersonService {
     private Logger logger;
     private Validator validator;
 
+    /**
+     * This is constructor and it set the connection and lru object
+     * @param con database connection
+     * @param lru lru cache object
+     */
     public PersonServiceImpl(Connection con,Cache lru) {
         logger = Logger.getLogger(Application.class.getName());
-        logger.info("Successfully Person Service start ");
         this.lru = lru;
         validator = new Validator();
         personDao =  new PersonDao(con);

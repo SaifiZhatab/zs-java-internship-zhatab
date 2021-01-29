@@ -30,17 +30,16 @@ public class BadmintonServiceImpl implements BadmintonService {
     private Validator validator;
 
     /**
-     * This is a constructor
-     * This class set logger and initialize Badminton database
+     * This is constructor and it set the connection and lru object
+     * @param con database connection
+     * @param lru lru cache object
      */
     public BadmintonServiceImpl(Connection con,Cache lru) {
         logger = Logger.getLogger(Application.class.getName());
         validator = new Validator();
 
-        logger.info("Successfully Badminton Service class start ");
         this.lru = lru;
         badmintonDao = new BadmintonDao(con);
-
         similarRequirement = new SimilarRequirement();
     }
 
@@ -106,10 +105,10 @@ public class BadmintonServiceImpl implements BadmintonService {
         try {
 
             /**
-             * if details are not present of given date
+             * if details are not present at given date
              */
             if (!resultSet.next()) {
-                throw new InvalidInputException(400, "Not present any entity");
+                return null;
             }
 
             Set<Badminton> setDetails = new HashSet<Badminton>();
