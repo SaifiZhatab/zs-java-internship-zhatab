@@ -1,7 +1,5 @@
 package com.zs.hobbies.dto;
 
-import java.sql.SQLException;
-
 /**
  * this class provide all videoWatching facility
  */
@@ -16,9 +14,8 @@ public class VideoWatching extends Hobby{
      * @param personId the person object
      * @param time the timing object
      * @param title the title of video
-     * @throws SQLException
      */
-    public VideoWatching(int id, int personId, Timing time, String title) throws SQLException {
+    public VideoWatching(int id, int personId, Timing time, String title) {
         super(id);
         this.personId = personId;
         this.time = time;

@@ -19,7 +19,7 @@ public class Validator {
      * @return true/false
      */
 
-    public boolean checkResult(String result) throws InvalidInputException {
+    public boolean checkResult(String result) {
         if(result.compareToIgnoreCase("win")==0 || result.compareToIgnoreCase("draw")==0
                 || result.compareToIgnoreCase("lost")==0 ) {
             return true;
@@ -34,7 +34,7 @@ public class Validator {
      * @param numOfPlayer   the number of player
      * @return  true / false
      */
-    public boolean checkNumOfPlayer(int numOfPlayer) throws InvalidInputException{
+    public boolean checkNumOfPlayer(int numOfPlayer) {
         if(numOfPlayer > 0) {
             return true;
         }else {
@@ -48,7 +48,7 @@ public class Validator {
      * @param move   the number of move
      * @return  true / false
      */
-    public boolean checkNumOfMove(int move) throws InvalidInputException{
+    public boolean checkNumOfMove(int move) {
         if(move >=0 && move <= 100) {
             return true;
         }else {
@@ -62,7 +62,7 @@ public class Validator {
      * @param mobile  the mobile number string
      * @return true/false
      */
-    public boolean checkMobile(String mobile) throws InvalidInputException{
+    public boolean checkMobile(String mobile) {
         int length = mobile.length();
 
         /**
@@ -92,7 +92,7 @@ public class Validator {
      * @param check the name string
      * @return true/false
      */
-    public boolean checkName(String check) throws InvalidInputException{
+    public boolean checkName(String check) {
         int length = check.length();
 
         /**
@@ -116,7 +116,7 @@ public class Validator {
      * @param position  the position string
      * @return  true/false
      */
-    public boolean checkPosition(String position) throws InvalidInputException{
+    public boolean checkPosition(String position) {
         if(position.length() >0 && position.length() < 100) {
             return true;
         }else {
@@ -130,9 +130,8 @@ public class Validator {
      * @param startTime the start time
      * @param endTime the end time
      * @return  true/false
-     * @throws InvalidInputException
      */
-    public boolean checkTime(Time startTime, Time endTime) throws InvalidInputException {
+    public boolean checkTime(Time startTime, Time endTime) {
         if(startTime.compareTo(endTime) < 0 && endTime.compareTo(Time.valueOf(LocalTime.now())) < 0) {
             return true;
         }else {
@@ -145,9 +144,8 @@ public class Validator {
      * if date is correct then it return true otherwise it return exception
      * @param date  the given date
      * @return true or exception
-     * @throws InvalidInputException  custom exception
      */
-    public boolean checkDate(Date date) throws InvalidInputException{
+    public boolean checkDate(Date date) {
         if(date.after(new Date(System.currentTimeMillis())) ){
             throw new InvalidInputException(400,"Date cannot be greater than today's date");
         }else {

@@ -5,6 +5,7 @@ import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.dao.ChessDao;
 import com.zs.hobbies.dto.Chess;
 import com.zs.hobbies.dto.Timing;
+import com.zs.hobbies.exception.ApplicationException;
 import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.validator.Validator;
 
@@ -48,10 +49,9 @@ public class ChessServiceImpl implements ChessService {
     /**
      * This function help you to insert Chess details into Chess database table
      * @param chess the chess object
-     * @throws InvalidInputException custom exception
      */
     @Override
-    public void insert(Chess chess) throws InvalidInputException {
+    public void insert(Chess chess) {
         /**
          * check the given data is valid or not
          */
@@ -60,7 +60,7 @@ public class ChessServiceImpl implements ChessService {
         validator.checkResult(chess.getResult());
         validator.checkNumOfMove(chess.getNumMoves());
 
-        chessDao.insertChess(chess);
+        chessDao.insert(chess);
 
         /**
          * insert into cache
@@ -88,42 +88,44 @@ public class ChessServiceImpl implements ChessService {
      * This function help you to fetch the data on the basis of date
      * @param personId    the person id
      * @param date      date
-     * @throws InvalidInputException
      */
     @Override
-    public Set<Chess> dateDetails(int personId, Date date) throws InvalidInputException, SQLException {
+    public Set<Chess> dateDetails(int personId, Date date) {
         validator.checkDate(date);
         Set<Chess> setDetails = new HashSet<Chess>();
 
-        ResultSet resultSet = chessDao.dateChessDetails(personId,date);
+        ResultSet resultSet = chessDao.dateDetails(personId,date);
 
-        /**
-         * if details are not present of given date
-         */
-        if(!resultSet.next()) {
-            throw new InvalidInputException(400,"Not present any entity");
+        try {
+            /**
+             * if details are not present of given date
+             */
+            if (!resultSet.next()) {
+                throw new InvalidInputException(400, "Not present any entity");
+            }
+
+            while (resultSet.next()) {
+                Timing timing = new Timing(resultSet.getTime("startTime"), resultSet.getTime("endTime"),
+                        resultSet.getDate("day"));
+
+                Chess chess = new Chess(resultSet.getInt("chess_id"), resultSet.getInt("personid"),
+                        timing, resultSet.getInt("numMoves"), resultSet.getString("result"));
+
+                setDetails.add(chess);
+            }
+            return setDetails;
+        }catch (SQLException e) {
+            throw new ApplicationException(500,"Sorry, some internal error comes");
         }
-
-        while(resultSet.next()) {
-            Timing timing = new Timing(resultSet.getTime("startTime"), resultSet.getTime("endTime"),
-                    resultSet.getDate("day"));
-
-            Chess chess = new Chess(resultSet.getInt("chess_id"),resultSet.getInt("personid"),
-                    timing,resultSet.getInt("numMoves"),resultSet.getString("result"));
-
-            setDetails.add(chess);
-        }
-        return setDetails;
     }
 
     /**
      * This function help you to find the last tick of Chess
      * @param personId    the person object
-     * @throws SQLException
      * @return
      */
     @Override
-    public Chess lastTick(int personId) throws SQLException {
+    public Chess lastTick(int personId) {
         /**
          * check in cache memory
          */
@@ -137,27 +139,27 @@ public class ChessServiceImpl implements ChessService {
         }
 
         ResultSet resultSet = chessDao.lastTick(personId);
+        try {
+            if (resultSet.next()) {
+                Timing timing = new Timing(resultSet.getTime("startTime"), resultSet.getTime("endTime"),
+                        resultSet.getDate("day"));
 
-        if(resultSet.next()) {
-            Timing timing = new Timing(resultSet.getTime("startTime"), resultSet.getTime("endTime"),
-                    resultSet.getDate("day"));
+                chess = new Chess(resultSet.getInt("chess_id"), resultSet.getInt("personid"),
+                        timing, resultSet.getInt("numMoves"), resultSet.getString("result"));
 
-            chess = new Chess(resultSet.getInt("chess_id"),resultSet.getInt("personid"),
-                    timing,resultSet.getInt("numMoves"),resultSet.getString("result"));
-
-        }else {
-            logger.warning("No tick available for you");
+            }
+            return chess;
+        }catch (SQLException e) {
+            throw new ApplicationException(500,"Sorry, some internal error comes");
         }
-        return chess;
     }
 
     /**
      * This function help you to find the longest streak in chess
      * @param personId    the peron id
-     * @throws SQLException
      */
     @Override
-    public int longestStreak(int personId) throws SQLException {
+    public int longestStreak(int personId) {
         /**
          * check the longest streak is available or not in cache memory
          */
@@ -171,39 +173,42 @@ public class ChessServiceImpl implements ChessService {
             return longestStreak;
         }
 
-        ResultSet resultSet = chessDao.longestChessStreak(personId);
+        ResultSet resultSet = chessDao.longestStreak(personId);
 
         /**
          * use to store dates in sorted order
          */
         SortedSet<String> days = new TreeSet<String>();
 
-        /**
-         * get all the details of person in chess table and perform operation on it.
-         * To find the longest streak
-         */
-        while(resultSet.next()){
-            days.add(resultSet.getDate("day").toString() );
+        try {
+            /**
+             * get all the details of person in chess table and perform operation on it.
+             * To find the longest streak
+             */
+            while (resultSet.next()) {
+                days.add(resultSet.getDate("day").toString());
+            }
+
+            longestStreak = similarRequirement.longestStreak(days);
+
+            /**
+             * insert into cache
+             */
+            lru.put(personId + "_chess_longestStreak", longestStreak);
+
+            return longestStreak;
+        }catch (SQLException e) {
+            throw new ApplicationException(500,"Sorry, some internal error comes");
         }
-
-        longestStreak =  similarRequirement.longestStreak(days);
-
-        /**
-         * insert into cache
-         */
-        lru.put(personId + "_chess_longestStreak" , longestStreak);
-
-        return  longestStreak;
     }
 
     /**
      * This function help you to find latest streak in chess
      * @param personId    the person id
-     * @throws SQLException
      * @return
      */
     @Override
-    public int latestStreak(int personId) throws SQLException {
+    public int latestStreak(int personId) {
         /**
          * check the latest streak is available in cache or not
          */
@@ -217,27 +222,31 @@ public class ChessServiceImpl implements ChessService {
             return latestStreak;
         }
 
-        ResultSet resultSet = chessDao.longestChessStreak(personId);
+        ResultSet resultSet = chessDao.longestStreak(personId);
 
         /**
          * use to store dates in sorted order
          */
         SortedSet<String> days = new TreeSet<String>();
 
-        /**
-         * get all the details of person in chess table and perform operation on it.
-         * To find the longest streak
-         */
-        while(resultSet.next()){
-            days.add(resultSet.getDate("day").toString() );
+        try {
+            /**
+             * get all the details of person in chess table and perform operation on it.
+             * To find the longest streak
+             */
+            while (resultSet.next()) {
+                days.add(resultSet.getDate("day").toString());
+            }
+
+            latestStreak = similarRequirement.latestStreak(days);
+
+            /**
+             * insert into cache
+             */
+            lru.put(personId + "_chess_latestStreak", latestStreak);
+            return latestStreak;
+        }catch (SQLException e) {
+            throw new ApplicationException(500,"Sorry, some internal error comes");
         }
-
-        latestStreak =  similarRequirement.latestStreak(days);
-
-        /**
-         * insert into cache
-         */
-        lru.put(personId + "_chess_latestStreak" , latestStreak);
-        return latestStreak;
     }
 }

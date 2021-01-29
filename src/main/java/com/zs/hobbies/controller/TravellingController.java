@@ -10,12 +10,8 @@ import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.service.TravellingService;
 import com.zs.hobbies.service.TravellingServiceImpl;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
-import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Set;
@@ -33,7 +29,7 @@ public class TravellingController {
 
     Scanner in = new Scanner(System.in);
 
-    public TravellingController(Connection con, Cache lru) throws SQLException, IOException, ClassNotFoundException {
+    public TravellingController(Connection con, Cache lru) {
         travellingService = new TravellingServiceImpl(con,lru);
 
        logger = Logger.getLogger(Application.class.getName());
@@ -41,20 +37,17 @@ public class TravellingController {
 
     /**
      * This funciton help you to insert the travelling object in database
-     * @throws ParseException
-     * @throws SQLException
      * @param travelling
      */
-    public void insert(Travelling travelling) throws SQLException {
+    public void insert(Travelling travelling){
         travellingService.insert(travelling);
     }
 
     /**
      * This function help you to find the longest streak in the chess
      * @param personId  the person ID
-     * @throws SQLException
      */
-    public void longestStreak(int personId) throws SQLException {
+    public void longestStreak(int personId) {
         int longestStreak = travellingService.longestStreak(personId);
         logger.info("Travelling longest streak : " + longestStreak);
     }
@@ -62,9 +55,8 @@ public class TravellingController {
     /**
      * This function help you to find the latest streak in the chess
      * @param personId  the person ID
-     * @throws SQLException
      */
-    public void latestStreak(int personId) throws SQLException {
+    public void latestStreak(int personId) {
         int latestStreak = travellingService.latestStreak(personId);
         logger.info("Travelling latest streak : " + latestStreak);
     }
@@ -72,9 +64,8 @@ public class TravellingController {
     /**
      * This function help you to find the last streak in the chess
      * @param personId  the person ID
-     * @throws SQLException
      */
-    public void lastTick(int personId) throws SQLException {
+    public void lastTick(int personId) {
         Travelling travelling = (Travelling) travellingService.lastTick(personId);
         if(travelling != null) {
             logger.info("Travelling last tick id : " + travelling.getId());
@@ -87,9 +78,8 @@ public class TravellingController {
      * This function help you to find the details according to details in the travelling
      * @param personId the person id
      * @param date the date
-     * @throws SQLException
      */
-    public void searchByDate(int personId, Date date) throws SQLException {
+    public void searchByDate(int personId, Date date) {
         Set<Travelling> setDetails = travellingService.dateDetails(personId,date);
 
         Iterator<Travelling> iterator = setDetails.iterator();

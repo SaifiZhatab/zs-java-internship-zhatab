@@ -2,7 +2,6 @@ package com.zs.hobbies.service;
 
 import com.zs.hobbies.dto.Person;
 
-import java.sql.SQLException;
 
 /**
  * This is a remote class of Person.
@@ -11,5 +10,5 @@ import java.sql.SQLException;
  * this class control all the functionality
  */
 public interface PersonService {
-    void insert(Person person) throws SQLException;
+    void insert(Person person) ;
 }

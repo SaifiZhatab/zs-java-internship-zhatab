@@ -5,6 +5,7 @@ import com.zs.hobbies.dao.BadmintonDao;
 import com.zs.hobbies.dto.Badminton;
 import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.dto.Timing;
+import com.zs.hobbies.exception.ApplicationException;
 import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.validator.Validator;
 
@@ -46,10 +47,9 @@ public class BadmintonServiceImpl implements BadmintonService {
     /**
      * This function is helpful you to insert data in badminton table
      * @param badminton this is a badminton object
-     * @throws InvalidInputException
      */
     @Override
-    public void insert(Badminton badminton) throws InvalidInputException {
+    public void insert(Badminton badminton) {
         /**
          * check the details is valid or not
          * start time will always less than end time and end time will always less than or equal to current time
@@ -59,7 +59,7 @@ public class BadmintonServiceImpl implements BadmintonService {
         validator.checkDate(badminton.getTime().getDay());
         validator.checkResult(badminton.getResult());
 
-        badmintonDao.insertBadminton(badminton);
+        badmintonDao.insert(badminton);
         logger.info("Successfully Badminton enter in database");
 
         /**
@@ -90,51 +90,56 @@ public class BadmintonServiceImpl implements BadmintonService {
      * @param personId the person id
      * @param date the date
      * @throws InvalidInputException  custom exception
-     * @throws SQLException
+     * @throws ApplicationException  custom exception
      * return return set of badminton
      */
     @Override
-    public Set<Badminton> dateDetails(int personId, Date date) throws InvalidInputException, SQLException {
+    public Set<Badminton> dateDetails(int personId, Date date) throws ApplicationException {
         /**
          * check the date is valid or not
          * start time will always less than end time and end time will always less than or equal to current time
          * date will always less than or equal to current date
          */
         validator.checkDate(date);
-        ResultSet resultSet = badmintonDao.dateBadmintonDetails(personId,date);
+        ResultSet resultSet = badmintonDao.dateDetails(personId,date);
 
-        /**
-         * if details are not present of given date
-         */
-        if(!resultSet.next()) {
-            throw new InvalidInputException(400,"Not present any entity");
+        try {
+
+            /**
+             * if details are not present of given date
+             */
+            if (!resultSet.next()) {
+                throw new InvalidInputException(400, "Not present any entity");
+            }
+
+            Set<Badminton> setDetails = new HashSet<Badminton>();
+
+            /**
+             * insert all details in set and return
+             */
+            while (resultSet.next()) {
+                Timing timing = new Timing(resultSet.getTime("startTime"), resultSet.getTime("endTime"),
+                        resultSet.getDate("day"));
+
+                Badminton badminton = new Badminton(resultSet.getInt("badminton_id"), resultSet.getInt("personid"),
+                        timing, resultSet.getInt("numPlayers"), resultSet.getString("result"));
+
+                setDetails.add(badminton);
+            }
+            return setDetails;
+        }catch (SQLException e) {
+            throw new ApplicationException(500,"Sorry, some internal error comes in badminton service");
         }
-
-        Set<Badminton> setDetails = new HashSet<Badminton>();
-
-        /**
-         * insert all details in set and return
-         */
-        while(resultSet.next()){
-            Timing timing = new Timing(resultSet.getTime("startTime"),resultSet.getTime("endTime"),
-                    resultSet.getDate("day"));
-
-            Badminton badminton = new Badminton(resultSet.getInt("badminton_id"),resultSet.getInt("personid"),
-                    timing, resultSet.getInt("numPlayers"),resultSet.getString("result"));
-
-            setDetails.add(badminton);
-        }
-        return setDetails;
     }
 
     /**
      * This function help you to find the last tick of person in badminton table
      * @param personId    the person object
-     * @throws SQLException
      * @return
      */
     @Override
-    public Badminton lastTick(int personId) throws SQLException {
+    public Badminton lastTick(int personId) {
+
         /**
          * check in cache memory key is present or not
          */
@@ -143,36 +148,38 @@ public class BadmintonServiceImpl implements BadmintonService {
         /**
          * if key present in cache memory
          */
-        if(badminton != null) {
+        if (badminton != null) {
             return badminton;
         }
 
         ResultSet resultSet = badmintonDao.lastTick(personId);
 
-        if(resultSet.next()) {
-            Timing timing = new Timing(resultSet.getTime("startTime"),resultSet.getTime("endTime"),
-                    resultSet.getDate("day"));
+        try{
+            if (resultSet.next()) {
+                Timing timing = new Timing(resultSet.getTime("startTime"), resultSet.getTime("endTime"),
+                        resultSet.getDate("day"));
 
-            badminton = new Badminton(resultSet.getInt("badminton_id"),resultSet.getInt("personid"),
-                    timing, resultSet.getInt("numPlayers"),resultSet.getString("result"));
+                badminton = new Badminton(resultSet.getInt("badminton_id"), resultSet.getInt("personid"),
+                        timing, resultSet.getInt("numPlayers"), resultSet.getString("result"));
 
-            /**
-             * if not available in cache, then insert it
-             */
-            lru.put(personId + "_badminton" , badminton);
-        }else {
-            logger.warning("No tick available for you");
+                /**
+                 * if not available in cache, then insert it
+                 */
+                lru.put(personId + "_badminton", badminton);
+            }
+            return badminton;
+        }catch (SQLException e) {
+            throw new ApplicationException(500,"Sorry, some internal error comes in badminton service");
         }
-        return badminton;
     }
 
     /**
      * This function help you to find the longest streak in the badminton table
      * @param personId    the person object
-     * @throws SQLException
      */
     @Override
-    public int longestStreak(int personId) throws SQLException {
+    public int longestStreak(int personId) {
+
         /**
          * check the longest streak is available or not in cache memory
          */
@@ -182,43 +189,46 @@ public class BadmintonServiceImpl implements BadmintonService {
          * if longest streak is available in cache then just return it.
          * if not available, then if condition doesn't execute
          */
-        if(longestStreak != null){
+        if (longestStreak != null) {
             return longestStreak;
         }
 
-        ResultSet resultSet = badmintonDao.longestBadmintonStreak(personId);
+        ResultSet resultSet = badmintonDao.longestStreak(personId);
 
         /**
          * use to store all dates in sorted order
          */
         SortedSet<String> days = new TreeSet<String>();
 
-        while(resultSet.next()){
-            days.add(resultSet.getDate("day").toString() );
+        try{
+            while (resultSet.next()) {
+                days.add(resultSet.getDate("day").toString());
+            }
+
+            /**
+             * get all the details of person in badminton table and perform operation on it.
+             * To find the longest streak
+             */
+            longestStreak = similarRequirement.longestStreak(days);
+
+            /**
+             * insert into cache
+             */
+            lru.put(personId + "_badminton_longestStreak", longestStreak);
+
+            return longestStreak;
+        }catch (SQLException e){
+            throw new ApplicationException(500, "Sorry, come internal error come");
         }
-
-        /**
-         * get all the details of person in badminton table and perform operation on it.
-         * To find the longest streak
-         */
-        longestStreak =  similarRequirement.longestStreak(days);
-
-        /**
-         * insert into cache
-         */
-        lru.put(personId + "_badminton_longestStreak" , longestStreak);
-
-        return  longestStreak;
     }
 
     /**
      * This function help you to find the latest streak
      * @param personId    the person object
-     * @throws SQLException
      * @return
      */
     @Override
-    public int latestStreak(int personId) throws SQLException {
+    public int latestStreak(int personId) {
         /**
          * check the latest streak is available in cache or not
          */
@@ -232,26 +242,30 @@ public class BadmintonServiceImpl implements BadmintonService {
             return latestStreak;
         }
 
-        ResultSet resultSet = badmintonDao.longestBadmintonStreak(personId);
+        ResultSet resultSet = badmintonDao.longestStreak(personId);
 
         /**
          * use to store all dates in sorted order
          */
         SortedSet<String> days = new TreeSet<String>();
 
-        /**
-         * get all the details of person in badminton table and perform operation on it.
-         * To find the longest streak
-         */
-        while(resultSet.next()){
-            days.add(resultSet.getDate("day").toString() );
-        }
-       latestStreak =  similarRequirement.latestStreak(days);
+        try {
+            /**
+             * get all the details of person in badminton table and perform operation on it.
+             * To find the longest streak
+             */
+            while (resultSet.next()) {
+                days.add(resultSet.getDate("day").toString());
+            }
+            latestStreak = similarRequirement.latestStreak(days);
 
-        /**
-         * insert into cache
-         */
-        lru.put(personId + "_badminton_latestStreak" , latestStreak);
-        return latestStreak;
+            /**
+             * insert into cache
+             */
+            lru.put(personId + "_badminton_latestStreak", latestStreak);
+            return latestStreak;
+        }catch (SQLException e) {
+            throw new ApplicationException(500,"Sorry, some internal error comes");
+        }
     }
 }

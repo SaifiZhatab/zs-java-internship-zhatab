@@ -2,8 +2,9 @@ package com.zs.hobbies.dao;
 
 import com.zs.hobbies.Application;
 import com.zs.hobbies.dto.Chess;
+import com.zs.hobbies.exception.ApplicationException;
+import com.zs.hobbies.exception.InvalidInputException;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -14,12 +15,11 @@ import java.util.logging.Logger;
 public class ChessDao {
     private Logger logger;
     private Connection con;
-    private PreparedStatement insertChess, dateChessDetails, lastTick,longestChessStreak;
+    private PreparedStatement insert, dateDetails, lastTick,longestStreak;
 
     public ChessDao(Connection con) {
         logger = Logger.getLogger(Application.class.getName());
         logger.info("Successfully Chess database start ");
-
         this.con = con;
     }
 
@@ -27,22 +27,25 @@ public class ChessDao {
      * this function help you to insert the Chess hobbies in database
      * @param chess this is a chess object
      * @return return status
-     * @throws SQLException
      */
-    public void insertChess(Chess chess) {
+    public void insert(Chess chess) {
+        if(chess == null) {
+            throw new InvalidInputException(400,"Sorry, Null object pass in Chess database");
+        }
+
        try{
-            insertChess = con.prepareStatement("insert into Chess values (?,?,?,?,?,?,?)");
-            insertChess.setInt(1,chess.getId());
-            insertChess.setInt(2,chess.getPersonId());
-            insertChess.setTime(3,chess.getTime().getStartTime());
-            insertChess.setTime(4,chess.getTime().getEndTime());
-            insertChess.setInt(5,chess.getNumMoves());
-            insertChess.setString(6,chess.getResult());
-            insertChess.setDate(7,chess.getTime().getDay());
-            insertChess.executeUpdate();
+            insert = con.prepareStatement("insert into Chess values (?,?,?,?,?,?,?)");
+            insert.setInt(1,chess.getId());
+            insert.setInt(2,chess.getPersonId());
+            insert.setTime(3,chess.getTime().getStartTime());
+            insert.setTime(4,chess.getTime().getEndTime());
+            insert.setInt(5,chess.getNumMoves());
+            insert.setString(6,chess.getResult());
+            insert.setDate(7,chess.getTime().getDay());
+            insert.executeUpdate();
             logger.info("Successfully insert chess in database");
        }catch (SQLException e) {
-           logger.warning(e.getMessage());
+           throw new ApplicationException(500,"Sorry,some internal exception comes in chess database");
        }
     }
 
@@ -51,19 +54,16 @@ public class ChessDao {
      * @param personId    the person object
      * @param date      date
      * @return      return the details fetch by database
-     * @throws SQLException
      */
-    public ResultSet dateChessDetails(int personId, Date date) {
+    public ResultSet dateDetails(int personId, Date date) {
         try{
-            dateChessDetails = con.prepareStatement("select * from Chess where personid = ? and day = ?");
-            dateChessDetails.setInt(1,personId);
-            dateChessDetails.setDate(2,date);
-
-            return dateChessDetails.executeQuery();
+            dateDetails = con.prepareStatement("select * from Chess where personid = ? and day = ?");
+            dateDetails.setInt(1,personId);
+            dateDetails.setDate(2,date);
+            return dateDetails.executeQuery();
         }catch (SQLException e) {
-            logger.warning(e.getMessage());
+            throw new ApplicationException(500,"Sorry,some internal exception comes in chess database");
         }
-        return null;
     }
 
 
@@ -71,7 +71,6 @@ public class ChessDao {
      * This function help you to find the last tick of chess
      * @param personId    the person object
      * @return      return the last tick by person
-     * @throws SQLException
      */
     public ResultSet lastTick(int personId) {
         try{
@@ -79,25 +78,22 @@ public class ChessDao {
             lastTick.setInt(1,personId);
             return lastTick.executeQuery();
         }catch (SQLException e) {
-            logger.warning(e.getMessage());
+            throw new ApplicationException(500,"Sorry,some internal exception comes in chess database");
         }
-        return null;
     }
 
     /**
      * This function help you to find the longest streak of person
      * @param personId    the person object
      * @return      return the all details of person available in database
-     * @throws SQLException
      */
-    public ResultSet longestChessStreak(int personId) {
+    public ResultSet longestStreak(int personId) {
         try{
-            longestChessStreak = con.prepareStatement("select * from Chess where personid = ? order by day");
-            longestChessStreak.setInt(1,personId);
-            return longestChessStreak.executeQuery();
+            longestStreak = con.prepareStatement("select * from Chess where personid = ? order by day");
+            longestStreak.setInt(1,personId);
+            return longestStreak.executeQuery();
         }catch (SQLException e) {
-            logger.warning(e.getMessage());
+            throw new ApplicationException(500,"Sorry,some internal exception comes in chess database");
         }
-        return null;
     }
 }

@@ -1,10 +1,7 @@
 package com.zs.hobbies.service;
 
-import com.zs.hobbies.dto.Person;
 import com.zs.hobbies.dto.VideoWatching;
 
-import java.sql.Date;
-import java.sql.SQLException;
 
 /**
  * This is a remote class of Video Watching.
@@ -13,5 +10,5 @@ import java.sql.SQLException;
  * this class control all the functionality
  */
 public interface VideoWatchingService extends HobbyService{
-    void insert(VideoWatching videoWatching) throws SQLException;
+    void insert(VideoWatching videoWatching);
 }

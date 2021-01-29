@@ -1,7 +1,5 @@
 package com.zs.hobbies.dto;
 
-import java.sql.SQLException;
-
 /**
  * this class provide all badminton facility
  */
@@ -18,9 +16,8 @@ public class Badminton extends Hobby{
      * @param time     the timing object
      * @param numPlayers  number of player
      * @param result  the result
-     * @throws SQLException
      */
-    public Badminton(int id, int personId, Timing time, int numPlayers, String result) throws SQLException {
+    public Badminton(int id, int personId, Timing time, int numPlayers, String result) {
         super(id);
         this.personId = personId;
         this.time = time;

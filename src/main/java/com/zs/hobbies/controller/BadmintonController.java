@@ -7,10 +7,8 @@ import com.zs.hobbies.dto.Person;
 import com.zs.hobbies.service.BadmintonService;
 import com.zs.hobbies.service.BadmintonServiceImpl;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.sql.Date;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -29,26 +27,23 @@ public class BadmintonController {
     BadmintonService badmintonService;
     Scanner in = new Scanner(System.in);
 
-    public BadmintonController(Connection con, Cache lru) throws SQLException, IOException, ClassNotFoundException {
+    public BadmintonController(Connection con, Cache lru) {
         badmintonService = new BadmintonServiceImpl(con,lru);
         logger = Logger.getLogger(Application.class.getName());
     }
 
     /**
      * This funciton help you to insert the badminton object in database
-     * @throws ParseException
-     * @throws SQLException
      */
-    public void insert(Badminton badminton) throws ParseException, SQLException {
+    public void insert(Badminton badminton) {
         badmintonService.insert(badminton);
     }
 
     /**
      * This function help you to find the longest streak in the badminton
      * @param personId  the person ID
-     * @throws SQLException
      */
-    public void longestStreak(int personId) throws SQLException {
+    public void longestStreak(int personId) {
         int longestStreak = badmintonService.longestStreak(personId);
         logger.info("Badminton longest streak : " + longestStreak);
     }
@@ -56,9 +51,8 @@ public class BadmintonController {
     /**
      * This function help you to find the latest streak in the badminton
      * @param personId  the person ID
-     * @throws SQLException
      */
-    public void latestStreak(int personId) throws SQLException {
+    public void latestStreak(int personId) {
         int latestStreak = badmintonService.latestStreak(personId);
         logger.info("Badminton latest streak : " + latestStreak);
     }
@@ -66,9 +60,8 @@ public class BadmintonController {
     /**
      * This function help you to find the last streak in the badminton
      * @param personId  the person ID
-     * @throws SQLException
      */
-    public void lastTick(int personId) throws SQLException {
+    public void lastTick(int personId) {
         Badminton badminton = (Badminton) badmintonService.lastTick(personId);
         if(badminton != null) {
             logger.info("Badminton last tick id : " + badminton.getId());
@@ -81,9 +74,8 @@ public class BadmintonController {
      * This function help you to find the details according to details in the badminton
      * @param personId the person id
      * @param date the date
-     * @throws SQLException
      */
-    public void searchByDate(int personId, Date date) throws SQLException {
+    public void searchByDate(int personId, Date date) {
         Set<Badminton> setDetails = badmintonService.dateDetails(personId,date);
 
         Iterator<Badminton> iterator = setDetails.iterator();

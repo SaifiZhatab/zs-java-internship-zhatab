@@ -2,6 +2,8 @@ package com.zs.hobbies.dao;
 
 import com.zs.hobbies.Application;
 import com.zs.hobbies.dto.Person;
+import com.zs.hobbies.exception.ApplicationException;
+import com.zs.hobbies.exception.InvalidInputException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +13,7 @@ import java.util.logging.Logger;
 public class PersonDao {
     private Logger logger;
     private Connection con;
-    private PreparedStatement insertPerson;
+    private PreparedStatement insert;
 
     public PersonDao(Connection con) {
         logger = Logger.getLogger(Application.class.getName());
@@ -23,20 +25,22 @@ public class PersonDao {
      * this function help you to insert the user entity in database
      * @param person    the person object
      * @return      return the status of insert query
-     * @throws SQLException
      */
-    public void insertPerson(Person person) {
+    public void insert(Person person) {
+        if(person == null) {
+            throw new InvalidInputException(500,"Sorry, Null object pass in person database");
+        }
         try{
-            insertPerson = con.prepareStatement("insert into Persons values (?,?,?,?)");
-            insertPerson.setInt(1,person.getId());
-            insertPerson.setString(2, person.getName());
-            insertPerson.setString(3, person.getMobile());
-            insertPerson.setString(4, person.getAddress());
+            insert = con.prepareStatement("insert into Persons values (?,?,?,?)");
+            insert.setInt(1,person.getId());
+            insert.setString(2, person.getName());
+            insert.setString(3, person.getMobile());
+            insert.setString(4, person.getAddress());
 
-            insertPerson.executeUpdate();
+            insert.executeUpdate();
             logger.info("Successfully insert person in database");
         }catch (SQLException e) {
-            logger.warning(e.getMessage());
+            throw new ApplicationException(500,"Sorry,some internal exception comes in person database");
         }
     }
 }

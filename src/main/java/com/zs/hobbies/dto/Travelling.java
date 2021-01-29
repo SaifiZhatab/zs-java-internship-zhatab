@@ -1,7 +1,5 @@
 package com.zs.hobbies.dto;
 
-import java.sql.SQLException;
-
 /**
  * this class provide all travelling facility
  */
@@ -20,9 +18,8 @@ public class Travelling extends Hobby{
      * @param startPoint the starting point
      * @param endPoint the ending point
      * @param distance  the total distance cover
-     * @throws SQLException
      */
-    public Travelling(int id, int personId, Timing time, String startPoint, String endPoint, float distance) throws SQLException {
+    public Travelling(int id, int personId, Timing time, String startPoint, String endPoint, float distance) {
         super(id);
         this.personId = personId;
         this.time = time;

@@ -17,7 +17,7 @@ public class Cache <String,V>{
     /**
      * This is the cache storage
      */
-    LinkedHashMap<String,V> Cache;
+    LinkedHashMap<String,V> cache;
 
     /**
      * This is a constructor.
@@ -26,6 +26,7 @@ public class Cache <String,V>{
      */
     public Cache(int capacity){
         this.capacity = capacity;
+        cache = new LinkedHashMap<String,V>();
     }
 
     /**
@@ -41,15 +42,15 @@ public class Cache <String,V>{
         /**
          * check key present or not in Cache
          */
-        if(Cache.containsKey(key)) {
-            V value = Cache.get(key);
+        if(cache.containsKey(key)) {
+            V value = cache.get(key);
 
             /**
              * remove key in Cache and insert in ending of list
              */
-            Cache.remove(key);
+            cache.remove(key);
 
-            Cache.put(key,value);
+            cache.put(key,value);
         }
         return null;
     }
@@ -70,11 +71,11 @@ public class Cache <String,V>{
          * if key is already present in lru Cache, then you delete the object and insert new object on the
          * same key
          */
-        if(Cache.containsKey(key)) {
+        if(cache.containsKey(key)) {
             /**
              * delete the key in Cache
              */
-            Cache.remove(key);
+            cache.remove(key);
 
         }
         /**
@@ -86,17 +87,17 @@ public class Cache <String,V>{
             /**
              * if the size of LRU Cache is full, then you need to delete the least recent used object in LRU Cache
              */
-            if(Cache.size() == capacity) {
+            if(cache.size() == capacity) {
                 /**
                  * delete the first object in Cache
                  */
-                Cache.remove(Cache.keySet().iterator().next());
+                cache.remove(cache.keySet().iterator().next());
 
             }
         }
         /**
          * insert object in Cache
          */
-        Cache.put(key,value);
+        cache.put(key,value);
     }
 }

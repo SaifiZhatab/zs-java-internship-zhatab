@@ -1,9 +1,5 @@
 package com.zs.hobbies.dto;
 
-import java.sql.SQLException;
-import java.sql.Time;
-import java.util.Date;
-
 /**
  * this class provide all chess facility
  */
@@ -20,9 +16,8 @@ public class Chess extends Hobby{
      * @param time  the timing object
      * @param numMoves  number of moves
      * @param result the result
-     * @throws SQLException
      */
-    public Chess(int id, int personId, Timing time, int numMoves, String result) throws SQLException {
+    public Chess(int id, int personId, Timing time, int numMoves, String result) {
         super(id);
         this.personId = personId;
         this.time = time;

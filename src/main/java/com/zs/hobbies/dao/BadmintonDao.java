@@ -2,6 +2,8 @@ package com.zs.hobbies.dao;
 
 import com.zs.hobbies.Application;
 import com.zs.hobbies.dto.Badminton;
+import com.zs.hobbies.exception.ApplicationException;
+import com.zs.hobbies.exception.InvalidInputException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,7 +18,7 @@ import java.util.logging.Logger;
 public class BadmintonDao {
     private Logger logger;
     private Connection con;
-    private PreparedStatement insertBadminton, dateBadmintonDetails, longestBadmintonStreak, lastTick;
+    private PreparedStatement insert, dateDetails, longestStreak, lastTick;
 
 
     public BadmintonDao(Connection con) {
@@ -27,44 +29,46 @@ public class BadmintonDao {
     }
     /**
      * this function help you to insert the Badminton hobbies in database
+     * when you pass null object, then it check and return
      * @param badminton this is a badminton object
      * @return   return status
-     * @throws SQLException
      */
-    public void insertBadminton(Badminton badminton) {
+    public void insert(Badminton badminton) {
+        if(badminton == null) {
+            throw new InvalidInputException(500,"Sorry, Null object pass in badminton database");
+        }
+
         try {
-            insertBadminton = con.prepareStatement("insert into Badminton values (?,?,?,?,?,?,?)");
-            insertBadminton.setInt(1, badminton.getId());
-            insertBadminton.setInt(2, badminton.getPersonId());
-            insertBadminton.setTime(3, badminton.getTime().getStartTime());
-            insertBadminton.setTime(4, badminton.getTime().getEndTime());
-            insertBadminton.setInt(5, badminton.getNumPlayers());
-            insertBadminton.setString(6, badminton.getResult());
-            insertBadminton.setDate(7, badminton.getTime().getDay());
-            insertBadminton.executeUpdate();
+            insert = con.prepareStatement("insert into Badminton values (?,?,?,?,?,?,?)");
+            insert.setInt(1, badminton.getId());
+            insert.setInt(2, badminton.getPersonId());
+            insert.setTime(3, badminton.getTime().getStartTime());
+            insert.setTime(4, badminton.getTime().getEndTime());
+            insert.setInt(5, badminton.getNumPlayers());
+            insert.setString(6, badminton.getResult());
+            insert.setDate(7, badminton.getTime().getDay());
+            insert.executeUpdate();
             logger.info("Successfully insert Badminton in database");
-            insertBadminton.close();
+            insert.close();
         }catch (SQLException e){
-            logger.warning(e.getMessage());
+            throw new ApplicationException(500,"Sorry,some internal exception comes in badminton database");
         }
     }
 
     /**
      * this function send all the person badminton details
      * @param personId
-     * @return
-     * @throws SQLException
+     * @return return result set of data
      */
-    public ResultSet longestBadmintonStreak(int personId) {
+    public ResultSet longestStreak(int personId) {
         try {
-            longestBadmintonStreak = con.prepareStatement("select * from Badminton where personid = ? order by day");
+            longestStreak = con.prepareStatement("select * from Badminton where personid = ? order by day");
 
-            longestBadmintonStreak.setInt(1, personId);
-            return longestBadmintonStreak.executeQuery();
+            longestStreak.setInt(1, personId);
+            return longestStreak.executeQuery();
         }catch (SQLException e) {
-            logger.warning(e.getMessage());
+            throw new ApplicationException(500,"Sorry,some internal exception comes in badminton database");
         }
-        return null;
     }
 
     /**
@@ -72,25 +76,22 @@ public class BadmintonDao {
      * @param personId    the person id
      * @param date      specific date
      * @return      return the set of data
-     * @throws SQLException
      */
-    public ResultSet dateBadmintonDetails(int personId, Date date) {
+    public ResultSet dateDetails(int personId, Date date) {
         try{
-            dateBadmintonDetails = con.prepareStatement("select * from Badminton where personid = ? and day=?");
-            dateBadmintonDetails.setInt(1,personId);
-            dateBadmintonDetails.setDate(2,date);
-            return dateBadmintonDetails.executeQuery();
+            dateDetails = con.prepareStatement("select * from Badminton where personid = ? and day=?");
+            dateDetails.setInt(1,personId);
+            dateDetails.setDate(2,date);
+            return dateDetails.executeQuery();
         }catch (SQLException e) {
-            logger.warning(e.getMessage());
+            throw new ApplicationException(500,"Sorry,some internal exception comes in badminton database");
         }
-        return null;
     }
 
     /**
      * This class help you to fetch the last tick details
      * @param personId    the person id
      * @return      return the last tick details
-     * @throws SQLException
      */
     public ResultSet lastTick(int personId) {
         try{
@@ -98,8 +99,7 @@ public class BadmintonDao {
             lastTick.setInt(1,personId);
             return lastTick.executeQuery();
         }catch (SQLException e) {
-            logger.warning(e.getMessage());
+            throw new ApplicationException(500,"Sorry,some internal exception comes in badminton database");
         }
-        return null;
     }
 }

@@ -17,6 +17,10 @@ public class SimilarRequirement {
      * @return      return the integer value
      */
     public int longestStreak(SortedSet<String> dates) {
+        if(dates == null) {
+            throw new InvalidInputException(400 , "Sorry, invalid input");
+        }
+
         int previous_day = -1, previous_month = -1, previous_year = -1;
         int max=0, count=0 ;
 
@@ -101,6 +105,10 @@ public class SimilarRequirement {
      * @return      return the integer value
      */
     public int latestStreak(SortedSet<String> dates){
+        if(dates == null) {
+            throw new InvalidInputException(400 , "Sorry, invalid input");
+        }
+
         int previous_day = -1, previous_month = -1, previous_year = -1;
         int max=0, count=0 ;
 

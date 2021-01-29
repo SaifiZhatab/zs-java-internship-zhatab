@@ -1,9 +1,7 @@
 package com.zs.hobbies.service;
 
-import com.zs.hobbies.dao.BadmintonDao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
 
@@ -34,5 +32,25 @@ class BadmintonServiceImplTest {
 
     @Test
     void latestStreak() {
+    }
+
+    @Test
+    void testInsert() {
+    }
+
+    @Test
+    void testDateDetails() {
+    }
+
+    @Test
+    void testLastTick() {
+    }
+
+    @Test
+    void testLongestStreak() {
+    }
+
+    @Test
+    void testLatestStreak() {
     }
 }

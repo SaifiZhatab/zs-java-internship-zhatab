@@ -3,16 +3,15 @@ package com.zs.hobbies;
 import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.controller.*;
 import com.zs.hobbies.dto.*;
+import com.zs.hobbies.exception.ApplicationException;
+import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.util.DataBase;
+import com.zs.hobbies.util.ResourceLoader;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Time;
-import java.text.ParseException;
 import java.sql.Date;
 import java.util.Scanner;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class Application {
@@ -20,9 +19,12 @@ public class Application {
     static Scanner in = new Scanner(System.in);
 
     /**
-     * use to perform all operation on person
+     * This function is used to perform all person operation
+     * @param personController  person controller class
+     * @throws ApplicationException  custom internal server exception
+     * @throws InvalidInputException  custom exception exception
      */
-    static void personOperation(PersonController personController) throws SQLException {
+    static void personOperation(PersonController personController) throws ApplicationException,InvalidInputException  {
         logger.info("1. for person entry ");
         logger.info("2. exit");
 
@@ -57,7 +59,13 @@ public class Application {
         }while (choice != 2);
     }
 
-    static void badmintonOperation(BadmintonController badmintonController) throws ParseException, SQLException, IOException, ClassNotFoundException {
+    /**
+     * The function is used to perform all badminton operation
+     * @param badmintonController  the badminton controller class
+     * @throws ApplicationException  custom internal server exception
+     * @throws InvalidInputException  custom exception exception
+     */
+    static void badmintonOperation(BadmintonController badmintonController) throws ApplicationException,InvalidInputException {
         logger.info("1. for insert badminton hobby");
         logger.info("2. for longest streak in badminton");
         logger.info("3. for latest streak in badminton");
@@ -134,10 +142,16 @@ public class Application {
                 case 6:
                     break;
             }
-        }while(choice != 5);
+        }while(choice != 6);
     }
 
-    static void chessOperation(ChessController chessController) throws ParseException, SQLException, IOException, ClassNotFoundException {
+    /**
+     * The function is used to perform all Chess operation
+     * @param chessController  the chess controller class
+     * @throws ApplicationException  custom internal server exception
+     * @throws InvalidInputException  custom exception exception
+     */
+    static void chessOperation(ChessController chessController) throws ApplicationException,InvalidInputException  {
         logger.info("1. for insert chess hobby");
         logger.info("2. for longest streak in chess");
         logger.info("3. for latest streak in chess");
@@ -214,10 +228,16 @@ public class Application {
                 case 6:
                     break;
             }
-        }while(choice != 5);
+        }while(choice != 6);
     }
 
-    static void travellingOperation(TravellingController travellingController) throws SQLException {
+    /**
+     * The function is used to perform all travelling operation
+     * @param travellingController  the travelling controller class
+     * @throws ApplicationException  custom internal server exception
+     * @throws InvalidInputException  custom exception exception
+     */
+    static void travellingOperation(TravellingController travellingController)throws ApplicationException,InvalidInputException  {
         logger.info("1. for insert travelling hobby");
         logger.info("2. for longest streak in travelling");
         logger.info("3. for latest streak in travelling");
@@ -297,10 +317,16 @@ public class Application {
                 case 6:
                     break;
             }
-        }while(choice != 5);
+        }while(choice != 6);
     }
 
-    static void videoWatchingOperation(VideoWatchingController videoWatchingController) throws SQLException, ParseException {
+    /**
+     * The function is used to perform all video watching operation
+     * @param videoWatchingController  the video watching controller class
+     * @throws ApplicationException  custom internal server exception
+     * @throws InvalidInputException  custom exception exception
+     */
+    static void videoWatchingOperation(VideoWatchingController videoWatchingController) throws ApplicationException,InvalidInputException {
         logger.info("1. for insert video watching hobby");
         logger.info("2. for longest streak in video watching");
         logger.info("3. for latest streak in video watching");
@@ -373,17 +399,26 @@ public class Application {
                 case 6:
                     break;
             }
-        }while(choice != 5);
+        }while(choice != 6);
     }
 
-    public static void main(String st[]) throws IOException, SQLException, ClassNotFoundException {
+    public static void main(String st[]) {
 
         try{
-            LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resources/logging.properties"));
-            logger = Logger.getLogger(Application.class.getName());
+            /**
+             * set logger class
+             */
+             ResourceLoader.loggerManager();
+             logger = Logger.getLogger(Application.class.getName());
 
-            logger.info("Enter the LRU Cache capacity = ");
-            int capacity = in.nextInt();
+            /**
+             * fetch cache memory size in application.properties file
+             * and set into the cache memory
+             * properties.getProperty("cache") give exception when the value is not present or when the value is not integer
+             */
+            ResourceLoader.loadApplicationResource();
+            int capacity = Integer.parseInt(ResourceLoader.getParameter("cache")) ;
+
             Cache lru = new Cache(capacity);
 
             DataBase dataBase = new DataBase();
@@ -392,7 +427,6 @@ public class Application {
             ChessController chessController = new ChessController(dataBase.getCon(),lru);
             TravellingController travellingController = new TravellingController(dataBase.getCon(),lru);
             VideoWatchingController videoWatchingController = new VideoWatchingController(dataBase.getCon(),lru);
-
 
 
             int choice;
@@ -435,8 +469,12 @@ public class Application {
 
             dataBase.getCon().close();
 
-        }catch (Exception e) {
-            logger.warning(e.getMessage());
+        }catch (InvalidInputException e) {
+            logger.warning("Error code : " + e.getErrorCode() + "   Error message : " + e.getErrorDescription());
+        }catch(ApplicationException e) {
+            logger.warning("Error code : " + e.getErrorCode() + "   Error message : " + e.getErrorDescription());
+        }catch (SQLException e) {
+            logger.warning("Sorry, some erorr comes");
         }
     }
 }

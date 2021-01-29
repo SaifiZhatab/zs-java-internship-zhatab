@@ -1,10 +1,9 @@
 package com.zs.hobbies.util;
 
 import com.zs.hobbies.Application;
-import com.zs.hobbies.exception.InvalidInputException;
+import com.zs.hobbies.exception.ApplicationException;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.DriverManager;
 import java.util.logging.Logger;
 
@@ -16,22 +15,20 @@ public class DataBase {
     private static Logger logger;
 
     /**
-     * This is constructor which help you to connect your program to database
+     *  This is constructor which help you to connect your program to database
      * set all the prepare statement
-     * @throws ClassNotFoundException
-     * @throws SQLException
+     * @throws ApplicationException  internal server exception custom class
      */
-    public DataBase() throws ClassNotFoundException {
-
-        Class.forName("org.postgresql.Driver");
+    public DataBase() {
         try {
+            Class.forName("org.postgresql.Driver");
             con = DriverManager.getConnection("jdbc:postgresql://0.0.0.0:2006/hobbies", "zhatab", "zhatab");
-        }catch (Exception ex) {
-            throw new InvalidInputException(500 , "Connection not create");
-        }
-        logger = Logger.getLogger(Application.class.getName());
 
-        logger.info("DataBase connect successfully ");
+            logger = Logger.getLogger(Application.class.getName());
+            logger.info("DataBase connect successfully ");
+        }catch (Exception e) {
+            throw new ApplicationException(500,"Some internal exception comes in database connectivity");
+        }
     }
 
     /**

@@ -5,10 +5,10 @@ import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.dao.VideoWatchingDao;
 import com.zs.hobbies.dto.Timing;
 import com.zs.hobbies.dto.VideoWatching;
+import com.zs.hobbies.exception.ApplicationException;
 import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.validator.Validator;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -30,7 +30,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
     private SimilarRequirement similarRequirement;
     private Validator validator;
 
-    public VideoWatchingServiceImpl(Connection con,Cache lru) throws SQLException, ClassNotFoundException, IOException {
+    public VideoWatchingServiceImpl(Connection con,Cache lru) {
         logger = Logger.getLogger(Application.class.getName());
 
         logger.info("Successfully VideoWatching service start ");
@@ -44,17 +44,16 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
     /**
      * This function is helpful you to insert data in video watching table
      * @param videoWatching this is a videoWatching object
-     * @throws SQLException
      */
     @Override
-    public void insert(VideoWatching videoWatching) throws InvalidInputException {
+    public void insert(VideoWatching videoWatching) {
         /**
          * check the given object data is valid or not
          */
         validator.checkTime(videoWatching.getTime().getStartTime(),videoWatching.getTime().getEndTime());
         validator.checkDate(videoWatching.getTime().getDay());
 
-        videoWatchingDao.insertVideo(videoWatching);
+        videoWatchingDao.insert(videoWatching);
 
         /**
          * put object in cache memory
@@ -82,52 +81,54 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
      * This function help you to find the details of person on particular date
      * @param personId    the person id
      * @param date      particular date
-     * @throws SQLException
      */
     @Override
-    public Set<VideoWatching> dateDetails(int personId, Date date) throws SQLException {
+    public Set<VideoWatching> dateDetails(int personId, Date date) {
         /**
          * check date is valid or not
          */
         validator.checkDate(date);
 
-        ResultSet resultSet = videoWatchingDao.dateVideoWatchingDetails(personId,date);
+        ResultSet resultSet = videoWatchingDao.dateDetails(personId,date);
 
-        /**
-         * if details are not present of given date
-         */
-        if(!resultSet.next()) {
-            throw new InvalidInputException(400,"Not present any entity");
+        try {
+            /**
+             * if details are not present of given date
+             */
+            if (!resultSet.next()) {
+                throw new InvalidInputException(400, "Not present any entity");
+            }
+
+            /**
+             * use to store the objects
+             */
+            Set<VideoWatching> setDetails = new HashSet<VideoWatching>();
+
+            /**
+             * query result
+             */
+            while (resultSet.next()) {
+                Timing timing = new Timing(resultSet.getTime("startTime"), resultSet.getTime("endTime"),
+                        resultSet.getDate("day"));
+
+                VideoWatching videoWatching = new VideoWatching(resultSet.getInt("videoWatching_id"), resultSet.getInt("personid"),
+                        timing, resultSet.getString("title"));
+
+                setDetails.add(videoWatching);
+            }
+            return setDetails;
+        }catch (SQLException e) {
+            throw new ApplicationException(500, "Sorry, some internal error comes");
         }
-
-        /**
-         * use to store the objects
-         */
-        Set<VideoWatching> setDetails = new HashSet<VideoWatching>();
-
-        /**
-         * query result
-         */
-        while(resultSet.next()){
-            Timing timing = new Timing(resultSet.getTime("startTime"),resultSet.getTime("endTime"),
-                    resultSet.getDate("day"));
-
-            VideoWatching videoWatching = new VideoWatching(resultSet.getInt("videoWatching_id"), resultSet.getInt("personid"),
-                    timing,resultSet.getString("title"));
-
-            setDetails.add(videoWatching);
-        }
-        return setDetails;
     }
 
     /**
      * This function help you to find the last tick of person in video watching table
      * @param personId    the person id
-     * @throws SQLException
      * @return
      */
     @Override
-    public VideoWatching lastTick(int personId) throws SQLException {
+    public VideoWatching lastTick(int personId) {
         /**
          * check in the cache memory
          */
@@ -142,25 +143,28 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
 
         ResultSet resultSet = videoWatchingDao.lastTick(personId);
 
-        if(resultSet.next()) {
-            Timing timing = new Timing(resultSet.getTime("startTime"),resultSet.getTime("endTime"),
-                    resultSet.getDate("day"));
+        try {
+            if (resultSet.next()) {
+                Timing timing = new Timing(resultSet.getTime("startTime"), resultSet.getTime("endTime"),
+                        resultSet.getDate("day"));
 
-            videoWatching = new VideoWatching(resultSet.getInt("videoWatching_id"), resultSet.getInt("personid"),
-                    timing,resultSet.getString("title"));
-        }else {
-            logger.warning("No tick available for you");
+                videoWatching = new VideoWatching(resultSet.getInt("videoWatching_id"), resultSet.getInt("personid"),
+                        timing, resultSet.getString("title"));
+            } else {
+                logger.warning("No tick available for you");
+            }
+            return videoWatching;
+        }catch (SQLException e) {
+            throw new ApplicationException(500, "Sorry, some internal error comes");
         }
-        return videoWatching;
     }
 
     /**
      * This function help you to find the longest streak in the video watching table
      * @param personId    the person id
-     * @throws SQLException
      */
     @Override
-    public int longestStreak(int personId) throws SQLException {
+    public int longestStreak(int personId) {
         /**
          * check the longest streak is available or not in cache memory
          */
@@ -174,43 +178,46 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
             return longestStreak;
         }
 
-        ResultSet resultSet = videoWatchingDao.longestVideoWatchingStreak(personId);
+        ResultSet resultSet = videoWatchingDao.longestStreak(personId);
 
         /**
          * use to store all dates in sorted order
          */
         SortedSet<String> days = new TreeSet<String>();
 
-        /**
-         * get all the details of person in video watching table and perform operation on it.
-         * To find the longest streak
-         */
-        while(resultSet.next()){
-            days.add(resultSet.getDate("day").toString() );
+        try {
+            /**
+             * get all the details of person in video watching table and perform operation on it.
+             * To find the longest streak
+             */
+            while (resultSet.next()) {
+                days.add(resultSet.getDate("day").toString());
+            }
+
+            /**
+             * get all the details of person in badminton table and perform operation on it.
+             * To find the longest streak
+             */
+            longestStreak = similarRequirement.longestStreak(days);
+
+            /**
+             * insert into cache
+             */
+            lru.put(personId + "_videoWatching_longestStreak", longestStreak);
+
+            return longestStreak;
+        }catch (SQLException e) {
+            throw new ApplicationException(500, "Sorry, some internal error comes");
         }
-
-        /**
-         * get all the details of person in badminton table and perform operation on it.
-         * To find the longest streak
-         */
-        longestStreak =  similarRequirement.longestStreak(days);
-
-        /**
-         * insert into cache
-         */
-        lru.put(personId + "_videoWatching_longestStreak" , longestStreak);
-
-        return  longestStreak;
     }
 
     /**
      * This function help you to find the latest streak
      * @param personId    the person id
-     * @throws SQLException
      * @return
      */
     @Override
-    public int latestStreak(int personId) throws SQLException {
+    public int latestStreak(int personId) {
         /**
          * check the latest streak is available in cache or not
          */
@@ -223,28 +230,32 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         if(latestStreak != null) {
             return latestStreak;
         }
-        ResultSet resultSet = videoWatchingDao.longestVideoWatchingStreak(personId);
+        ResultSet resultSet = videoWatchingDao.longestStreak(personId);
 
         /**
          * use to store all dates in sorted order
          */
         SortedSet<String> days = new TreeSet<String>();
 
-        /**
-         * get all the details of person in video watching table and perform operation on it.
-         * To find the longest streak
-         */
-        while(resultSet.next()){
-            days.add(resultSet.getDate("day").toString() );
+        try {
+            /**
+             * get all the details of person in video watching table and perform operation on it.
+             * To find the longest streak
+             */
+            while (resultSet.next()) {
+                days.add(resultSet.getDate("day").toString());
+            }
+
+            latestStreak = similarRequirement.latestStreak(days);
+
+            /**
+             * insert into cache
+             */
+            lru.put(personId + "_videoWatching_latestStreak", latestStreak);
+            return latestStreak;
+        }catch (SQLException e) {
+            throw new ApplicationException(500, "Sorry, some internal error comes");
         }
-
-        latestStreak =  similarRequirement.latestStreak(days);
-
-        /**
-         * insert into cache
-         */
-        lru.put(personId + "_videoWatching_latestStreak" , latestStreak);
-        return latestStreak;
     }
 
 }

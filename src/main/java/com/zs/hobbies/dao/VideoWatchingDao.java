@@ -2,6 +2,8 @@ package com.zs.hobbies.dao;
 
 import com.zs.hobbies.Application;
 import com.zs.hobbies.dto.VideoWatching;
+import com.zs.hobbies.exception.ApplicationException;
+import com.zs.hobbies.exception.InvalidInputException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +15,7 @@ import java.util.logging.Logger;
 public class VideoWatchingDao {
     private Logger logger;
     private Connection con;
-    private PreparedStatement insertVideo, dateVideoWatchingDetails, lastTick, longestVideoWatchingStreak;
+    private PreparedStatement insert, dateDetails, lastTick, longestStreak;
 
     public VideoWatchingDao(Connection con) {
         logger = Logger.getLogger(Application.class.getName());
@@ -25,22 +27,25 @@ public class VideoWatchingDao {
      * this function help you to insert the Video hobbies in database
      * @param videoWatching this is a video hobbies object
      * @return return status
-     * @throws SQLException
      */
-    public void insertVideo(VideoWatching videoWatching) {
-        try {
-            insertVideo = con.prepareStatement("insert into VideoWatching values (?,?,?,?,?,?)");
-            insertVideo.setInt(1, videoWatching.getId());
-            insertVideo.setInt(2, videoWatching.getPersonId());
-            insertVideo.setTime(3, videoWatching.getTime().getStartTime());
-            insertVideo.setTime(4, videoWatching.getTime().getEndTime());
-            insertVideo.setString(5, videoWatching.getTitle());
-            insertVideo.setDate(6, videoWatching.getTime().getDay());
+    public void insert(VideoWatching videoWatching) {
+        if(videoWatching == null) {
+            throw new InvalidInputException(500,"Sorry, Null object pass in video watching database");
+        }
 
-            insertVideo.executeUpdate();
+        try {
+            insert = con.prepareStatement("insert into VideoWatching values (?,?,?,?,?,?)");
+            insert.setInt(1, videoWatching.getId());
+            insert.setInt(2, videoWatching.getPersonId());
+            insert.setTime(3, videoWatching.getTime().getStartTime());
+            insert.setTime(4, videoWatching.getTime().getEndTime());
+            insert.setString(5, videoWatching.getTitle());
+            insert.setDate(6, videoWatching.getTime().getDay());
+
+            insert.executeUpdate();
             logger.info("Successfully insert videoWatching in database");
         }catch (SQLException e){
-            logger.warning(e.getMessage());
+            throw new ApplicationException(500,"Sorry,some internal exception comes in video watching database");
         }
     }
 
@@ -49,25 +54,22 @@ public class VideoWatchingDao {
      * @param personId    the person id
      * @param date      particular date
      * @return      return the fetch data
-     * @throws SQLException
      */
-    public ResultSet dateVideoWatchingDetails(int personId, Date date) {
+    public ResultSet dateDetails(int personId, Date date) {
         try{
-            dateVideoWatchingDetails = con.prepareStatement("select * from VideoWatching where personid = ? and day = ?");
-            dateVideoWatchingDetails.setInt(1,personId);
-            dateVideoWatchingDetails.setDate(2,date);
-            return dateVideoWatchingDetails.executeQuery();
+            dateDetails = con.prepareStatement("select * from VideoWatching where personid = ? and day = ?");
+            dateDetails.setInt(1,personId);
+            dateDetails.setDate(2,date);
+            return dateDetails.executeQuery();
         }catch (SQLException e){
-            logger.warning(e.getMessage());
+            throw new ApplicationException(500,"Sorry,some internal exception comes in video watching database");
         }
-        return null;
     }
 
     /**
      * This function help you to find the last tick of person
      * @param personId    the person id
      * @return      return the fetch data
-     * @throws SQLException
      */
     public ResultSet lastTick(int personId) {
         try{
@@ -75,25 +77,22 @@ public class VideoWatchingDao {
             lastTick.setInt(1,personId);
             return lastTick.executeQuery();
         }catch (SQLException e){
-            logger.warning(e.getMessage());
+            throw new ApplicationException(500,"Sorry,some internal exception comes in video watching database");
         }
-        return null;
     }
 
     /**
      * This function used for find the longest streak in the database
      * @param personId    the person id
      * @return      return the fetch data
-     * @throws SQLException
      */
-    public ResultSet longestVideoWatchingStreak(int personId) {
+    public ResultSet longestStreak(int personId) {
         try{
-            longestVideoWatchingStreak = con.prepareStatement("select * from VideoWatching where personid = ? order by day");
-            longestVideoWatchingStreak.setInt(1,personId);
-            return longestVideoWatchingStreak.executeQuery();
+            longestStreak = con.prepareStatement("select * from VideoWatching where personid = ? order by day");
+            longestStreak.setInt(1,personId);
+            return longestStreak.executeQuery();
         }catch (SQLException e){
-            logger.warning(e.getMessage());
+            throw new ApplicationException(500,"Sorry,some internal exception comes in video watching database");
         }
-        return null;
     }
 }

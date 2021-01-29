@@ -2,16 +2,12 @@ package com.zs.hobbies.controller;
 
 import com.zs.hobbies.Application;
 import com.zs.hobbies.cache.Cache;
-import com.zs.hobbies.dto.Badminton;
 import com.zs.hobbies.dto.Chess;
 import com.zs.hobbies.dto.Person;
 import com.zs.hobbies.service.ChessService;
 import com.zs.hobbies.service.ChessServiceImpl;
 
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.ParseException;
 import java.sql.Date;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -29,7 +25,7 @@ public class ChessController {
     private ChessService chessService;
     Scanner in = new Scanner(System.in);
 
-    public ChessController(Connection con, Cache lru) throws SQLException, IOException, ClassNotFoundException {
+    public ChessController(Connection con, Cache lru) {
         chessService = new ChessServiceImpl(con,lru);
 
         logger = Logger.getLogger(Application.class.getName());
@@ -47,19 +43,16 @@ public class ChessController {
 
     /**
      * This function help you to insert the chess object in database
-     * @throws ParseException
-     * @throws SQLException
      */
-    public void insert(Chess chess) throws ParseException, SQLException {
+    public void insert(Chess chess) {
         chessService.insert(chess);
     }
 
     /**
      * This function help you to find the longest streak in the chess
      * @param personId  the person ID
-     * @throws SQLException
      */
-    public void longestStreak(int personId) throws SQLException {
+    public void longestStreak(int personId) {
         int longestStreak = chessService.longestStreak(personId);
         logger.info("Chess longest streak : " + longestStreak);
     }
@@ -67,9 +60,8 @@ public class ChessController {
     /**
      * This function help you to find the latest streak in the chess
      * @param personId  the person ID
-     * @throws SQLException
      */
-    public void latestStreak(int personId) throws SQLException {
+    public void latestStreak(int personId) {
         int latestStreak = chessService.latestStreak(personId);
         logger.info("Chess latest Streak : " + latestStreak);
     }
@@ -77,9 +69,8 @@ public class ChessController {
     /**
      * This function help you to find the last streak in the chess
      * @param personId  the person ID
-     * @throws SQLException
      */
-    public void lastTick(int personId) throws SQLException {
+    public void lastTick(int personId) {
         Chess chess = (Chess) chessService.lastTick(personId);
 
         if(chess != null) {
@@ -92,9 +83,8 @@ public class ChessController {
     /**
      * This function help you to find the details according to details in the chess
      * @param personId  the person ID
-     * @throws SQLException
      */
-    public void searchByDate(int personId, Date date) throws SQLException {
+    public void searchByDate(int personId, Date date) {
         Set<Chess> setDetails = chessService.dateDetails(personId,date);
 
         Iterator<Chess> iterator = setDetails.iterator();

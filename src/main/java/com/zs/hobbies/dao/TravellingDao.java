@@ -2,6 +2,8 @@ package com.zs.hobbies.dao;
 
 import com.zs.hobbies.Application;
 import com.zs.hobbies.dto.Travelling;
+import com.zs.hobbies.exception.ApplicationException;
+import com.zs.hobbies.exception.InvalidInputException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +15,7 @@ import java.util.logging.Logger;
 public class TravellingDao {
     private Logger logger;
     private Connection con;
-    private PreparedStatement insertTravelling, dateTravellingDetails, lastTick, longestTravellingStreak;
+    private PreparedStatement insert, dateDetails, lastTick, longestStreak;
 
     public TravellingDao(Connection con) {
          logger = Logger.getLogger(Application.class.getName());
@@ -25,24 +27,26 @@ public class TravellingDao {
      * this function help you to insert the travelling hobbies in database
      * @param travelling    this is a travel object
      * @return  return status of insert query
-     * @throws SQLException
      */
-    public void insertTravelling(Travelling travelling) {
+    public void insert(Travelling travelling) {
+        if(travelling == null) {
+            throw new InvalidInputException(500,"Sorry, Null object pass in travelling database");
+        }
         try{
-            insertTravelling = con.prepareStatement("insert into travelling values (?,?,?,?,?,?,?,?)");
-            insertTravelling.setInt(1,travelling.getId());
-            insertTravelling.setInt(2,travelling.getPersonId());
-            insertTravelling.setTime(3, travelling.getTime().getStartTime());
-            insertTravelling.setTime(4,travelling.getTime().getEndTime());
-            insertTravelling.setString(5,travelling.getStartPoint());
-            insertTravelling.setString(6,travelling.getEndPoint());
-            insertTravelling.setFloat(7,travelling.getDistance());
-            insertTravelling.setDate(8,travelling.getTime().getDay());
+            insert = con.prepareStatement("insert into travelling values (?,?,?,?,?,?,?,?)");
+            insert.setInt(1,travelling.getId());
+            insert.setInt(2,travelling.getPersonId());
+            insert.setTime(3, travelling.getTime().getStartTime());
+            insert.setTime(4,travelling.getTime().getEndTime());
+            insert.setString(5,travelling.getStartPoint());
+            insert.setString(6,travelling.getEndPoint());
+            insert.setFloat(7,travelling.getDistance());
+            insert.setDate(8,travelling.getTime().getDay());
 
-            insertTravelling.executeUpdate();
+            insert.executeUpdate();
             logger.info("Successfully insert travelling in database");
         }catch (SQLException e) {
-            logger.warning(e.getMessage());
+            throw new ApplicationException(500,"Sorry,some internal exception comes in travelling database");
         }
     }
 
@@ -51,26 +55,23 @@ public class TravellingDao {
      * @param personId    the person id
      * @param date      particular date
      * @return      return the fetch data
-     * @throws SQLException
      */
-    public ResultSet dateTravellingDetails(int personId, Date date) {
+    public ResultSet dateDetails(int personId, Date date) {
         try{
-            dateTravellingDetails = con.prepareStatement("select * from Travelling where personid = ? and day = ?");
-            dateTravellingDetails.setInt(1,personId);
-            dateTravellingDetails.setDate(2,date);
+            dateDetails = con.prepareStatement("select * from Travelling where personid = ? and day = ?");
+            dateDetails.setInt(1,personId);
+            dateDetails.setDate(2,date);
 
-            return dateTravellingDetails.executeQuery();
+            return dateDetails.executeQuery();
         }catch (SQLException e) {
-            logger.warning(e.getMessage());
+            throw new ApplicationException(500,"Sorry,some internal exception comes in travelling database");
         }
-        return null;
     }
 
     /**
      * This function help you to fetch the last tick of person
      * @param personId the person id
      * @return      return the fetch data
-     * @throws SQLException
      */
     public ResultSet lastTick(int personId) {
         try{
@@ -78,26 +79,23 @@ public class TravellingDao {
             lastTick.setInt(1,personId);
             return lastTick.executeQuery();
         }catch (SQLException e) {
-            logger.warning(e.getMessage());
+            throw new ApplicationException(500,"Sorry,some internal exception comes in travelling database");
         }
-        return null;
     }
 
     /**
      * This function help you to find the longest Streak in travelling
      * @param personId    the person id
      * @return      return the fetch data
-     * @throws SQLException
      */
-    public ResultSet longestTravellingStreak(int personId) {
+    public ResultSet longestStreak(int personId) {
        try{
-            longestTravellingStreak = con.prepareStatement("select * from Travelling where personid = ? order by day");
-            longestTravellingStreak.setInt(1,personId);
-            return longestTravellingStreak.executeQuery();
+            longestStreak = con.prepareStatement("select * from Travelling where personid = ? order by day");
+            longestStreak.setInt(1,personId);
+            return longestStreak.executeQuery();
        }catch (SQLException e) {
-           logger.warning(e.getMessage());
+           throw new ApplicationException(500,"Sorry,some internal exception comes in travelling database");
        }
-       return null;
     }
 
 }
