@@ -53,7 +53,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
         /**
          * check the given object data is valid or not
          */
-        validator.validateVideoWatching(videoWatching);
+        validator.validVideoWatching(videoWatching);
 
         videoWatchingDao.insert(videoWatching);
 

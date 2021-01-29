@@ -52,7 +52,7 @@ public class TravellingServiceImpl implements TravellingService {
         /**
          * check the data is valid or not
          */
-        validator.validateTravelling(travelling);
+        validator.validTravelling(travelling);
 
         travellingDao.insert(travelling);
 

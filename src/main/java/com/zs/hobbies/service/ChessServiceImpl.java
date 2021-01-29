@@ -52,7 +52,7 @@ public class ChessServiceImpl implements ChessService {
         /**
          * check the given data is valid or not
          */
-        validator.validateChess(chess);
+        validator.validChess(chess);
 
         chessDao.insert(chess);
 

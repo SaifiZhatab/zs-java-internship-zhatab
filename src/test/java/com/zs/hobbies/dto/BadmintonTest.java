@@ -35,7 +35,7 @@ class BadmintonTest {
      *  This function help you to check the person object available in badminton object
      */
     @Test
-    void validatePersonAvailable() throws SQLException {
+    void validPersonAvailable() throws SQLException {
         person = new Person(1,"zhatab" , "8024987656","UP");
 
         /**

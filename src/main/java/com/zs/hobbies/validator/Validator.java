@@ -158,7 +158,7 @@ public class Validator {
      * @param badminton the badminton object
      * @return true or invalid input exception
      */
-    public boolean validateBadminton(Badminton badminton) {
+    public boolean validBadminton(Badminton badminton) {
         if( validTime(badminton.getTime().getStartTime(),badminton.getTime().getEndTime()) &&
             validDate(badminton.getTime().getDay()) && validNumberOfPlayer(badminton.getNumPlayers()) &&
                 validResult(badminton.getResult()) ){
@@ -173,7 +173,7 @@ public class Validator {
      * @param person the person object
      * @return true or invalid input exception
      */
-    public  boolean validatePerson(Person person) {
+    public  boolean validPerson(Person person) {
         if(validName(person.getName()) && validMobile(person.getMobile()) ) {
             return true;
         }else {
@@ -186,7 +186,7 @@ public class Validator {
      * @param chess the chess object
      * @return true or invalid input exception
      */
-    public boolean validateChess(Chess chess) {
+    public boolean validChess(Chess chess) {
         if(validTime(chess.getTime().getStartTime(),chess.getTime().getEndTime()) &&
             validDate(chess.getTime().getDay()) && validResult(chess.getResult()) &&
                 validNumberOfMoves(chess.getNumMoves()) ) {
@@ -201,7 +201,7 @@ public class Validator {
      * @param videoWatching the videoWatching object
      * @return true or invalid input exception
      */
-    public boolean validateVideoWatching(VideoWatching videoWatching) {
+    public boolean validVideoWatching(VideoWatching videoWatching) {
         if (validTime(videoWatching.getTime().getStartTime(),videoWatching.getTime().getEndTime()) &&
                 validDate(videoWatching.getTime().getDay()) ) {
             return true;
@@ -216,7 +216,7 @@ public class Validator {
      * @param travelling the travelling object
      * @return true or invalid input exception
      */
-    public boolean validateTravelling(Travelling travelling) {
+    public boolean validTravelling(Travelling travelling) {
         if (validTime(travelling.getTime().getStartTime(),travelling.getTime().getEndTime()) &&
                 validDate(travelling.getTime().getDay()) && validPosition(travelling.getStartPoint()) &&
                 validPosition(travelling.getEndPoint()) ){
