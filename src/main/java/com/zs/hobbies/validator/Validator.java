@@ -158,7 +158,7 @@ public class Validator {
      * @param badminton the badminton object
      * @return true or invalid input exception
      */
-    public boolean validBadminton(Badminton badminton) {
+    public boolean validateBadminton(Badminton badminton) {
         if( validTime(badminton.getTime().getStartTime(),badminton.getTime().getEndTime()) &&
             validDate(badminton.getTime().getDay()) && validNumberOfPlayer(badminton.getNumPlayers()) &&
                 validResult(badminton.getResult()) ){
@@ -173,7 +173,7 @@ public class Validator {
      * @param person the person object
      * @return true or invalid input exception
      */
-    public  boolean validPerson(Person person) {
+    public  boolean validatePerson(Person person) {
         if(validName(person.getName()) && validMobile(person.getMobile()) ) {
             return true;
         }else {

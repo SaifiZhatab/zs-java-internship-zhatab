@@ -1,7 +1,7 @@
 package com.zs.hobbies.dao;
 
-import com.zs.hobbies.dto.Chess;
 import com.zs.hobbies.dto.Timing;
+import com.zs.hobbies.dto.VideoWatching;
 import com.zs.hobbies.exception.ApplicationException;
 import com.zs.hobbies.exception.InvalidInputException;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,55 +9,46 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
-
-class ChessDaoTest {
+class VideoWatchingDaoTest {
 
     private Connection connection = mock(Connection.class);
     private PreparedStatement preparedStatement = mock(PreparedStatement.class);
-    private ChessDao chessDao;
+    private VideoWatchingDao videoWatchingDao;
 
-    private int chessId,personId;
+    private int videoWatchingId,personId;
     private Time startTime ,endTime;
     private Date date;
-    private int numOfMoves ;
-    private String result;
-    private Chess chess;
+    private String title;
+    private VideoWatching videoWatching;
     private Timing timing;
 
     @BeforeEach
-    void setUp() throws SQLException {
-        /**
-         * create object with mock connection
-         */
-        chessDao = new ChessDao(connection);
+    void setUp() {
+        videoWatchingDao = new VideoWatchingDao(connection);
 
-        /**
-         * initialise object values
-         */
-        chessId = 1;
+        videoWatchingId = 1;
         personId = 1;
         startTime = Time.valueOf("10:45:31");
         endTime = Time.valueOf("12:20:31");
         date =  Date.valueOf("2021-01-01");
-        numOfMoves = 4;
-        result = "Win";
+        title = "lucifer morningstar";
 
         timing = new Timing(startTime,endTime,date);
 
-        chess = new Chess(chessId,personId,timing,numOfMoves,result);
+        videoWatching = new VideoWatching(videoWatchingId,personId,timing,title);
     }
 
     @Test
     void insertObject() throws SQLException {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeUpdate()).thenReturn(1);
-        chessDao.insert(chess);
+        videoWatchingDao.insert(videoWatching);
         verify(connection.prepareStatement(anyString()) , times(1)).executeUpdate();
     }
 
@@ -65,7 +56,7 @@ class ChessDaoTest {
     void insertWithNullObject() throws SQLException {
         assertThrows(InvalidInputException.class,
                 () -> {
-                    chessDao.insert(null);
+                    videoWatchingDao.insert(null);
                 });
     }
 
@@ -76,7 +67,7 @@ class ChessDaoTest {
 
         assertThrows(ApplicationException.class,
                 () -> {
-                    chessDao.insert(chess);
+                    videoWatchingDao.insert(videoWatching);
                 });
     }
 
@@ -90,14 +81,14 @@ class ChessDaoTest {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
 
-        chessDao.dateDetails(personId,date);
+        videoWatchingDao.dateDetails(personId,date);
 
         verify(connection.prepareStatement(anyString()) , times(1));
 
         /**
          * check the actual or expected value
          */
-        assertEquals(resultSet, chessDao.dateDetails(personId,date));
+        assertEquals(resultSet, videoWatchingDao.dateDetails(personId,date));
     }
 
     @Test
@@ -107,7 +98,7 @@ class ChessDaoTest {
 
         assertThrows(ApplicationException.class,
                 () -> {
-                    chessDao.dateDetails(personId,date);
+                    videoWatchingDao.dateDetails(personId,date);
                 });
     }
 
@@ -121,14 +112,14 @@ class ChessDaoTest {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
 
-        chessDao.lastTick(personId);
+        videoWatchingDao.lastTick(personId);
 
         verify(connection.prepareStatement(anyString()) , times(1));
 
         /**
          * check the actual or expected value
          */
-        assertEquals(resultSet, chessDao.lastTick(personId));
+        assertEquals(resultSet, videoWatchingDao.lastTick(personId));
     }
 
     @Test
@@ -137,7 +128,7 @@ class ChessDaoTest {
         when(connection.prepareStatement(anyString()).executeQuery()).thenThrow(new SQLException());
         assertThrows(ApplicationException.class,
                 () -> {
-                    chessDao.lastTick(personId);
+                    videoWatchingDao.lastTick(personId);
                 });
     }
 
@@ -151,15 +142,16 @@ class ChessDaoTest {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
 
-        chessDao.longestStreak(personId);
+        videoWatchingDao.longestStreak(personId);
 
         verify(connection.prepareStatement(anyString()) , times(1));
 
         /**
          * check the actual or expected value
          */
-        assertEquals(resultSet, chessDao.longestStreak(personId));
+        assertEquals(resultSet, videoWatchingDao.longestStreak(personId));
     }
+
 
     @Test
     void longestStreakException() throws SQLException {
@@ -168,7 +160,7 @@ class ChessDaoTest {
 
         assertThrows(ApplicationException.class,
                 () -> {
-                    chessDao.longestStreak(personId);
+                    videoWatchingDao.longestStreak(personId);
                 });
     }
 }

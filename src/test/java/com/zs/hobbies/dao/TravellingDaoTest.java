@@ -1,7 +1,7 @@
 package com.zs.hobbies.dao;
 
-import com.zs.hobbies.dto.Chess;
 import com.zs.hobbies.dto.Timing;
+import com.zs.hobbies.dto.Travelling;
 import com.zs.hobbies.exception.ApplicationException;
 import com.zs.hobbies.exception.InvalidInputException;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,55 +9,51 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
-
-class ChessDaoTest {
+class TravellingDaoTest {
 
     private Connection connection = mock(Connection.class);
     private PreparedStatement preparedStatement = mock(PreparedStatement.class);
-    private ChessDao chessDao;
+    private TravellingDao travellingDao;
 
-    private int chessId,personId;
+    private int travellingId,personId;
     private Time startTime ,endTime;
     private Date date;
-    private int numOfMoves ;
-    private String result;
-    private Chess chess;
+    private String startPoint , endPoint;
+    private Float distance;
+
+    private Travelling travelling;
     private Timing timing;
 
-    @BeforeEach
-    void setUp() throws SQLException {
-        /**
-         * create object with mock connection
-         */
-        chessDao = new ChessDao(connection);
 
-        /**
-         * initialise object values
-         */
-        chessId = 1;
+    @BeforeEach
+    void setUp() {
+        travellingDao = new TravellingDao(connection);
+
+        travellingId = 1;
         personId = 1;
         startTime = Time.valueOf("10:45:31");
         endTime = Time.valueOf("12:20:31");
         date =  Date.valueOf("2021-01-01");
-        numOfMoves = 4;
-        result = "Win";
+        startPoint = "Up";
+        endPoint = "MP";
+        distance = 1.5f;
 
         timing = new Timing(startTime,endTime,date);
 
-        chess = new Chess(chessId,personId,timing,numOfMoves,result);
+        travelling = new Travelling(travellingId,personId,timing,startPoint,endPoint,distance);
     }
 
     @Test
     void insertObject() throws SQLException {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeUpdate()).thenReturn(1);
-        chessDao.insert(chess);
+        travellingDao.insert(travelling);
         verify(connection.prepareStatement(anyString()) , times(1)).executeUpdate();
     }
 
@@ -65,7 +61,7 @@ class ChessDaoTest {
     void insertWithNullObject() throws SQLException {
         assertThrows(InvalidInputException.class,
                 () -> {
-                    chessDao.insert(null);
+                    travellingDao.insert(null);
                 });
     }
 
@@ -76,7 +72,7 @@ class ChessDaoTest {
 
         assertThrows(ApplicationException.class,
                 () -> {
-                    chessDao.insert(chess);
+                    travellingDao.insert(travelling);
                 });
     }
 
@@ -90,14 +86,14 @@ class ChessDaoTest {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
 
-        chessDao.dateDetails(personId,date);
+        travellingDao.dateDetails(personId,date);
 
         verify(connection.prepareStatement(anyString()) , times(1));
 
         /**
          * check the actual or expected value
          */
-        assertEquals(resultSet, chessDao.dateDetails(personId,date));
+        assertEquals(resultSet, travellingDao.dateDetails(personId,date));
     }
 
     @Test
@@ -107,7 +103,7 @@ class ChessDaoTest {
 
         assertThrows(ApplicationException.class,
                 () -> {
-                    chessDao.dateDetails(personId,date);
+                    travellingDao.dateDetails(personId,date);
                 });
     }
 
@@ -121,14 +117,14 @@ class ChessDaoTest {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
 
-        chessDao.lastTick(personId);
+        travellingDao.lastTick(personId);
 
         verify(connection.prepareStatement(anyString()) , times(1));
 
         /**
          * check the actual or expected value
          */
-        assertEquals(resultSet, chessDao.lastTick(personId));
+        assertEquals(resultSet, travellingDao.lastTick(personId));
     }
 
     @Test
@@ -137,7 +133,7 @@ class ChessDaoTest {
         when(connection.prepareStatement(anyString()).executeQuery()).thenThrow(new SQLException());
         assertThrows(ApplicationException.class,
                 () -> {
-                    chessDao.lastTick(personId);
+                    travellingDao.lastTick(personId);
                 });
     }
 
@@ -151,14 +147,14 @@ class ChessDaoTest {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
 
-        chessDao.longestStreak(personId);
+        travellingDao.longestStreak(personId);
 
         verify(connection.prepareStatement(anyString()) , times(1));
 
         /**
          * check the actual or expected value
          */
-        assertEquals(resultSet, chessDao.longestStreak(personId));
+        assertEquals(resultSet, travellingDao.longestStreak(personId));
     }
 
     @Test
@@ -168,7 +164,7 @@ class ChessDaoTest {
 
         assertThrows(ApplicationException.class,
                 () -> {
-                    chessDao.longestStreak(personId);
+                    travellingDao.longestStreak(personId);
                 });
     }
 }

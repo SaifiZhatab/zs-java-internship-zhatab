@@ -39,7 +39,7 @@ public class PersonServiceImpl implements PersonService {
         /**
          * check validity
          */
-        validator.validPerson(person);
+        validator.validatePerson(person);
         personDao.insert(person);
     }
 

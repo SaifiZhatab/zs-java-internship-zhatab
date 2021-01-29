@@ -52,7 +52,7 @@ public class BadmintonServiceImpl implements BadmintonService {
         /**
          * check the badminton object details
          */
-        validator.validBadminton(badminton);
+        validator.validateBadminton(badminton);
 
         badmintonDao.insert(badminton);
         logger.info("Successfully Badminton enter in database");

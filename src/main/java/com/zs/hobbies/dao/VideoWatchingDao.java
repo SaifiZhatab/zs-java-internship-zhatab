@@ -94,4 +94,5 @@ public class VideoWatchingDao {
             throw new ApplicationException(500,"Sorry,some internal exception comes in video watching database");
         }
     }
+
 }

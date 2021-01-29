@@ -2,16 +2,21 @@ package com.zs.hobbies.dao;
 
 import com.zs.hobbies.dto.Badminton;
 import com.zs.hobbies.dto.Timing;
+import com.zs.hobbies.exception.ApplicationException;
+import com.zs.hobbies.exception.InvalidInputException;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
 import java.sql.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 /**
@@ -22,7 +27,7 @@ public class BadmintonDaoTest {
      Connection connection = mock(Connection.class);
      PreparedStatement preparedStatement = mock(PreparedStatement.class);
 
-    @InjectMocks
+
     private BadmintonDao badmintonDao ;
 
     private int badmintonId,personId;
@@ -65,7 +70,7 @@ public class BadmintonDaoTest {
      * @throws SQLException
      */
     @Test
-    void insertObject() throws SQLException {
+    void insertNotNullBadmintonObject() throws SQLException {
         /**
          * when connection.prepareStatement(anyString()) instruction come, then it return preparedStatement
          */
@@ -82,43 +87,75 @@ public class BadmintonDaoTest {
          * verify the connection.prepareStatement(anyString()) will execute only 1 time
          */
         verify(connection.prepareStatement(anyString()) , times(1)).executeUpdate();
-
     }
 
+
+    /**
+     * when you try to insert null object in dao, then it return InvalidInputException
+     */
+    @Test
+    void insertNullObject() {
+        /**
+         * check the insert(null) give InvalidInputException
+         */
+        assertThrows(InvalidInputException.class,
+                () -> {
+                    badmintonDao.insert(null);
+                });
+    }
+    
+    @Test
+    void insertException() throws SQLException {
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(connection.prepareStatement(anyString()).executeUpdate()).thenThrow(new SQLException());
+
+        assertThrows(ApplicationException.class,
+                ()->{
+                    badmintonDao.insert(badminton);
+                });
+    }
 
     /**
      * check longest streak function
      * @throws SQLException
      */
     @Test
-    public void longestStreak() throws SQLException {
+    void longestStreak() throws SQLException {
         ResultSet resultSet = null;
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
 
         badmintonDao.longestStreak(personId);
 
-        verify(connection.prepareStatement(anyString()) , times(1));
+        verify(connection.prepareStatement(anyString()) , times(1)).executeQuery();
 
-        /**
-         * check the actual or expected value
-         */
         assertEquals(resultSet, badmintonDao.longestStreak(personId));
     }
 
+
+    @Test
+    void longestStreakException() throws SQLException {
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(connection.prepareStatement(anyString()).executeQuery()).thenThrow(new SQLException());
+
+        assertThrows(ApplicationException.class,
+                () -> {
+                    badmintonDao.longestStreak(personId);
+                });
+    }
     /**
      * check the deta details function of badminton dao class
      * @throws SQLException
      */
     @Test
-    public void dateDetails() throws SQLException {
+    void dateDetails() throws SQLException {
         ResultSet resultSet = null;
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
 
         badmintonDao.dateDetails(personId,date);
 
-        verify(connection.prepareStatement(anyString()) , times(1));
+        verify(connection.prepareStatement(anyString()) , times(1)).executeQuery();
 
         /**
          * check the actual or expected value
@@ -127,19 +164,13 @@ public class BadmintonDaoTest {
     }
 
     @Test
-    public void dateDetailsWithNullObject() throws SQLException {
-        ResultSet resultSet = null;
+    void dateDetailsException() throws SQLException {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
-
-        badmintonDao.dateDetails(personId,null);
-
-        verify(connection.prepareStatement(anyString()) , times(1));
-
-        /**
-         * check the actual or expected value
-         */
-        assertEquals(resultSet, badmintonDao.longestStreak(personId));
+        when(connection.prepareStatement(anyString()).executeQuery()).thenThrow(new SQLException());
+        assertThrows(ApplicationException.class,
+                () -> {
+                    badmintonDao.dateDetails(personId,date);
+                });
     }
 
     /**
@@ -160,5 +191,15 @@ public class BadmintonDaoTest {
          * check the actual or expected value
          */
         assertEquals(resultSet, badmintonDao.longestStreak(personId));
+    }
+
+    @Test
+    void lastTickExceptionThrow() throws SQLException {
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(connection.prepareStatement(anyString()).executeQuery()).thenThrow(new SQLException());
+        assertThrows(ApplicationException.class,
+                () -> {
+                    badmintonDao.lastTick(personId);
+                });
     }
 }

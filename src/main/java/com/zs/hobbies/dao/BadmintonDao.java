@@ -33,7 +33,7 @@ public class BadmintonDao {
      */
     public void insert(Badminton badminton) {
         if(badminton == null) {
-            throw new InvalidInputException(500,"Sorry, Null object pass in badminton database");
+            throw new InvalidInputException(400,"Sorry, Null object pass in badminton database");
         }
 
         try {
@@ -61,7 +61,6 @@ public class BadmintonDao {
     public ResultSet longestStreak(int personId) {
         try {
             longestStreak = con.prepareStatement("select * from Badminton where personid = ? order by day");
-
             longestStreak.setInt(1, personId);
             return longestStreak.executeQuery();
         }catch (SQLException e) {
@@ -94,7 +93,8 @@ public class BadmintonDao {
     public ResultSet lastTick(int personId) {
         try{
             lastTick = con.prepareStatement("select * from Badminton where personid = ? order by badminton_id desc LIMIT 1");
-            lastTick.setInt(1,personId);
+            lastTick.setInt(1,personId );
+            lastTick = con.prepareStatement(" selct * from badminton");
             return lastTick.executeQuery();
         }catch (SQLException e) {
             throw new ApplicationException(500,"Sorry,some internal exception comes in badminton database");
