@@ -100,7 +100,7 @@ public class Validator {
          */
         for(int i=0;i<length;i++) {
             if((check.charAt(i)>= 'a' && check.charAt(i) <= 'z') ||
-                    (check.charAt(i)>='A' && check.charAt(i) <= 'Z') ) {
+                    (check.charAt(i)>='A' && check.charAt(i) <= 'Z') || (check.charAt(i) == ' ')) {
 
             }else {
                 throw new InvalidInputException(400,"Name must contains only char ");
@@ -132,7 +132,7 @@ public class Validator {
      * @return  true/false
      */
     public boolean validTime(Time startTime, Time endTime) {
-        if(startTime.compareTo(endTime) < 0 && endTime.compareTo(Time.valueOf(LocalTime.now())) < 0) {
+        if(startTime.compareTo(endTime) < 0 ) {
             return true;
         }else {
             throw new InvalidInputException(400,"Wrong time given by user");
@@ -158,12 +158,14 @@ public class Validator {
      * @param badminton the badminton object
      * @return true or invalid input exception
      */
-    public boolean validateBadminton(Badminton badminton) {
-        if( validTime(badminton.getTime().getStartTime(),badminton.getTime().getEndTime()) &&
-            validDate(badminton.getTime().getDay()) && validNumberOfPlayer(badminton.getNumPlayers()) &&
-                validResult(badminton.getResult()) ){
+    public boolean validBadminton(Badminton badminton) {
+        try{
+            validTime(badminton.getTime().getStartTime(),badminton.getTime().getEndTime());
+            validDate(badminton.getTime().getDay());
+            validNumberOfPlayer(badminton.getNumPlayers());
+            validResult(badminton.getResult()) ;
             return true;
-        }else{
+        }catch(InvalidInputException e){
             throw new InvalidInputException(400,"Wrong data given by user");
         }
     }
@@ -173,10 +175,12 @@ public class Validator {
      * @param person the person object
      * @return true or invalid input exception
      */
-    public  boolean validatePerson(Person person) {
-        if(validName(person.getName()) && validMobile(person.getMobile()) ) {
+    public  boolean validPerson(Person person) {
+        try{
+            validName(person.getName());
+            validMobile(person.getMobile()) ;
             return true;
-        }else {
+        }catch (InvalidInputException e){
             throw new InvalidInputException(400,"Wrong data given by user");
         }
     }
@@ -187,11 +191,13 @@ public class Validator {
      * @return true or invalid input exception
      */
     public boolean validChess(Chess chess) {
-        if(validTime(chess.getTime().getStartTime(),chess.getTime().getEndTime()) &&
-            validDate(chess.getTime().getDay()) && validResult(chess.getResult()) &&
-                validNumberOfMoves(chess.getNumMoves()) ) {
+        try{
+            validTime(chess.getTime().getStartTime(),chess.getTime().getEndTime()) ;
+            validDate(chess.getTime().getDay());
+            validResult(chess.getResult());
+            validNumberOfMoves(chess.getNumMoves());
             return true;
-        }else {
+        }catch (InvalidInputException e){
             throw new InvalidInputException(400,"Wrong data given by user");
         }
     }
@@ -202,10 +208,11 @@ public class Validator {
      * @return true or invalid input exception
      */
     public boolean validVideoWatching(VideoWatching videoWatching) {
-        if (validTime(videoWatching.getTime().getStartTime(),videoWatching.getTime().getEndTime()) &&
-                validDate(videoWatching.getTime().getDay()) ) {
+        try{
+            validTime(videoWatching.getTime().getStartTime(),videoWatching.getTime().getEndTime()) ;
+            validDate(videoWatching.getTime().getDay());
             return true;
-        }else {
+        }catch (InvalidInputException e){
             throw new InvalidInputException(400,"Wrong data given by user");
         }
 
@@ -217,11 +224,13 @@ public class Validator {
      * @return true or invalid input exception
      */
     public boolean validTravelling(Travelling travelling) {
-        if (validTime(travelling.getTime().getStartTime(),travelling.getTime().getEndTime()) &&
-                validDate(travelling.getTime().getDay()) && validPosition(travelling.getStartPoint()) &&
-                validPosition(travelling.getEndPoint()) ){
+        try{
+            validTime(travelling.getTime().getStartTime(),travelling.getTime().getEndTime()) ;
+            validDate(travelling.getTime().getDay());
+            validPosition(travelling.getStartPoint());
+            validPosition(travelling.getEndPoint());
             return true;
-        }else {
+        }catch (InvalidInputException e){
             throw new InvalidInputException(400,"Wrong data given by user");
         }
     }

@@ -93,12 +93,6 @@ public class TravellingServiceImpl implements TravellingService {
         ResultSet resultSet = travellingDao.dateDetails(personId,date);
 
         try {
-            /**
-             * if details are not present at given date
-             */
-            if (!resultSet.next()) {
-                return null;
-            }
 
             /**
              * setDetails use to store the object
@@ -117,7 +111,6 @@ public class TravellingServiceImpl implements TravellingService {
                         resultSet.getFloat("distance"));
 
                 setDetails.add(travelling);
-
             }
             return setDetails;
         }catch (SQLException e) {
@@ -132,7 +125,7 @@ public class TravellingServiceImpl implements TravellingService {
      * @return
      */
     @Override
-    public int lastTick(int personId) {
+    public Integer lastTick(int personId) {
         /**
          * check in cache memeory
          */

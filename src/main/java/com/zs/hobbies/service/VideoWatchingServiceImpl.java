@@ -95,13 +95,6 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
 
         try {
             /**
-             * if details are not present at given date
-             */
-            if (!resultSet.next()) {
-                return null;
-            }
-
-            /**
              * use to store the objects
              */
             Set<VideoWatching> setDetails = new HashSet<VideoWatching>();
@@ -130,7 +123,7 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
      * @return
      */
     @Override
-    public int lastTick(int personId) {
+    public Integer lastTick(int personId) {
         /**
          * check in the cache memory
          */

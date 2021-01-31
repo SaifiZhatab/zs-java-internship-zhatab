@@ -1,8 +1,8 @@
 package com.zs.hobbies.service;
 
 import com.zs.hobbies.cache.Cache;
-import com.zs.hobbies.dao.BadmintonDao;
-import com.zs.hobbies.dto.Badminton;
+import com.zs.hobbies.dao.ChessDao;
+import com.zs.hobbies.dto.Chess;
 import com.zs.hobbies.dto.Timing;
 import com.zs.hobbies.exception.ApplicationException;
 import com.zs.hobbies.validator.Validator;
@@ -16,75 +16,88 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * This class is badminton service testing implementation
  */
-class BadmintonServiceImplTest {
-
+class ChessServiceImplTest {
     private Cache lru = mock(Cache.class);
     private Connection connection = mock(Connection.class);
     private Validator validator = mock(Validator.class);
-    private BadmintonDao badmintonDao = mock(BadmintonDao.class);
+    private ChessDao chessDao = mock(ChessDao.class);
     private ResultSet resultSet = mock(ResultSet.class);
     private PreparedStatement preparedStatement = mock(PreparedStatement.class);
     private SimilarRequirement similarRequirement = mock(SimilarRequirement.class);
 
-    private BadmintonService badmintonService;
+    private ChessService chessService;
 
-    private int badmintonId,personId;
+    private int chessId,personId;
     private Date date;
     private Timing timing;
-    private int numPlayers ;
+    private int numOfMoves ;
     private String result;
-    private Badminton badminton;
+    private Chess chess;
 
     @BeforeEach
     void setUp() {
-        badmintonService = new BadmintonServiceImpl(connection,lru);
+        chessService = new ChessServiceImpl(connection,lru);
 
-        badmintonId = 1;
+        chessId = 1;
         personId =2;
         date = Date.valueOf("2021-01-01");
         timing = new Timing(Time.valueOf("10:45:31"),Time.valueOf("12:20:31"), date);
-        numPlayers = 3;
+        numOfMoves = 3;
         result = "win";
 
-        badminton = new Badminton(badmintonId,personId,timing,numPlayers,result);
+        chess = new Chess(chessId,personId,timing,numOfMoves,result);
     }
 
+    /**
+     * insert function testing
+     * @throws SQLException
+     */
     @Test
     void insert() throws SQLException {
-        when(validator.validBadminton(badminton)).thenReturn(true);
+        /**
+         * set the external object to mock object
+         */
+        when(validator.validChess(chess)).thenReturn(true);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeUpdate()).thenReturn(1);
-
         when(lru.get(anyString())).thenReturn(1);
 
-        badmintonService.insert(badminton);
-
+        /**
+         * call method which you want to test
+         */
+        chessService.insert(chess);
     }
 
     @Test
     void dateDetails() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
-
         when(resultSet.getTime("startTime")).thenReturn(Time.valueOf("10:45:31"));
         when(resultSet.getTime("endTime")).thenReturn(Time.valueOf("12:20:31"));
         when(resultSet.getDate("day")).thenReturn(Date.valueOf("2021-01-01"));
-        when(resultSet.getInt("badminton_id")).thenReturn(1);
+        when(resultSet.getInt("chess_id")).thenReturn(1);
         when(resultSet.getInt("personid")).thenReturn(2);
-        when(resultSet.getInt("numPlayers")).thenReturn(4);
+        when(resultSet.getInt("numMoves")).thenReturn(4);
         when(resultSet.getString("result")).thenReturn("win");
-
         when(resultSet.next()).thenReturn(true).thenReturn(false);
         when(validator.validDate(any())).thenReturn(true);
 
-        badmintonService.dateDetails(personId,date);
+        /**
+         * call method which you want to test
+         */
+        chessService.dateDetails(personId,date);
     }
 
     @Test
@@ -95,9 +108,9 @@ class BadmintonServiceImplTest {
         when(resultSet.getTime("startTime")).thenReturn(Time.valueOf("10:45:31"));
         when(resultSet.getTime("endTime")).thenReturn(Time.valueOf("12:20:31"));
         when(resultSet.getDate("day")).thenReturn(Date.valueOf("2021-01-01"));
-        when(resultSet.getInt("badminton_id")).thenReturn(1);
+        when(resultSet.getInt("chess_id")).thenReturn(1);
         when(resultSet.getInt("personid")).thenReturn(2);
-        when(resultSet.getInt("numPlayers")).thenReturn(4);
+        when(resultSet.getInt("numMoves")).thenReturn(4);
         when(resultSet.getString("result")).thenReturn("win");
 
         when(resultSet.next()).thenThrow(new SQLException()).thenReturn(false);
@@ -105,7 +118,7 @@ class BadmintonServiceImplTest {
 
         assertThrows(ApplicationException.class,
                 ()->{
-                    badmintonService.dateDetails(personId,date);
+                    chessService.dateDetails(personId,date);
                 });
     }
 
@@ -113,7 +126,7 @@ class BadmintonServiceImplTest {
     void lastTickAvailableInCache() {
         when(lru.get(anyString())).thenReturn(1);
 
-        badmintonService.lastTick(personId);
+        chessService.lastTick(personId);
     }
 
     @Test
@@ -122,9 +135,9 @@ class BadmintonServiceImplTest {
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
         when(lru.get(anyString())).thenReturn(null);
         when(resultSet.next()).thenReturn(true).thenReturn(false);
-        when(resultSet.getInt("badminton_id")).thenReturn(1);
+        when(resultSet.getInt("chess_id")).thenReturn(1);
 
-        badmintonService.lastTick(personId);
+        chessService.lastTick(personId);
     }
 
     @Test
@@ -133,19 +146,18 @@ class BadmintonServiceImplTest {
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
         when(lru.get(anyString())).thenReturn(null);
         when(resultSet.next()).thenThrow(new SQLException()).thenReturn(false);
-        when(resultSet.getInt("badminton_id")).thenReturn(1);
+        when(resultSet.getInt("chess_id")).thenReturn(1);
 
         assertThrows(ApplicationException.class,
                 ()->{
-                    badmintonService.lastTick(personId);
+                    chessService.lastTick(personId);
                 });
     }
 
     @Test
     void longestStreakAvailableInCache() {
         when(lru.get(anyString())).thenReturn(1);
-
-        badmintonService.longestStreak(personId);
+        chessService.longestStreak(personId);
     }
 
     @Test
@@ -156,7 +168,7 @@ class BadmintonServiceImplTest {
         when(resultSet.next()).thenReturn(true).thenReturn(false);
         when(resultSet.getDate("day")).thenReturn(date);
 
-        badmintonService.longestStreak(personId);
+        chessService.longestStreak(personId);
     }
 
     @Test
@@ -165,11 +177,11 @@ class BadmintonServiceImplTest {
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
         when(lru.get(anyString())).thenReturn(null);
         when(resultSet.next()).thenThrow(new SQLException()).thenReturn(false);
-        when(resultSet.getInt("badminton_id")).thenReturn(1);
+        when(resultSet.getInt("day")).thenReturn(1);
 
         assertThrows(ApplicationException.class,
                 ()->{
-                    badmintonService.longestStreak(personId);
+                    chessService.longestStreak(personId);
                 });
     }
 
@@ -177,7 +189,7 @@ class BadmintonServiceImplTest {
     void latestStreakAvailableInCache() {
         when(lru.get(anyString())).thenReturn(1);
 
-        badmintonService.latestStreak(personId);
+        chessService.latestStreak(personId);
     }
 
     @Test
@@ -188,7 +200,7 @@ class BadmintonServiceImplTest {
         when(resultSet.next()).thenReturn(true).thenReturn(false);
         when(resultSet.getDate("day")).thenReturn(date);
 
-        badmintonService.latestStreak(personId);
+        chessService.latestStreak(personId);
     }
 
     @Test
@@ -201,7 +213,7 @@ class BadmintonServiceImplTest {
 
         assertThrows(ApplicationException.class,
                 ()->{
-                    badmintonService.latestStreak(personId);
+                    chessService.latestStreak(personId);
                 });
     }
 }

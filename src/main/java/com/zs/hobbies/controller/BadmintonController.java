@@ -9,7 +9,6 @@ import com.zs.hobbies.service.BadmintonServiceImpl;
 import java.sql.Connection;
 import java.sql.Date;
 import java.util.Iterator;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -20,7 +19,6 @@ import java.util.logging.Logger;
 public class BadmintonController {
     private Logger logger;
     BadmintonService badmintonService;
-    Scanner in = new Scanner(System.in);
 
     public BadmintonController(Connection con, Cache lru) {
         badmintonService = new BadmintonServiceImpl(con,lru);
@@ -28,7 +26,7 @@ public class BadmintonController {
     }
 
     /**
-     * This funciton help you to insert the badminton object in database
+     * This function help you to insert the badminton object in database
      */
     public void insert(Badminton badminton) {
         badmintonService.insert(badminton);
@@ -57,12 +55,8 @@ public class BadmintonController {
      * @param personId  the person ID
      */
     public void lastTick(int personId) {
-        Integer badmintonId = (Integer) badmintonService.lastTick(personId);
-        if(badmintonId != null) {
-            logger.info("Badminton last tick id : " +badmintonId);
-        }else {
-            logger.warning("Not present last tick");
-        }
+        Integer badmintonId = badmintonService.lastTick(personId);
+        logger.info("Badminton last tick id : " + badmintonId);
     }
 
     /**
@@ -73,12 +67,13 @@ public class BadmintonController {
     public void searchByDate(int personId, Date date) {
         Set<Badminton> setDetails = badmintonService.dateDetails(personId,date);
 
-        if(setDetails == null) {
+        if(setDetails.size() == 0) {
             logger.warning("No details present at this date");
             return;
         }
 
         Iterator<Badminton> iterator = setDetails.iterator();
+        System.out.println("njbj");
         while(iterator.hasNext()) {
             logger.info("Badminton id : " + iterator.next().getId());
         }

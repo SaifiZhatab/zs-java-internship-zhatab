@@ -53,7 +53,6 @@ public class ChessServiceImpl implements ChessService {
          * check the given data is valid or not
          */
         validator.validChess(chess);
-
         chessDao.insert(chess);
 
         /**
@@ -94,10 +93,6 @@ public class ChessServiceImpl implements ChessService {
             /**
              * if details are not present at given date
              */
-            if (!resultSet.next()) {
-                return null;
-            }
-
             while (resultSet.next()) {
                 Timing timing = new Timing(resultSet.getTime("startTime"), resultSet.getTime("endTime"),
                         resultSet.getDate("day"));
@@ -119,7 +114,7 @@ public class ChessServiceImpl implements ChessService {
      * @return
      */
     @Override
-    public int lastTick(int personId) {
+    public Integer lastTick(int personId) {
         /**
          * check in cache memory
          */

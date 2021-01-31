@@ -1,71 +1,70 @@
 package com.zs.hobbies.service;
 
 import com.zs.hobbies.cache.Cache;
-import com.zs.hobbies.dao.BadmintonDao;
-import com.zs.hobbies.dto.Badminton;
+import com.zs.hobbies.dao.TravellingDao;
 import com.zs.hobbies.dto.Timing;
+import com.zs.hobbies.dto.Travelling;
 import com.zs.hobbies.exception.ApplicationException;
 import com.zs.hobbies.validator.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.PreparedStatement;
-import java.sql.Date;
-import java.sql.SQLException;
-import java.sql.Time;
+import java.sql.*;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-/**
- * This class is badminton service testing implementation
- */
-class BadmintonServiceImplTest {
+class TravellingServiceImplTest {
 
     private Cache lru = mock(Cache.class);
     private Connection connection = mock(Connection.class);
     private Validator validator = mock(Validator.class);
-    private BadmintonDao badmintonDao = mock(BadmintonDao.class);
+    private TravellingDao travellingDao = mock(TravellingDao.class);
     private ResultSet resultSet = mock(ResultSet.class);
     private PreparedStatement preparedStatement = mock(PreparedStatement.class);
     private SimilarRequirement similarRequirement = mock(SimilarRequirement.class);
 
-    private BadmintonService badmintonService;
+    private TravellingService travellingService;
 
-    private int badmintonId,personId;
+    private int travellingId,personId;
+    private Time startTime ,endTime;
     private Date date;
+    private String startPoint , endPoint;
+    private Float distance;
+    private Travelling travelling;
     private Timing timing;
-    private int numPlayers ;
-    private String result;
-    private Badminton badminton;
+
 
     @BeforeEach
     void setUp() {
-        badmintonService = new BadmintonServiceImpl(connection,lru);
+        travellingService = new TravellingServiceImpl(connection,lru);
 
-        badmintonId = 1;
-        personId =2;
-        date = Date.valueOf("2021-01-01");
-        timing = new Timing(Time.valueOf("10:45:31"),Time.valueOf("12:20:31"), date);
-        numPlayers = 3;
-        result = "win";
+        travellingId = 1;
+        personId = 1;
+        startTime = Time.valueOf("10:45:31");
+        endTime = Time.valueOf("12:20:31");
+        date =  Date.valueOf("2021-01-01");
+        startPoint = "Up";
+        endPoint = "MP";
+        distance = 1.5f;
 
-        badminton = new Badminton(badmintonId,personId,timing,numPlayers,result);
+        timing = new Timing(startTime,endTime,date);
+
+        travelling = new Travelling(travellingId,personId,timing,startPoint,endPoint,distance);
     }
 
     @Test
     void insert() throws SQLException {
-        when(validator.validBadminton(badminton)).thenReturn(true);
+        when(validator.validTravelling(travelling)).thenReturn(true);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeUpdate()).thenReturn(1);
 
         when(lru.get(anyString())).thenReturn(1);
 
-        badmintonService.insert(badminton);
-
+        travellingService.insert(travelling);
     }
 
     @Test
@@ -76,15 +75,16 @@ class BadmintonServiceImplTest {
         when(resultSet.getTime("startTime")).thenReturn(Time.valueOf("10:45:31"));
         when(resultSet.getTime("endTime")).thenReturn(Time.valueOf("12:20:31"));
         when(resultSet.getDate("day")).thenReturn(Date.valueOf("2021-01-01"));
-        when(resultSet.getInt("badminton_id")).thenReturn(1);
+        when(resultSet.getInt("travelling_id")).thenReturn(1);
         when(resultSet.getInt("personid")).thenReturn(2);
-        when(resultSet.getInt("numPlayers")).thenReturn(4);
-        when(resultSet.getString("result")).thenReturn("win");
+        when(resultSet.getString("startPoint")).thenReturn("UP");
+        when(resultSet.getString("endPoint")).thenReturn("MP");
+        when(resultSet.getFloat("distance")).thenReturn(1200f);
 
         when(resultSet.next()).thenReturn(true).thenReturn(false);
         when(validator.validDate(any())).thenReturn(true);
 
-        badmintonService.dateDetails(personId,date);
+        travellingService.dateDetails(personId,date);
     }
 
     @Test
@@ -95,17 +95,18 @@ class BadmintonServiceImplTest {
         when(resultSet.getTime("startTime")).thenReturn(Time.valueOf("10:45:31"));
         when(resultSet.getTime("endTime")).thenReturn(Time.valueOf("12:20:31"));
         when(resultSet.getDate("day")).thenReturn(Date.valueOf("2021-01-01"));
-        when(resultSet.getInt("badminton_id")).thenReturn(1);
+        when(resultSet.getInt("travelling_id")).thenReturn(1);
         when(resultSet.getInt("personid")).thenReturn(2);
-        when(resultSet.getInt("numPlayers")).thenReturn(4);
-        when(resultSet.getString("result")).thenReturn("win");
+        when(resultSet.getString("startPoint")).thenReturn("UP");
+        when(resultSet.getString("endPoint")).thenReturn("MP");
+        when(resultSet.getFloat("distance")).thenReturn(1200f);
 
         when(resultSet.next()).thenThrow(new SQLException()).thenReturn(false);
         when(validator.validDate(any())).thenReturn(true);
 
         assertThrows(ApplicationException.class,
                 ()->{
-                    badmintonService.dateDetails(personId,date);
+                    travellingService.dateDetails(personId,date);
                 });
     }
 
@@ -113,7 +114,7 @@ class BadmintonServiceImplTest {
     void lastTickAvailableInCache() {
         when(lru.get(anyString())).thenReturn(1);
 
-        badmintonService.lastTick(personId);
+        travellingService.lastTick(personId);
     }
 
     @Test
@@ -122,9 +123,9 @@ class BadmintonServiceImplTest {
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
         when(lru.get(anyString())).thenReturn(null);
         when(resultSet.next()).thenReturn(true).thenReturn(false);
-        when(resultSet.getInt("badminton_id")).thenReturn(1);
+        when(resultSet.getInt("travelling_id")).thenReturn(1);
 
-        badmintonService.lastTick(personId);
+        travellingService.lastTick(personId);
     }
 
     @Test
@@ -133,11 +134,11 @@ class BadmintonServiceImplTest {
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
         when(lru.get(anyString())).thenReturn(null);
         when(resultSet.next()).thenThrow(new SQLException()).thenReturn(false);
-        when(resultSet.getInt("badminton_id")).thenReturn(1);
+        when(resultSet.getInt("travelling_id")).thenReturn(1);
 
         assertThrows(ApplicationException.class,
                 ()->{
-                    badmintonService.lastTick(personId);
+                    travellingService.lastTick(personId);
                 });
     }
 
@@ -145,7 +146,7 @@ class BadmintonServiceImplTest {
     void longestStreakAvailableInCache() {
         when(lru.get(anyString())).thenReturn(1);
 
-        badmintonService.longestStreak(personId);
+        travellingService.longestStreak(personId);
     }
 
     @Test
@@ -156,7 +157,7 @@ class BadmintonServiceImplTest {
         when(resultSet.next()).thenReturn(true).thenReturn(false);
         when(resultSet.getDate("day")).thenReturn(date);
 
-        badmintonService.longestStreak(personId);
+        travellingService.longestStreak(personId);
     }
 
     @Test
@@ -165,11 +166,11 @@ class BadmintonServiceImplTest {
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
         when(lru.get(anyString())).thenReturn(null);
         when(resultSet.next()).thenThrow(new SQLException()).thenReturn(false);
-        when(resultSet.getInt("badminton_id")).thenReturn(1);
+        when(resultSet.getInt("day")).thenReturn(1);
 
         assertThrows(ApplicationException.class,
                 ()->{
-                    badmintonService.longestStreak(personId);
+                    travellingService.longestStreak(personId);
                 });
     }
 
@@ -177,7 +178,7 @@ class BadmintonServiceImplTest {
     void latestStreakAvailableInCache() {
         when(lru.get(anyString())).thenReturn(1);
 
-        badmintonService.latestStreak(personId);
+        travellingService.latestStreak(personId);
     }
 
     @Test
@@ -188,7 +189,7 @@ class BadmintonServiceImplTest {
         when(resultSet.next()).thenReturn(true).thenReturn(false);
         when(resultSet.getDate("day")).thenReturn(date);
 
-        badmintonService.latestStreak(personId);
+        travellingService.latestStreak(personId);
     }
 
     @Test
@@ -201,7 +202,7 @@ class BadmintonServiceImplTest {
 
         assertThrows(ApplicationException.class,
                 ()->{
-                    badmintonService.latestStreak(personId);
+                    travellingService.latestStreak(personId);
                 });
     }
 }

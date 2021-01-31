@@ -13,28 +13,32 @@ import static org.junit.jupiter.api.Assertions.*;
  * This is a testing class for Chess dto class
  */
 class ChessTest {
-    private Person person;
+    private int personId, chessID ;
     private Timing timing;
     private int numMoves;
     private String result;
+
     private Chess chess;
 
     @BeforeEach
     void setUp() throws SQLException {
-        person = new Person(9,"Rahul","8235456789","MP");
+        personId = 9;
+        chessID = 5;
         timing = new Timing(Time.valueOf("10:59:59"),Time.valueOf("12:59:59"), Date.valueOf("2015-04-05"));
         numMoves = 5;
         result = "Draw";
-        chess = new Chess(2,person.getId(),timing,numMoves,result);
+        chess = new Chess(chessID,personId,timing,numMoves,result);
     }
 
     @Test
-    void getPerson() {
-        assertEquals(person.getId(),chess.getPersonId());
+    void getPersonId() {
+        assertEquals(personId,chess.getPersonId());
     }
 
     @Test
-    void setPerson() {
+    void setPersonId() {
+        chess.setPersonId(5);
+        assertEquals(5,chess.getPersonId());
     }
 
     @Test
@@ -44,6 +48,9 @@ class ChessTest {
 
     @Test
     void setTime() {
+        Timing time = new Timing(Time.valueOf("01:39:49"),Time.valueOf("12:59:59"), Date.valueOf("2012-12-15"));
+        chess.setTime(time);
+        assertEquals(time,chess.getTime());
     }
 
     @Test
@@ -53,6 +60,8 @@ class ChessTest {
 
     @Test
     void setNumMoves() {
+        chess.setNumMoves(5);
+        assertEquals(5,chess.getNumMoves());
     }
 
     @Test
@@ -62,5 +71,7 @@ class ChessTest {
 
     @Test
     void setResult() {
+        chess.setResult("draw");
+        assertEquals("draw",chess.getResult());
     }
 }

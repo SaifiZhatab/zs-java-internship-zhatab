@@ -16,6 +16,9 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
 
+/**
+ * This class is ChessDao test implementation
+ */
 class ChessDaoTest {
 
     private Connection connection = mock(Connection.class);
@@ -49,28 +52,54 @@ class ChessDaoTest {
         result = "Win";
 
         timing = new Timing(startTime,endTime,date);
-
         chess = new Chess(chessId,personId,timing,numOfMoves,result);
     }
 
     @Test
     void insertObject() throws SQLException {
+        /**
+         * when connection.prepareStatement(anyString()) instruction come, then it return preparedStatement
+         */
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+
+        /**
+         * when connection.prepareStatement(anyString()).executeUpdate() instruction come,then it return 1
+         */
         when(connection.prepareStatement(anyString()).executeUpdate()).thenReturn(1);
+
+        /**
+         * call that method which you want to test
+         */
         chessDao.insert(chess);
+
+        /**
+         * verify the connection.prepareStatement(anyString()) will execute only 1 time
+         */
         verify(connection.prepareStatement(anyString()) , times(1)).executeUpdate();
     }
 
+    /**
+     * when you try to insert null object in dao, then it return InvalidInputException
+     */
     @Test
     void insertWithNullObject() throws SQLException {
+        /**
+         * check the insert(null) give InvalidInputException
+         */
         assertThrows(InvalidInputException.class,
                 () -> {
                     chessDao.insert(null);
                 });
     }
 
+    /**
+     * when you try to insert object in dao, then it return ApplicationException
+     */
     @Test
     void insertException() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeUpdate()).thenThrow(new SQLException());
 
@@ -86,12 +115,21 @@ class ChessDaoTest {
      */
     @Test
     void dateDetails() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         ResultSet resultSet = null;
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
 
+        /**
+         * call method which you want to test
+         */
         chessDao.dateDetails(personId,date);
 
+        /**
+         * check connection.prepareStatement(anyString()).executeQuery() run only 1 time
+         */
         verify(connection.prepareStatement(anyString()) , times(1));
 
         /**
@@ -100,11 +138,21 @@ class ChessDaoTest {
         assertEquals(resultSet, chessDao.dateDetails(personId,date));
     }
 
+    /**
+     * check date details for exception
+     * @throws SQLException
+     */
     @Test
     void dateDetailsException() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenThrow(new SQLException());
 
+        /**
+         * check the exception arise or not for this test case
+         */
         assertThrows(ApplicationException.class,
                 () -> {
                     chessDao.dateDetails(personId,date);
@@ -117,12 +165,21 @@ class ChessDaoTest {
      */
     @Test
     void lastTick() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         ResultSet resultSet = null;
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
 
+        /**
+         * call method which you want to test
+         */
         chessDao.lastTick(personId);
 
+        /**
+         * check connection.prepareStatement(anyString()).executeQuery() run only 1 time
+         */
         verify(connection.prepareStatement(anyString()) , times(1));
 
         /**
@@ -131,10 +188,21 @@ class ChessDaoTest {
         assertEquals(resultSet, chessDao.lastTick(personId));
     }
 
+    /**
+     * last tick function call when exception throw
+     * @throws SQLException
+     */
     @Test
     void lastTickException() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenThrow(new SQLException());
+
+        /**
+         * check the exception arise or not for this test case
+         */
         assertThrows(ApplicationException.class,
                 () -> {
                     chessDao.lastTick(personId);
@@ -147,28 +215,47 @@ class ChessDaoTest {
      */
     @Test
     void longestStreak() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         ResultSet resultSet = null;
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
 
+        /**
+         * call method which you want to test
+         */
         chessDao.longestStreak(personId);
 
+        /**
+         * check connection.prepareStatement(anyString()).executeQuery() run only 1 time
+         */
         verify(connection.prepareStatement(anyString()) , times(1));
 
         /**
-         * check the actual or expected value
+         * check the method return correct value or not
          */
         assertEquals(resultSet, chessDao.longestStreak(personId));
     }
 
+    /**
+     * test longestStreak function when this function give exception
+     * @throws SQLException
+     */
     @Test
     void longestStreakException() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenThrow(new SQLException());
 
+        /**
+         * check the exception arise or not for this test case
+         */
         assertThrows(ApplicationException.class,
-                () -> {
-                    chessDao.longestStreak(personId);
-                });
+            () -> {
+                chessDao.longestStreak(personId);
+            });
     }
 }

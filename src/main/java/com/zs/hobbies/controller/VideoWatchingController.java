@@ -68,7 +68,7 @@ public class VideoWatchingController {
     public void searchByDate(int personId, Date date) {
         Set<VideoWatching> setDetails = videoWatchingService.dateDetails(personId,date);
 
-        if(setDetails == null) {
+        if(setDetails.size() == 0) {
             logger.warning("No details present at this date");
             return;
         }

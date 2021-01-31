@@ -35,7 +35,6 @@ public class BadmintonDao {
         if(badminton == null) {
             throw new InvalidInputException(400,"Sorry, Null object pass in badminton database");
         }
-
         try {
             insert = con.prepareStatement("insert into Badminton values (?,?,?,?,?,?,?)");
             insert.setInt(1, badminton.getId());
@@ -46,7 +45,6 @@ public class BadmintonDao {
             insert.setString(6, badminton.getResult());
             insert.setDate(7, badminton.getTime().getDay());
             insert.executeUpdate();
-            logger.info("Successfully insert Badminton in database");
             insert.close();
         }catch (SQLException e){
             throw new ApplicationException(500,"Sorry,some internal exception comes in badminton database");
@@ -94,7 +92,6 @@ public class BadmintonDao {
         try{
             lastTick = con.prepareStatement("select * from Badminton where personid = ? order by badminton_id desc LIMIT 1");
             lastTick.setInt(1,personId );
-            lastTick = con.prepareStatement(" selct * from badminton");
             return lastTick.executeQuery();
         }catch (SQLException e) {
             throw new ApplicationException(500,"Sorry,some internal exception comes in badminton database");

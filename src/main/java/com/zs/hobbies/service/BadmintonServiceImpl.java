@@ -52,10 +52,9 @@ public class BadmintonServiceImpl implements BadmintonService {
         /**
          * check the badminton object details
          */
-        validator.validateBadminton(badminton);
+        validator.validBadminton(badminton);
 
         badmintonDao.insert(badminton);
-        logger.info("Successfully Badminton enter in database");
 
         /**
          * insert hobby into the LRU Cache
@@ -94,17 +93,8 @@ public class BadmintonServiceImpl implements BadmintonService {
          * date will always less than or equal to current date
          */
         validator.validDate(date);
-        ResultSet resultSet = badmintonDao.dateDetails(personId,date);
-
         try {
-
-            /**
-             * if details are not present at given date
-             */
-            if (!resultSet.next()) {
-                return null;
-            }
-
+            ResultSet resultSet = badmintonDao.dateDetails(personId,date);
             Set<Badminton> setDetails = new HashSet<Badminton>();
 
             /**
@@ -131,7 +121,7 @@ public class BadmintonServiceImpl implements BadmintonService {
      * @return
      */
     @Override
-    public int lastTick(int personId) {
+    public Integer lastTick(int personId) {
 
         /**
          * check in cache memory key is present or not

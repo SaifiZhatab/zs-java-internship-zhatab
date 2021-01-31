@@ -33,6 +33,8 @@ class PersonTest {
 
     @Test
     void setId() {
+        person.setId(2);
+        assertEquals(2,person.getId());
     }
 
     @Test
@@ -42,6 +44,8 @@ class PersonTest {
 
     @Test
     void setName() {
+        person.setName("Aftab");
+        assertEquals("Aftab",person.getName());
     }
 
     @Test
@@ -51,6 +55,8 @@ class PersonTest {
 
     @Test
     void setMobile() {
+        person.setMobile("8279575493");
+        assertEquals("8279575493",person.getMobile());
     }
 
     @Test
@@ -60,6 +66,7 @@ class PersonTest {
 
     @Test
     void setAddress() {
-
+        person.setAddress("MP");
+        assertEquals("MP",person.getAddress());
     }
 }
