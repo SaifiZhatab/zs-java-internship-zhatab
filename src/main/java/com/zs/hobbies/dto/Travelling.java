@@ -27,6 +27,14 @@ public class Travelling extends Hobby{
         this.endPoint = endPoint;
         this.distance = distance;
     }
+    public Travelling(int id, int personId, String startTime, String endTime , String day, String startPoint, String endPoint, float distance) {
+        super(id);
+        this.personId = personId;
+        this.time = new Timing(startTime,endTime,day);
+        this.startPoint = startPoint;
+        this.endPoint = endPoint;
+        this.distance = distance;
+    }
 
     public int getPersonId() {
         return personId;

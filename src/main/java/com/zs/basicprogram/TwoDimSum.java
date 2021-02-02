@@ -21,12 +21,12 @@ public class TwoDimSum {
         }
     }
 
-    public static void main(String[] args) {
-        int firstArray[][] = {{1,2,3},{4,5,6},{7,8,9}};
-        int secondArray[][] = {{1,2,3},{4,5,6},{7,8,9}};
-
-        TwoDimSum twoDimSum = new TwoDimSum();
-        twoDimSum.twoDimSum(firstArray,secondArray,3,3);
-
-    }
+//    public static void main(String[] args) {
+//        int firstArray[][] = {{1,2,3},{4,5,6},{7,8,9}};
+//        int secondArray[][] = {{1,2,3},{4,5,6},{7,8,9}};
+//
+//        TwoDimSum twoDimSum = new TwoDimSum();
+//        twoDimSum.twoDimSum(firstArray,secondArray,3,3);
+//
+//    }
 }

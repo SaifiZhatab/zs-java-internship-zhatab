@@ -202,107 +202,104 @@ public class Dictionary {
      * this is main method who control the dictionary
      * @param st command line argument
      */
-    public static void main(String st[])  {
-        try {
-            } catch (Exception e) {
-            e.printStackTrace();
-        }
-        logger = Logger.getLogger(Dictionary.class.getName());
-
-        Scanner in = new Scanner(System.in);
-        head = new Node();
-
-        logger.info("Please read the instruction carefully");
-        logger.info("1 - word insert in dictionary");
-        logger.info("2 - check word in dictionary");
-        logger.info("3 - find meaning in dictionary");
-        logger.info("4 - find similar word");
-        logger.info("5 - word start with ");
-        logger.info("6 - for exit ");
-
-        int choice;
-        String word, meaning;
-        boolean check;
-        do {
-
-            logger.info("Please choose which operation you want to perform = ");
-            choice = in.nextInt();
-
-            switch(choice) {
-                case 1:
-                    System.out.print("Please enter word = ");
-                    word = in.next();
-                    System.out.print("Please enter meaning = ");
-                    meaning = in.next();
-                    insert(word,meaning);
-                    break;
-
-                case 2:
-                    System.out.print("Please enter which you want to check = ");
-                    word = in.next();
-                    check = search(word);
-                    if(check) {
-                        logger.info("Yes this word is available in dictionary");
-                    }else {
-                        logger.info("No, this word isn't present in dictionary");
-                    }
-                    break;
-
-                case 3:
-                    System.out.print("Please enter the word = ");
-                    word = in.next();
-
-                    check = search(word);
-                    if(check) {
-                        meaning = meaning(word);
-                        logger.info(word + " : " + meaning);
-                    }else {
-                        logger.info("Sorry,this word isn't present in dictionary");
-                    }
-                    break;
-
-                case 4:
-                    System.out.print("Please enter the word = ");
-                    word = in.next();
-                    ArrayList<String> correctWord = correctWord(word);
-
-                    if(correctWord.size() == 0) {
-                        logger.info("No word present in dictionary similar to "+ word);
-                    }else {
-                        int index=1;
-                        logger.info("Words start with " + word );
-
-                        for(String match : correctWord) {
-                            logger.info(index + ") " + match );
-                            index++;
-                        }
-                    }
-                    break;
-
-                case 5:
-                    System.out.print("Please enter word = ");
-                    word = in.next();
-
-                    ArrayList<String> matchWord = matchWord(word);
-
-
-                    if(matchWord.size() == 0) {
-                        logger.info("No word present in dictionary who match with "+ word);
-                    }else {
-                        int index=1;
-                        logger.info("Words start with " + word );
-
-                        for(String match : matchWord) {
-                            logger.info(index + ") " + match );
-                            index++;
-                        }
-                    }
-                    break;
-
-                default:
-                    break;
-            }
-
-        }while(choice != 6);
-    }
+//    public static void main(String st[])  {
+//
+//        logger = Logger.getLogger(Dictionary.class.getName());
+//
+//        Scanner in = new Scanner(System.in);
+//        head = new Node();
+//
+//        logger.info("Please read the instruction carefully");
+//        logger.info("1 - word insert in dictionary");
+//        logger.info("2 - check word in dictionary");
+//        logger.info("3 - find meaning in dictionary");
+//        logger.info("4 - find similar word");
+//        logger.info("5 - word start with ");
+//        logger.info("6 - for exit ");
+//
+//        int choice;
+//        String word, meaning;
+//        boolean check;
+//        do {
+//
+//            logger.info("Please choose which operation you want to perform = ");
+//            choice = in.nextInt();
+//
+//            switch(choice) {
+//                case 1:
+//                    System.out.print("Please enter word = ");
+//                    word = in.next();
+//                    System.out.print("Please enter meaning = ");
+//                    meaning = in.next();
+//                    insert(word,meaning);
+//                    break;
+//
+//                case 2:
+//                    System.out.print("Please enter which you want to check = ");
+//                    word = in.next();
+//                    check = search(word);
+//                    if(check) {
+//                        logger.info("Yes this word is available in dictionary");
+//                    }else {
+//                        logger.info("No, this word isn't present in dictionary");
+//                    }
+//                    break;
+//
+//                case 3:
+//                    System.out.print("Please enter the word = ");
+//                    word = in.next();
+//
+//                    check = search(word);
+//                    if(check) {
+//                        meaning = meaning(word);
+//                        logger.info(word + " : " + meaning);
+//                    }else {
+//                        logger.info("Sorry,this word isn't present in dictionary");
+//                    }
+//                    break;
+//
+//                case 4:
+//                    System.out.print("Please enter the word = ");
+//                    word = in.next();
+//                    ArrayList<String> correctWord = correctWord(word);
+//
+//                    if(correctWord.size() == 0) {
+//                        logger.info("No word present in dictionary similar to "+ word);
+//                    }else {
+//                        int index=1;
+//                        logger.info("Words start with " + word );
+//
+//                        for(String match : correctWord) {
+//                            logger.info(index + ") " + match );
+//                            index++;
+//                        }
+//                    }
+//                    break;
+//
+//                case 5:
+//                    System.out.print("Please enter word = ");
+//                    word = in.next();
+//
+//                    ArrayList<String> matchWord = matchWord(word);
+//
+//
+//                    if(matchWord.size() == 0) {
+//                        logger.info("No word present in dictionary who match with "+ word);
+//                    }else {
+//                        int index=1;
+//                        logger.info("Words start with " + word );
+//
+//                        for(String match : matchWord) {
+//                            logger.info(index + ") " + match );
+//                            index++;
+//                        }
+//                    }
+//                    break;
+//
+//                default:
+//                    break;
+//            }
+//
+//        }while(choice != 6);
+//    }
 }

@@ -15,10 +15,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- *
+ * This class is badminton service testing implementation
  */
 class PersonServiceImplTest {
 
+    /**
+     * create mock object for external usage object in chess service
+     */
     private Cache lru = mock(Cache.class);
     private Connection connection = mock(Connection.class);
     private Validator validator = mock(Validator.class);
@@ -31,8 +34,10 @@ class PersonServiceImplTest {
 
     @BeforeEach
     void setUp() {
-
-        personService = new PersonServiceImpl(connection,lru);
+        /**
+         * initialise service service object with mock object
+         */
+        personService = new PersonServiceImpl();
 
         personId = 1;
         name = "Zhatab";
@@ -41,8 +46,15 @@ class PersonServiceImplTest {
         person = new Person(personId,name,mobile,address);
     }
 
+    /**
+     * insert function testing
+     * @throws SQLException
+     */
     @Test
     void insert() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         when(validator.validPerson(person)).thenReturn(true);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeUpdate()).thenReturn(1);

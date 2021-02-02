@@ -39,7 +39,7 @@ public class PersonDao {
             insert.executeUpdate();
             logger.info("Successfully insert person in database");
         }catch (SQLException e) {
-            throw new ApplicationException(500,"Sorry,some internal exception comes in person database");
+            throw new InvalidInputException(500,"Sorry,you give duplicate key");
         }
     }
 }

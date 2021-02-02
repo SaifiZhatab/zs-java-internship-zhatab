@@ -9,16 +9,27 @@ import com.zs.hobbies.validator.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.PreparedStatement;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.sql.Time;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * This class is travelling service testing implementation
+ */
 class TravellingServiceImplTest {
 
+    /**
+     * create mock object for external usage object in travelling service
+     */
     private Cache lru = mock(Cache.class);
     private Connection connection = mock(Connection.class);
     private Validator validator = mock(Validator.class);
@@ -40,7 +51,10 @@ class TravellingServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        travellingService = new TravellingServiceImpl(connection,lru);
+        /**
+         * initialise travelling service object with mock object
+         */
+        travellingService = new TravellingServiceImpl();
 
         travellingId = 1;
         personId = 1;
@@ -56,8 +70,15 @@ class TravellingServiceImplTest {
         travelling = new Travelling(travellingId,personId,timing,startPoint,endPoint,distance);
     }
 
+    /**
+     * insert function testing
+     * @throws SQLException
+     */
     @Test
     void insert() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         when(validator.validTravelling(travelling)).thenReturn(true);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeUpdate()).thenReturn(1);
@@ -67,8 +88,15 @@ class TravellingServiceImplTest {
         travellingService.insert(travelling);
     }
 
+    /**
+     * this function check the date details function in service class
+     * @throws SQLException
+     */
     @Test
     void dateDetails() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
 
@@ -87,8 +115,15 @@ class TravellingServiceImplTest {
         travellingService.dateDetails(personId,date);
     }
 
+    /**
+     * test date details function when this function throw exception
+     * @throws SQLException
+     */
     @Test
     void dateDetailsException() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
 
@@ -104,21 +139,38 @@ class TravellingServiceImplTest {
         when(resultSet.next()).thenThrow(new SQLException()).thenReturn(false);
         when(validator.validDate(any())).thenReturn(true);
 
+        /**
+         * check Application exception will throw or not
+         */
         assertThrows(ApplicationException.class,
                 ()->{
                     travellingService.dateDetails(personId,date);
                 });
     }
 
+    /**
+     * test last tick it check in database without exception
+     * @throws SQLException
+     */
     @Test
     void lastTickAvailableInCache() {
+        /**
+         * set the external object to mock object
+         */
         when(lru.get(anyString())).thenReturn(1);
 
         travellingService.lastTick(personId);
     }
 
+    /**
+     * test last tick it check in database without exception
+     * @throws SQLException
+     */
     @Test
     void lastTickNotAvailableWithoutException() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
         when(lru.get(anyString())).thenReturn(null);
@@ -128,29 +180,53 @@ class TravellingServiceImplTest {
         travellingService.lastTick(personId);
     }
 
+
+    /**
+     * test last tick it check in database with exception
+     * @throws SQLException
+     */
     @Test
     void lastTickNotAvailableWithException() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
         when(lru.get(anyString())).thenReturn(null);
         when(resultSet.next()).thenThrow(new SQLException()).thenReturn(false);
         when(resultSet.getInt("travelling_id")).thenReturn(1);
 
+        /**
+         * check Application exception will throw or not
+         */
         assertThrows(ApplicationException.class,
                 ()->{
                     travellingService.lastTick(personId);
                 });
     }
 
+    /**
+     * test longest streak available in cache when it's available in cache memory
+     */
     @Test
     void longestStreakAvailableInCache() {
+        /**
+         * set the external object to mock object
+         */
         when(lru.get(anyString())).thenReturn(1);
 
         travellingService.longestStreak(personId);
     }
 
+    /**
+     * test longest streak it check in database without exception
+     * @throws SQLException
+     */
     @Test
     void longestStreakNotAvailableWithoutException() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
         when(lru.get(anyString())).thenReturn(null);
@@ -160,29 +236,52 @@ class TravellingServiceImplTest {
         travellingService.longestStreak(personId);
     }
 
+    /**
+     * test longest streak it check in database with exception
+     * @throws SQLException
+     */
     @Test
     void longestStreakNotAvailableWithException() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
         when(lru.get(anyString())).thenReturn(null);
         when(resultSet.next()).thenThrow(new SQLException()).thenReturn(false);
         when(resultSet.getInt("day")).thenReturn(1);
 
+        /**
+         * check Application exception will throw or not
+         */
         assertThrows(ApplicationException.class,
                 ()->{
                     travellingService.longestStreak(personId);
                 });
     }
 
+    /**
+     * test latest streak when it's available in cache memory
+     */
     @Test
     void latestStreakAvailableInCache() {
+        /**
+         * set the external object to mock object
+         */
         when(lru.get(anyString())).thenReturn(1);
 
         travellingService.latestStreak(personId);
     }
 
+    /**
+     * test latest streak it check in database without exception
+     * @throws SQLException
+     */
     @Test
     void latestStreakNotAvailableWithoutException() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
         when(lru.get(anyString())).thenReturn(null);
@@ -192,14 +291,24 @@ class TravellingServiceImplTest {
         travellingService.latestStreak(personId);
     }
 
+    /**
+     * test latest streak it check in database with exception
+     * @throws SQLException
+     */
     @Test
     void latestStreakNotAvailableWithException() throws SQLException {
+        /**
+         * set the external object to mock object
+         */
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
         when(lru.get(anyString())).thenReturn(null);
         when(resultSet.next()).thenThrow(new SQLException()).thenReturn(false);
         when(resultSet.getDate("day")).thenReturn(date);
 
+        /**
+         * check Application exception will throw or not
+         */
         assertThrows(ApplicationException.class,
                 ()->{
                     travellingService.latestStreak(personId);

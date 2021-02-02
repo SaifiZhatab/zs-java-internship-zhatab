@@ -365,48 +365,48 @@ public class E_commerce {
      * with the help of this function we can control the database
      * @param args
      */
-    public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
-        try {
-            /**
-             * make the connection between java program and postgres database
-             */
-            Class.forName("org.postgresql.Driver");
-            con = DriverManager.getConnection("jdbc:postgresql://0.0.0.0:2006/postgres",
-                    "postgres", "root123");
-
-            logger.info("Connection make successfully");
-
-
-            /**
-             * initialize logger
-             */
-                logger = Logger.getLogger(E_commerce.class.getName());
-            logger.info("logger connect successfully");
-
-            /**
-             * try to insert in product table using java
-             */
-            logger.info("Enter product id = ");
-            int id = in.nextInt();
-
-            logger.info("Enter product name = ");
-            String name = in.next();
-
-            logger.info("Enter the quantity = ");
-            int quantity = in.nextInt();
-
-            logger.info("Enter the price = ");
-            int price = in.nextInt();
-
-            insertInProduct(id,name,quantity,price);
-
-            /**
-             * here you can work on database
-             */
-
-        }catch(Exception ex){
-            logger.warning(ex.getMessage());
-        }
-    }
+//    public static void main(String[] args) {
+//        Scanner in = new Scanner(System.in);
+//        try {
+//            /**
+//             * make the connection between java program and postgres database
+//             */
+//            Class.forName("org.postgresql.Driver");
+//            con = DriverManager.getConnection("jdbc:postgresql://0.0.0.0:2006/postgres",
+//                    "postgres", "root123");
+//
+//            logger.info("Connection make successfully");
+//
+//
+//            /**
+//             * initialize logger
+//             */
+//                logger = Logger.getLogger(E_commerce.class.getName());
+//            logger.info("logger connect successfully");
+//
+//            /**
+//             * try to insert in product table using java
+//             */
+//            logger.info("Enter product id = ");
+//            int id = in.nextInt();
+//
+//            logger.info("Enter product name = ");
+//            String name = in.next();
+//
+//            logger.info("Enter the quantity = ");
+//            int quantity = in.nextInt();
+//
+//            logger.info("Enter the price = ");
+//            int price = in.nextInt();
+//
+//            insertInProduct(id,name,quantity,price);
+//
+//            /**
+//             * here you can work on database
+//             */
+//
+//        }catch(Exception ex){
+//            logger.warning(ex.getMessage());
+//        }
+//    }
 }

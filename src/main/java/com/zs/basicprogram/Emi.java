@@ -28,8 +28,8 @@ public class Emi {
 
        System.out.println(emi);
     }
-    public static void main(String[] args) {
-        Emi emi = new Emi();
-        emi.emi(12,4000,4);
-    }
+//    public static void main(String[] args) {
+//        Emi emi = new Emi();
+//        emi.emi(12,4000,4);
+//    }
 }

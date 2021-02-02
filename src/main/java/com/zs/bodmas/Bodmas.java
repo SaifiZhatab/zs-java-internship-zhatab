@@ -192,9 +192,9 @@ public class Bodmas {
         return value.peek() ;
     }
 
-    public static void main (String [] args) {
-        Bodmas bodmas = new Bodmas();
-        bodmas.bodmasSolver("(5+8)*2");
-    }
+//    public static void main (String [] args) {
+//        Bodmas bodmas = new Bodmas();
+//        bodmas.bodmasSolver("(5+8)*2");
+//    }
 
 }

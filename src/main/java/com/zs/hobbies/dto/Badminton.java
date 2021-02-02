@@ -6,7 +6,7 @@ package com.zs.hobbies.dto;
 public class Badminton extends Hobby{
     private int personId;
     private Timing time;
-    private int numPlayers ;
+    private int numPlayers;
     private String result;
 
     /**
@@ -21,6 +21,15 @@ public class Badminton extends Hobby{
         super(id);
         this.personId = personId;
         this.time = time;
+        this.numPlayers = numPlayers;
+        this.result = result;
+    }
+
+    public Badminton(int id, int personId, String startTime, String endTime , String day, int numPlayers, String result) {
+        super(id);
+        this.personId = personId;
+
+        this.time = new Timing(startTime,endTime,day);
         this.numPlayers = numPlayers;
         this.result = result;
     }

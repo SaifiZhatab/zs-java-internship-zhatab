@@ -8,6 +8,12 @@ public class Timing {
     private Time endTime;
     private Date day;
 
+    public Timing(String startTime, String endTime , String day) {
+        this.startTime = Time.valueOf(startTime);
+        this.endTime = Time.valueOf(endTime);
+        this.day = Date.valueOf(day);
+    }
+
     public Timing(Time startTime, Time endTime, Date day) {
         this.startTime = startTime;
         this.endTime = endTime;
@@ -36,5 +42,17 @@ public class Timing {
 
     public void setDay(Date day) {
         this.day = day;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = Time.valueOf(startTime);
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = Time.valueOf(endTime);
+    }
+
+    public void setDay(String day) {
+        this.day = Date.valueOf(day);
     }
 }

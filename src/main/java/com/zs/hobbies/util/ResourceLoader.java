@@ -13,9 +13,9 @@ import java.util.logging.LogManager;
  * this class is load all external resource
  */
 public class ResourceLoader {
-    private Properties properties;
+    private static Properties properties;
 
-    public void loggerManager(){
+    public static void loggerManager(){
         try {
             LogManager.getLogManager().readConfiguration(new FileInputStream("src/main/resources/logging.properties"));
         }catch (FileNotFoundException e){
@@ -24,7 +24,7 @@ public class ResourceLoader {
             throw new ApplicationException(500,"Sorry, input error comes");
         }
     }
-    public void loadApplicationResource(){
+    public static void loadApplicationResource(){
         try {
             properties = new Properties();
             FileReader fileReader = new FileReader("src/main/resources/application.properties");
@@ -36,7 +36,7 @@ public class ResourceLoader {
         }
     }
 
-    public Integer getCacheSize() {
+    public static Integer getCacheSize() {
        return Integer.parseInt(properties.getProperty("cacheSize"));
     }
 }

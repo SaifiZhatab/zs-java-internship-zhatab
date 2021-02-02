@@ -4,9 +4,10 @@ import com.zs.hobbies.Application;
 import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.dao.PersonDao;
 import com.zs.hobbies.dto.Person;
+import com.zs.hobbies.util.DataBase;
+import com.zs.hobbies.util.ResourceLoader;
 import com.zs.hobbies.validator.Validator;
 
-import java.sql.Connection;
 import java.util.logging.Logger;
 
 /**
@@ -20,14 +21,12 @@ public class PersonServiceImpl implements PersonService {
 
     /**
      * This is constructor and it set the connection and lru object
-     * @param con database connection
-     * @param lru lru cache object
      */
-    public PersonServiceImpl(Connection con,Cache lru) {
+    public PersonServiceImpl() {
         logger = Logger.getLogger(Application.class.getName());
-        this.lru = lru;
         validator = new Validator();
-        personDao =  new PersonDao(con);
+        this.lru = new Cache(ResourceLoader.getCacheSize());
+        personDao =  new PersonDao(DataBase.getCon());
     }
 
     /**

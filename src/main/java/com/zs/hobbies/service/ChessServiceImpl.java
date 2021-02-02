@@ -7,9 +7,10 @@ import com.zs.hobbies.dao.ChessDao;
 import com.zs.hobbies.dto.Chess;
 import com.zs.hobbies.dto.Timing;
 import com.zs.hobbies.exception.ApplicationException;
+import com.zs.hobbies.util.DataBase;
+import com.zs.hobbies.util.ResourceLoader;
 import com.zs.hobbies.validator.Validator;
 
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,16 +32,13 @@ public class ChessServiceImpl implements ChessService {
 
     /**
      * This is constructor and it set the connection and lru object
-     * @param con database connection
-     * @param lru lru cache object
      */
-    public ChessServiceImpl(Connection con,Cache lru) {
+    public ChessServiceImpl() {
         logger = Logger.getLogger(Application.class.getName());
-
-        this.lru = lru;
-        chessDao = new ChessDao(con);
-        similarRequirement = new SimilarRequirement();
         validator = new Validator();
+        this.lru = new Cache(ResourceLoader.getCacheSize());
+        chessDao = new ChessDao(DataBase.getCon());
+        similarRequirement = new SimilarRequirement();
     }
 
     /**

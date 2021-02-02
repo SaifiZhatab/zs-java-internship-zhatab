@@ -12,14 +12,14 @@ import java.util.logging.Logger;
  * This class is help you to connect with database
  */
 public class DataBase {
-    private Connection con;
+    private static Connection con;
     private static Logger logger;
 
     /**
      *  This is constructor which help you to connect your program to database
      * set all the prepare statement
      */
-    public DataBase() {
+    static  {
         try {
             Class.forName("org.postgresql.Driver");
             con = DriverManager.getConnection("jdbc:postgresql://0.0.0.0:2006/hobbies", "zhatab", "zhatab");
@@ -37,11 +37,11 @@ public class DataBase {
      * This function return the connection
      * @return  connection
      */
-    public Connection getCon() {
+    public static Connection getCon() {
         return con;
     }
 
-    public void closeConnection(){
+    public static void closeConnection(){
         try{
             con.close();
         }catch (SQLException e){

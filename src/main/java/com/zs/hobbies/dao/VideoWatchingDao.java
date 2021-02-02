@@ -44,7 +44,7 @@ public class VideoWatchingDao {
             insert.executeUpdate();
             logger.info("Successfully insert videoWatching in database");
         }catch (SQLException e){
-            throw new ApplicationException(500,"Sorry,some internal exception comes in video watching database");
+            throw new InvalidInputException(500,"Sorry,you use duplicate key");
         }
     }
 

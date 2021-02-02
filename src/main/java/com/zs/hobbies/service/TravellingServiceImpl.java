@@ -7,9 +7,10 @@ import com.zs.hobbies.dao.TravellingDao;
 import com.zs.hobbies.dto.Timing;
 import com.zs.hobbies.dto.Travelling;
 import com.zs.hobbies.exception.ApplicationException;
+import com.zs.hobbies.util.DataBase;
+import com.zs.hobbies.util.ResourceLoader;
 import com.zs.hobbies.validator.Validator;
 
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,15 +32,12 @@ public class TravellingServiceImpl implements TravellingService {
 
     /**
      * This is constructor and it set the connection and lru object
-     * @param con database connection
-     * @param lru lru cache object
      */
-    public TravellingServiceImpl(Connection con,Cache lru) {
+    public TravellingServiceImpl() {
         logger = Logger.getLogger(Application.class.getName());
-
-        this.lru = lru;
-        travellingDao = new TravellingDao(con);
         validator = new Validator();
+        this.lru = new Cache(ResourceLoader.getCacheSize());
+        travellingDao = new TravellingDao(DataBase.getCon());
         similarRequirement = new SimilarRequirement();
     }
 

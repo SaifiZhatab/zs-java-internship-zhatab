@@ -35,8 +35,8 @@ public class ExtractSentence {
         }
     }
 
-    public static void main(String[] args) {
-        ExtractSentence ext = new ExtractSentence();
-        ext.extractSentence("abc def ghi jkl");
-    }
+//    public static void main(String[] args) {
+//        ExtractSentence ext = new ExtractSentence();
+//        ext.extractSentence("abc def ghi jkl");
+//    }
 }

@@ -9,14 +9,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.PreparedStatement;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.sql.Time;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 
 /**
@@ -70,7 +76,7 @@ public class BadmintonDaoTest {
      * @throws SQLException
      */
     @Test
-    void insertNotNullBadmintonObject() throws SQLException {
+    void insertWithNotNullBadmintonObject() throws SQLException {
         /**
          * when connection.prepareStatement(anyString()) instruction come, then it return preparedStatement
          */

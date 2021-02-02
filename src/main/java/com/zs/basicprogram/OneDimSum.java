@@ -15,11 +15,11 @@ public class OneDimSum {
         }
     }
 
-    public static void main(String[] args) {
-        OneDimSum sum = new OneDimSum();
-        int firstArray[] = {1,2,3};
-        int secondArray[] = {4,5,6};
-
-        sum.oneDimSum(firstArray,secondArray,3);
-    }
+//    public static void main(String[] args) {
+//        OneDimSum sum = new OneDimSum();
+//        int firstArray[] = {1,2,3};
+//        int secondArray[] = {4,5,6};
+//
+//        sum.oneDimSum(firstArray,secondArray,3);
+//    }
 }

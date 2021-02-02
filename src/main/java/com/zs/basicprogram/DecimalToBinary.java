@@ -22,11 +22,11 @@ public class DecimalToBinary {
         }
          return binary;
     }
-    public static void main(String[] args) {
-        /**
-         * check decimal to binary
-         */
-        DecimalToBinary dtb = new DecimalToBinary();
-        dtb.decimalToBinary(11);
-    }
+//    public static void main(String[] args) {
+//        /**
+//         * check decimal to binary
+//         */
+//        DecimalToBinary dtb = new DecimalToBinary();
+//        dtb.decimalToBinary(11);
+//    }
 }

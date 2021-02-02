@@ -7,7 +7,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * This is a testing class for Badminton dto class
@@ -31,49 +31,87 @@ class BadmintonTest {
     }
 
 
+    /**
+     * check this function in dto return correct value or not
+     */
     @Test
     void getNumPlayers() {
         assertEquals(numPlayers,badminton.getNumPlayers());
     }
 
+    /**
+     * check this function is set the correct value or not
+     */
     @Test
     void setNumPlayers() {
         badminton.setNumPlayers(5);
 
+        /**
+         * check the expected or actual value is same
+         */
         assertEquals(5,badminton.getNumPlayers());
     }
 
+    /**
+     * check this function in dto return correct value or not
+     */
     @Test
     void getResult() {
         assertEquals(result,badminton.getResult());
     }
 
+    /**
+     * check this function is set the correct value or not
+     */
     @Test
     void setResult() {
         badminton.setResult("draw");
+        /**
+         * check the expected or actual value is same
+         */
         assertEquals("draw",badminton.getResult());
     }
 
+    /**
+     * check this function in dto return correct value or not
+     */
     @Test
     void getPersonId() {
         assertEquals(personId,badminton.getPersonId());
     }
 
+
+    /**
+     * check this function is set the correct value or not
+     */
     @Test
     void setPersonId() {
         badminton.setPersonId(3);
+        /**
+         * check the expected or actual value is same
+         */
         assertEquals(3,badminton.getPersonId());
     }
 
+    /**
+     * check this function in dto return correct value or not
+     */
     @Test
     void getTime() {
         assertEquals(timing,badminton.getTime());
     }
 
+    /**
+     * check this function is set the correct value or not
+     */
     @Test
     void setTime() {
         Timing time = new Timing(Time.valueOf("04:05:09"),Time.valueOf("01:39:49"), Date.valueOf("2020-04-05"));
         badminton.setTime(time);
+
+        /**
+         * check the expected or actual value is same
+         */
         assertEquals(time,badminton.getTime());
     }
 }

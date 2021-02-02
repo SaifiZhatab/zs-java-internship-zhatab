@@ -7,9 +7,10 @@ import com.zs.hobbies.dao.VideoWatchingDao;
 import com.zs.hobbies.dto.Timing;
 import com.zs.hobbies.dto.VideoWatching;
 import com.zs.hobbies.exception.ApplicationException;
+import com.zs.hobbies.util.DataBase;
+import com.zs.hobbies.util.ResourceLoader;
 import com.zs.hobbies.validator.Validator;
 
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,12 +33,13 @@ public class VideoWatchingServiceImpl implements VideoWatchingService {
 
     /**
      * This is constructor and it set the connection and lru object
-     * @param con database connection
-     * @param lru lru cache object
      */
-    public VideoWatchingServiceImpl(Connection con,Cache lru) {
+    public VideoWatchingServiceImpl() {
         logger = Logger.getLogger(Application.class.getName());
-        videoWatchingDao = new VideoWatchingDao(con);
+        validator = new Validator();
+        this.lru = new Cache(ResourceLoader.getCacheSize());
+        logger = Logger.getLogger(Application.class.getName());
+        videoWatchingDao = new VideoWatchingDao(DataBase.getCon());
 
         this.lru = lru;
         similarRequirement = new SimilarRequirement();

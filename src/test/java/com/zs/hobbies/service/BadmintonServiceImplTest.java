@@ -10,28 +10,31 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.PreparedStatement;
 import java.sql.Date;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * This class is badminton service testing implementation
  */
 class BadmintonServiceImplTest {
 
+    /**
+     * create mock object for external usage object in Badminton service
+     */
     private Cache lru = mock(Cache.class);
     private Connection connection = mock(Connection.class);
     private Validator validator = mock(Validator.class);
-    private BadmintonDao badmintonDao = mock(BadmintonDao.class);
-    private ResultSet resultSet = mock(ResultSet.class);
-    private PreparedStatement preparedStatement = mock(PreparedStatement.class);
-    private SimilarRequirement similarRequirement = mock(SimilarRequirement.class);
+    private  BadmintonDao badmintonDao = mock(BadmintonDao.class);
 
     private BadmintonService badmintonService;
 
@@ -44,7 +47,10 @@ class BadmintonServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        badmintonService = new BadmintonServiceImpl(connection,lru);
+        /**
+         * initialise badminton service object with mock object
+         */
+        badmintonService  = new BadmintonServiceImpl();
 
         badmintonId = 1;
         personId =2;
@@ -53,152 +59,188 @@ class BadmintonServiceImplTest {
         numPlayers = 3;
         result = "win";
 
+        badminton = mock(Badminton.class);
+
         badminton = new Badminton(badmintonId,personId,timing,numPlayers,result);
     }
 
+    /**
+     * test insert function of service class
+     * @throws SQLException
+     */
     @Test
     void insert() throws SQLException {
+        /**
+         * set condition for  external usage of object
+         */
         when(validator.validBadminton(badminton)).thenReturn(true);
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(connection.prepareStatement(anyString()).executeUpdate()).thenReturn(1);
+        doNothing().when(badmintonDao).insert(badminton);
 
         when(lru.get(anyString())).thenReturn(1);
 
-        badmintonService.insert(badminton);
-
+        /**
+         * call the function which you want to test
+         */
+        badmintonService.insert(any());
     }
 
+    /**
+     * this function check the date details function in service class
+     * @throws SQLException
+     */
     @Test
     void dateDetails() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
+        /**
+         * set condition for  external usage of object
+         */
 
-        when(resultSet.getTime("startTime")).thenReturn(Time.valueOf("10:45:31"));
-        when(resultSet.getTime("endTime")).thenReturn(Time.valueOf("12:20:31"));
-        when(resultSet.getDate("day")).thenReturn(Date.valueOf("2021-01-01"));
-        when(resultSet.getInt("badminton_id")).thenReturn(1);
-        when(resultSet.getInt("personid")).thenReturn(2);
-        when(resultSet.getInt("numPlayers")).thenReturn(4);
-        when(resultSet.getString("result")).thenReturn("win");
-
-        when(resultSet.next()).thenReturn(true).thenReturn(false);
-        when(validator.validDate(any())).thenReturn(true);
-
+        /**
+         * call the function which you want to test
+         */
         badmintonService.dateDetails(personId,date);
     }
 
+    /**
+     * test date details function when this function throw exception
+     * @throws SQLException
+     */
     @Test
     void dateDetailsException() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
+        /**
+         * call the function which you want to test
+         */
 
-        when(resultSet.getTime("startTime")).thenReturn(Time.valueOf("10:45:31"));
-        when(resultSet.getTime("endTime")).thenReturn(Time.valueOf("12:20:31"));
-        when(resultSet.getDate("day")).thenReturn(Date.valueOf("2021-01-01"));
-        when(resultSet.getInt("badminton_id")).thenReturn(1);
-        when(resultSet.getInt("personid")).thenReturn(2);
-        when(resultSet.getInt("numPlayers")).thenReturn(4);
-        when(resultSet.getString("result")).thenReturn("win");
 
-        when(resultSet.next()).thenThrow(new SQLException()).thenReturn(false);
-        when(validator.validDate(any())).thenReturn(true);
-
+        /**
+         * check Application exception will throw or not
+         */
         assertThrows(ApplicationException.class,
                 ()->{
                     badmintonService.dateDetails(personId,date);
                 });
     }
 
+    /**
+     * test last tick when it's available in cache memory
+     */
     @Test
     void lastTickAvailableInCache() {
+        /**
+         * call the function which you want to test
+         */
         when(lru.get(anyString())).thenReturn(1);
 
         badmintonService.lastTick(personId);
     }
 
+    /**
+     * test last tick it check in database without exception
+     * @throws SQLException
+     */
     @Test
     void lastTickNotAvailableWithoutException() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
-        when(lru.get(anyString())).thenReturn(null);
-        when(resultSet.next()).thenReturn(true).thenReturn(false);
-        when(resultSet.getInt("badminton_id")).thenReturn(1);
+        /**
+         * call the function which you want to test
+         */
+
 
         badmintonService.lastTick(personId);
     }
 
+    /**
+     * test last tick it check in database with exception
+     * @throws SQLException
+     */
     @Test
     void lastTickNotAvailableWithException() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
-        when(lru.get(anyString())).thenReturn(null);
-        when(resultSet.next()).thenThrow(new SQLException()).thenReturn(false);
-        when(resultSet.getInt("badminton_id")).thenReturn(1);
+        /**
+         * call the function which you want to test
 
+         * check Application exception will throw or not
+         */
         assertThrows(ApplicationException.class,
                 ()->{
                     badmintonService.lastTick(personId);
                 });
     }
 
+    /**
+     * test longest streak available in cache when it's available in cache memory
+     */
     @Test
     void longestStreakAvailableInCache() {
+        /**
+         * call the function which you want to test
+         */
         when(lru.get(anyString())).thenReturn(1);
 
         badmintonService.longestStreak(personId);
     }
 
+    /**
+     * test longest streak it check in database without exception
+     * @throws SQLException
+     */
     @Test
     void longestStreakNotAvailableWithoutException() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
-        when(lru.get(anyString())).thenReturn(null);
-        when(resultSet.next()).thenReturn(true).thenReturn(false);
-        when(resultSet.getDate("day")).thenReturn(date);
 
         badmintonService.longestStreak(personId);
     }
 
+    /**
+     * test longest streak it check in database with exception
+     * @throws SQLException
+     */
     @Test
     void longestStreakNotAvailableWithException() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
-        when(lru.get(anyString())).thenReturn(null);
-        when(resultSet.next()).thenThrow(new SQLException()).thenReturn(false);
-        when(resultSet.getInt("badminton_id")).thenReturn(1);
 
+        /**
+         * check Application exception will throw or not
+         */
         assertThrows(ApplicationException.class,
                 ()->{
                     badmintonService.longestStreak(personId);
                 });
     }
 
+    /**
+     * test latest streak when it's available in cache memory
+     */
     @Test
     void latestStreakAvailableInCache() {
+        /**
+         * call the function which you want to test
+         */
         when(lru.get(anyString())).thenReturn(1);
 
         badmintonService.latestStreak(personId);
     }
 
+    /**
+     * test latest streak it check in database without exception
+     * @throws SQLException
+     */
     @Test
     void latestStreakNotAvailableWithoutException() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
+        ResultSet resultSet = mock(ResultSet.class);
         when(lru.get(anyString())).thenReturn(null);
-        when(resultSet.next()).thenReturn(true).thenReturn(false);
-        when(resultSet.getDate("day")).thenReturn(date);
-
         badmintonService.latestStreak(personId);
+
+        when(badmintonDao.longestStreak(anyInt())).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+//        when(resultSet.getInt());
     }
 
+    /**
+     * test latest streak it check in database with exception
+     * @throws SQLException
+     */
     @Test
     void latestStreakNotAvailableWithException() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(connection.prepareStatement(anyString()).executeQuery()).thenReturn(resultSet);
-        when(lru.get(anyString())).thenReturn(null);
-        when(resultSet.next()).thenThrow(new SQLException()).thenReturn(false);
-        when(resultSet.getDate("day")).thenReturn(date);
 
+        /**
+         * check Application exception will throw or not
+         */
         assertThrows(ApplicationException.class,
                 ()->{
                     badmintonService.latestStreak(personId);

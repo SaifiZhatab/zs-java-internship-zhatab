@@ -26,8 +26,8 @@ public class UniqueChar {
             System.out.print(iterator.next() + " ");
         }
     }
-    public static void main(String[] args) {
-        UniqueChar uniqueChar = new UniqueChar();
-        uniqueChar.uniqueChar("abcdefabcefabcd");
-    }
+//    public static void main(String[] args) {
+//        UniqueChar uniqueChar = new UniqueChar();
+//        uniqueChar.uniqueChar("abcdefabcefabcd");
+//    }
 }

@@ -22,6 +22,13 @@ public class VideoWatching extends Hobby{
         this.title = title;
     }
 
+    public VideoWatching(int id, int personId, String startTime, String endTime , String day, String title) {
+        super(id);
+        this.personId = personId;
+        this.time = new Timing(startTime,endTime,day);;
+        this.title = title;
+    }
+
     public int getPersonId() {
         return personId;
     }

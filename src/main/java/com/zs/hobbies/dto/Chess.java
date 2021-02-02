@@ -25,6 +25,14 @@ public class Chess extends Hobby{
         this.result = result;
     }
 
+    public Chess(int id, int personId,String startTime, String endTime , String day, int numMoves, String result) {
+        super(id);
+        this.personId = personId;
+        this.time = new Timing(startTime,endTime,day);
+        this.numMoves = numMoves;
+        this.result = result;
+    }
+
     public int getPersonId() {
         return personId;
     }

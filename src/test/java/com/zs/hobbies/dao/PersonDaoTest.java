@@ -12,7 +12,10 @@ import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * This class is PersonDao test implementation

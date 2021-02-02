@@ -7,9 +7,10 @@ import com.zs.hobbies.dto.Badminton;
 import com.zs.hobbies.cache.Cache;
 import com.zs.hobbies.dto.Timing;
 import com.zs.hobbies.exception.ApplicationException;
+import com.zs.hobbies.util.DataBase;
+import com.zs.hobbies.util.ResourceLoader;
 import com.zs.hobbies.validator.Validator;
 
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,15 +32,12 @@ public class BadmintonServiceImpl implements BadmintonService {
 
     /**
      * This is constructor and it set the connection and lru object
-     * @param con database connection
-     * @param lru lru cache object
      */
-    public BadmintonServiceImpl(Connection con,Cache lru) {
+    public BadmintonServiceImpl() {
         logger = Logger.getLogger(Application.class.getName());
         validator = new Validator();
-
-        this.lru = lru;
-        badmintonDao = new BadmintonDao(con);
+        this.lru = new Cache(ResourceLoader.getCacheSize());
+        badmintonDao = new BadmintonDao(DataBase.getCon());
         similarRequirement = new SimilarRequirement();
     }
 
@@ -55,7 +53,6 @@ public class BadmintonServiceImpl implements BadmintonService {
         validator.validBadminton(badminton);
 
         badmintonDao.insert(badminton);
-
         /**
          * insert hobby into the LRU Cache
          */

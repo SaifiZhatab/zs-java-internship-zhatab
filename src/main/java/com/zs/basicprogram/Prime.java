@@ -24,8 +24,8 @@ public class Prime {
             }
         }
     }
-    public static void main(String[] args) {
-        Prime prime = new Prime();
-        prime.prime(20);
-    }
+//    public static void main(String[] args) {
+//        Prime prime = new Prime();
+//        prime.prime(20);
+//    }
 }

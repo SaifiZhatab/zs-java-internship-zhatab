@@ -47,7 +47,7 @@ public class BadmintonDao {
             insert.executeUpdate();
             insert.close();
         }catch (SQLException e){
-            throw new ApplicationException(500,"Sorry,some internal exception comes in badminton database");
+            throw new InvalidInputException(500,"Sorry,you use duplicate key");
         }
     }
 
