@@ -7,12 +7,14 @@ import com.zs.hobbies.dto.Person;
 import com.zs.hobbies.util.DataBase;
 import com.zs.hobbies.util.ResourceLoader;
 import com.zs.hobbies.validator.Validator;
+import org.springframework.stereotype.Service;
 
 import java.util.logging.Logger;
 
 /**
  * This class give service to person
  */
+@Service
 public class PersonServiceImpl implements PersonService {
     private PersonDao personDao;
     private Cache lru;

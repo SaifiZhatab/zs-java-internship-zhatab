@@ -10,6 +10,7 @@ import com.zs.hobbies.exception.ApplicationException;
 import com.zs.hobbies.util.DataBase;
 import com.zs.hobbies.util.ResourceLoader;
 import com.zs.hobbies.validator.Validator;
+import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -24,6 +25,7 @@ import java.util.logging.Logger;
 /**
  * This class give service to Video watching hobby
  */
+@Service
 public class VideoWatchingServiceImpl implements VideoWatchingService {
     private VideoWatchingDao videoWatchingDao;
     private Logger logger;

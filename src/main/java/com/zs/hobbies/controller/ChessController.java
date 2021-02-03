@@ -7,11 +7,11 @@ import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.service.ChessService;
 import com.zs.hobbies.service.ChessServiceImpl;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Date;
@@ -36,10 +36,16 @@ public class ChessController {
     /**
      * This function help you to insert the chess object in database
      */
-    @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping("/Chess/insert")
-    public void insert(@RequestBody  Chess chess) {
-        chessService.insert(chess);
+    public ResponseEntity<String> insert(@RequestBody  Chess chess) {
+        try {
+            chessService.insert(chess);
+            return new ResponseEntity<>("Added", HttpStatus.OK);
+        } catch (InvalidInputException e) {
+            return new ResponseEntity<>(e.getErrorCode() + " " + e.getErrorCode(), HttpStatus.BAD_REQUEST);
+        } catch (ApplicationException e) {
+            return new ResponseEntity<>(e.getErrorCode() + " " + e.getErrorCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**

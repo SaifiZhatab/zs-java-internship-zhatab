@@ -8,6 +8,7 @@ public class Timing {
     private Time endTime;
     private Date day;
 
+
     public Timing(String startTime, String endTime , String day) {
         this.startTime = Time.valueOf(startTime);
         this.endTime = Time.valueOf(endTime);

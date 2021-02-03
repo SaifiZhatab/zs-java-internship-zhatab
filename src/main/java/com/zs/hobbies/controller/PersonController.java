@@ -2,6 +2,8 @@ package com.zs.hobbies.controller;
 
 import com.zs.hobbies.Application;
 import com.zs.hobbies.dto.Person;
+import com.zs.hobbies.exception.ApplicationException;
+import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.service.PersonService;
 import com.zs.hobbies.service.PersonServiceImpl;
 import org.springframework.http.HttpStatus;
@@ -31,7 +33,13 @@ public class PersonController {
      */
     @PostMapping("Person/insert")
     public ResponseEntity insert(@RequestBody Person person) {
+        try{
             personService.insert(person);
-            return ResponseEntity.ok(HttpStatus.ACCEPTED);
+            return new ResponseEntity<>("Added", HttpStatus.OK);
+        } catch (InvalidInputException e) {
+            return new ResponseEntity<>(e.getErrorCode() + " " + e.getErrorCode(), HttpStatus.BAD_REQUEST);
+        } catch (ApplicationException e) {
+            return new ResponseEntity<>(e.getErrorCode() + " " + e.getErrorCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

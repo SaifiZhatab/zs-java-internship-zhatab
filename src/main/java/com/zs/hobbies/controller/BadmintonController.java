@@ -7,11 +7,11 @@ import com.zs.hobbies.exception.InvalidInputException;
 import com.zs.hobbies.service.BadmintonService;
 import com.zs.hobbies.service.BadmintonServiceImpl;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Date;
@@ -36,11 +36,17 @@ public class BadmintonController {
     /**
      * This function help you to insert the badminton object in database
      */
-   @ResponseStatus(HttpStatus.ACCEPTED)
-    @PostMapping("/Badminton/insert")
-    public void insert(@RequestBody Badminton badminton) {
-            badmintonService.insert(badminton);
 
+    @PostMapping("/Badminton/insert")
+    public ResponseEntity<String> insert(@RequestBody Badminton badminton) {
+        try{
+            badmintonService.insert(badminton);
+            return new ResponseEntity<>("Added", HttpStatus.OK);
+        } catch (InvalidInputException e) {
+            return new ResponseEntity<>(e.getErrorCode() + " " + e.getErrorCode(), HttpStatus.BAD_REQUEST);
+        } catch (ApplicationException e) {
+            return new ResponseEntity<>(e.getErrorCode() + " " + e.getErrorCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
