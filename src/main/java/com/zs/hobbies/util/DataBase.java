@@ -22,7 +22,8 @@ public class DataBase {
     static  {
         try {
             Class.forName("org.postgresql.Driver");
-            con = DriverManager.getConnection("jdbc:postgresql://0.0.0.0:2006/hobbies", "zhatab", "zhatab");
+            con = DriverManager.getConnection("jdbc:postgresql://0.0.0.0:2006/postgres",
+                    "postgres", "root123");
 
             logger = Logger.getLogger(Application.class.getName());
             logger.info("DataBase connect successfully ");
